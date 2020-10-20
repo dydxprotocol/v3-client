@@ -1,2 +1,1 @@
-export function noop() {
-}
+export { default as DydxClient } from './dydx-client';
