@@ -1,7 +1,8 @@
-import { noop } from '../src';
+import { DydxClient } from '../src';
 
 describe('noop test', () => {
   it('does nothing', () => {
-    noop();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const unusedClient = new DydxClient('https://example.com');
   });
 });
