@@ -5,11 +5,13 @@ import {
 } from '../../types';
 
 export interface Public {
-  getMarkets(market?: Market): Promise<void>;
-  getOrderBook(market: Market): Promise<void>;
-  getStats({ market, days }: { market: Market, days?: MarketStatisticDay }): Promise<void>;
+  host: string;
+
+  getMarkets(market?: Market): Promise<{}> ;
+  getOrderBook(market: Market): Promise<{}> ;
+  getStats({ market, days }: { market: Market, days?: MarketStatisticDay }): Promise<{}> ;
   getTrades(
     { market, startingBeforeOrAt }: { market: Market, startingBeforeOrAt?: ISO8601 },
-  ): Promise<void>;
-  getHistoricalFunding(market: Market): Promise<void>;
+  ): Promise<{}> ;
+  getHistoricalFunding(market: Market): Promise<{}> ;
 }

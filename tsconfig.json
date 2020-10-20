@@ -6,7 +6,6 @@
     "src"
   ],
   "compilerOptions": {
-    "outDir": "build",
-    "esModuleInterop": true
+    "outDir": "build"
   }
 }
