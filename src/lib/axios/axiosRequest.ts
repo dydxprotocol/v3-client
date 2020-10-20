@@ -1,7 +1,3 @@
-/**
- * Simple handling of axios requests and errors.
- */
-
 import axios, { AxiosRequestConfig } from 'axios';
 
 import {
