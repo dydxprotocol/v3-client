@@ -10,6 +10,7 @@
     "coverage": "npm run test -- --coverage",
     "fix": "npm run lint -- --fix",
     "lint": "eslint --ext .ts,.js .",
+    "prepublishOnly": "npm run compile",
     "test": "NODE_ENV=test jest",
     "test:watch": "npm test -- --watch"
   },
