@@ -1,0 +1,11 @@
+{
+  "extends": "./node_modules/@dydxprotocol/node-service-base-dev/tsconfig.json",
+  "include": [
+    "__tests__",
+    "scripts",
+    "src"
+  ],
+  "compilerOptions": {
+    "outDir": "build"
+  }
+}

@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+
+# testing
+coverage/
+
+# production
+build/
+
+# misc
+.DS_Store
+.env.local
+.nyc_output
+npm-debug.log
+
+# vim
+*.swo
+*.swp

@@ -1,0 +1,33 @@
+{
+  "name": "v3-client",
+  "version": "0.0.1",
+  "description": "Trading client library for the new dYdX system (v3 API)",
+  "main": "build/src/index.js",
+  "scripts": {
+    "build": "rm -rf build/ && npm run compile",
+    "compile": "tsc",
+    "compile:watch": "npm run compile -- --watch",
+    "coverage": "npm run test -- --coverage",
+    "fix": "npm run lint -- --fix",
+    "lint": "eslint --ext .ts,.js .",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "npm test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dydxprotocol/v3-client.git"
+  },
+  "author": "dYdX",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dydxprotocol/v3-client/issues"
+  },
+  "homepage": "https://github.com/dydxprotocol/v3-client#readme",
+  "dependencies": {
+    "@dydxprotocol/starkex-lib": "^0.2.3",
+    "axios": "^0.20.0"
+  },
+  "devDependencies": {
+    "@dydxprotocol/node-service-base-dev": "0.0.10"
+  }
+}
