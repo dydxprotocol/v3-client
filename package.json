@@ -1,5 +1,5 @@
 {
-  "name": "v3-client",
+  "name": "@dydxprotocol/v3-client",
   "version": "0.0.1",
   "description": "Trading client library for the new dYdX system (v3 API)",
   "main": "build/src/index.js",
