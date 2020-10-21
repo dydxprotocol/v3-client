@@ -1,22 +1,20 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   KeyPair,
   Order as StarkExOrder,
-  Withdrawal as StarkExWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
 } from '@dydxprotocol/starkex-lib';
-
-import {
-  ApiOrder,
-  ApiWithdrawal,
-  PartialBy,
-} from '../../types';
 
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
 import { getUserId } from '../../lib/db';
+import {
+  ApiOrder,
+  PartialBy,
+} from '../../types';
 
 export default class Private {
   readonly host: string;
@@ -62,7 +60,7 @@ export default class Private {
         signature: 'mock-signature',
         ethereumAddress,
         expiration: new Date().toISOString(),
-      }
+      },
     );
   }
 
@@ -152,7 +150,9 @@ export default class Private {
   //   let signature: string | undefined = params.signature;
   //   if (!signature) {
   //     if (!this.starkKeyPair) {
-  //       throw new Error('Withdrawal is not signed and client was not initialized with starkPrivateKey');
+  //       throw new Error(
+  //         'Withdrawal is not signed and client was not initialized with starkPrivateKey',
+  //       );
   //     }
   //     signature = StarkExWithdrawal.fromInternal({
   //       ...possiblyUnsignedWithdrawal,
