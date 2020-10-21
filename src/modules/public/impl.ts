@@ -62,7 +62,6 @@ export default class PublicImpl implements Public {
   }
 
   private sendPublicGetRequest(requestPath: string): Promise<{}> {
-    // TODO make production
     return axiosRequest({
       method: 'GET',
       url: `${this.host}/${requestPath}`,

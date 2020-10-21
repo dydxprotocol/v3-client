@@ -5,7 +5,7 @@ import {
 } from '../../types';
 
 export interface Public {
-  host: string;
+  readonly host: string;
 
   getMarkets(market?: Market): Promise<{}> ;
   getOrderBook(market: Market): Promise<{}> ;

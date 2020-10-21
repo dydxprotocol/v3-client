@@ -29,7 +29,6 @@
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@dydxprotocol/node-service-base-dev": "0.0.10",
-    "@types/request-promise-native": "^1.0.17"
+    "@dydxprotocol/node-service-base-dev": "0.0.10"
   }
 }
