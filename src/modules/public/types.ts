@@ -1,7 +1,17 @@
+import {
+  ISO8601,
+  Market,
+  MarketStatisticDay,
+} from '../../types';
+
 export interface Public {
-  getMarkets(): void;
-  getOrderBook(): void;
-  getStats(): void;
-  getTrades(): void;
-  getHistoricalFunding(): void;
+  readonly host: string;
+
+  getMarkets(market?: Market): Promise<{}> ;
+  getOrderBook(market: Market): Promise<{}> ;
+  getStats({ market, days }: { market: Market, days?: MarketStatisticDay }): Promise<{}> ;
+  getTrades(
+    { market, startingBeforeOrAt }: { market: Market, startingBeforeOrAt?: ISO8601 },
+  ): Promise<{}> ;
+  getHistoricalFunding(market: Market): Promise<{}> ;
 }

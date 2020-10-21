@@ -59,7 +59,7 @@ export default class DydxClient {
     this.web3Proivder = options.web3Proivder;
 
     // Modules.
-    this._public = new PublicImpl();
+    this._public = new PublicImpl(host);
   }
 
   /**
