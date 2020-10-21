@@ -1,2 +1,1 @@
-export { default as PublicImpl } from './impl';
-export * from './types';
+export { default as Public } from './impl';

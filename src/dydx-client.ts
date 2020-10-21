@@ -4,27 +4,22 @@ import {
 
 import {
   Eth,
-  EthImpl,
   ethNotSupported,
 } from './modules/eth';
 import {
   Keys,
-  KeysImpl,
   keysNotSupported,
 } from './modules/keys';
 import {
   Onboarding,
-  OnboardingImpl,
   onboardingNotSupported,
 } from './modules/onboarding';
 import {
   Private,
-  PrivateImpl,
   privateNotSupported,
 } from './modules/private';
 import {
   Public,
-  PublicImpl,
 } from './modules/public';
 
 export interface ClientOptions {
@@ -59,14 +54,14 @@ export default class DydxClient {
     this.web3Proivder = options.web3Proivder;
 
     // Modules.
-    this._public = new PublicImpl(host);
+    this._public = new Public(host);
   }
 
   /**
    * Get the public module, used for interacting with public endpoints.
    */
   get public(): Public {
-    return this.public;
+    return this._public;
   }
 
   /**
@@ -75,9 +70,14 @@ export default class DydxClient {
   get private(): Private {
     if (!this._private) {
       if (this.apiPrivateKey) {
-        this._private = new PrivateImpl(this.apiPrivateKey, this.starkPrivateKey);
+        this._private = new Private(
+          this.host,
+          this.apiPrivateKey,
+          this.starkPrivateKey,
+        );
+      } else {
+        return privateNotSupported;
       }
-      return privateNotSupported;
     }
     return this._private;
   }
@@ -88,9 +88,10 @@ export default class DydxClient {
   get keys(): Keys {
     if (!this._keys) {
       if (this.web3Proivder) {
-        this._keys = new KeysImpl(this.web3Proivder);
+        this._keys = new Keys(this.web3Proivder);
+      } else {
+        return keysNotSupported;
       }
-      return keysNotSupported;
     }
     return this._keys;
   }
@@ -101,9 +102,10 @@ export default class DydxClient {
   get onboarding(): Onboarding {
     if (!this._onboarding) {
       if (this.web3Proivder) {
-        this._onboarding = new OnboardingImpl(this.web3Proivder);
+        this._onboarding = new Onboarding(this.web3Proivder);
+      } else {
+        return onboardingNotSupported;
       }
-      return onboardingNotSupported;
     }
     return this._onboarding;
   }
@@ -114,9 +116,10 @@ export default class DydxClient {
   get eth() {
     if (!this._eth) {
       if (this.web3Proivder) {
-        this._eth = new EthImpl(this.web3Proivder);
+        this._eth = new Eth(this.web3Proivder);
+      } else {
+        return ethNotSupported;
       }
-      return ethNotSupported;
     }
     return this._eth;
   }

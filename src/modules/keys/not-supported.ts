@@ -1,6 +1,4 @@
-import {
-  Keys,
-} from './types';
+import Keys from './impl';
 
 const handler = {
   get() {

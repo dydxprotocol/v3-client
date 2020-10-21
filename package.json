@@ -26,9 +26,11 @@
   "homepage": "https://github.com/dydxprotocol/v3-client#readme",
   "dependencies": {
     "@dydxprotocol/starkex-lib": "^0.2.3",
-    "axios": "^0.19.0"
+    "axios": "^0.19.0",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
-    "@dydxprotocol/node-service-base-dev": "0.0.10"
+    "@dydxprotocol/node-service-base-dev": "0.0.10",
+    "@types/uuid": "^8.3.0"
   }
 }

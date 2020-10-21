@@ -1,8 +1,4 @@
-import {
-  Onboarding,
-} from './types';
-
-export default class OnboardingImpl implements Onboarding {
+export default class Onboarding {
   readonly web3Proivder: {};
 
   constructor(
