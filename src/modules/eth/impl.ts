@@ -1,8 +1,4 @@
-import {
-  Eth,
-} from './types';
-
-export default class EthImpl implements Eth {
+export default class Eth {
   readonly web3Proivder: {};
 
   constructor(

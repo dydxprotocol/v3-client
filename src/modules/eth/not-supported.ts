@@ -1,6 +1,4 @@
-import {
-  Eth,
-} from './types';
+import Eth from './impl';
 
 const handler = {
   get() {

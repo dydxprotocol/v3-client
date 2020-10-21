@@ -1,6 +1,4 @@
-import {
-  Onboarding,
-} from './types';
+import Onboarding from './impl';
 
 const handler = {
   get() {

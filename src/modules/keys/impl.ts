@@ -1,8 +1,4 @@
-import {
-  Keys,
-} from './types';
-
-export default class KeysImpl implements Keys {
+export default class Keys {
   readonly web3Proivder: {};
 
   constructor(

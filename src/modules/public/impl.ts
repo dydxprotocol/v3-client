@@ -1,14 +1,24 @@
 import { axiosRequest } from '../../lib/axios';
 import { ISO8601, Market, MarketStatisticDay } from '../../types';
-import {
-  Public,
-} from './types';
 
-export default class PublicImpl implements Public {
+export default class Public {
   host: string;
 
   constructor(host: string) {
     this.host = host;
+  }
+
+  getAccount(
+    accountId: string,
+    ethereumAddress: string, // TODO: Should not require this.
+  ): Promise<{}> {
+    const uri: string = `v3/accounts/${accountId}`;
+    return this.sendPublicGetRequest(
+      uri,
+      {
+        owner: ethereumAddress,
+      },
+    );
   }
 
   getMarkets(market?: Market): Promise<{}> {
@@ -61,9 +71,13 @@ export default class PublicImpl implements Public {
     return this.sendPublicGetRequest(`v3/historical-funding/${market}`);
   }
 
-  private sendPublicGetRequest(requestPath: string): Promise<{}> {
+  private sendPublicGetRequest(
+    requestPath: string,
+    headers: {} = {},
+  ): Promise<{}> {
     return axiosRequest({
       method: 'GET',
+      headers,
       url: `${this.host}/${requestPath}`,
     });
   }
