@@ -139,30 +139,31 @@ export default class Private {
   async getFills(): Promise<void> {}
   async getTransfers(): Promise<void> {}
 
-  async createWithdrawal(
-    params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
-  ): Promise<{}> {
-    const possiblyUnsignedWithdrawal: PartialBy<ApiWithdrawal, 'signature'> = {
-      ...params,
-      clientId: params.clientId || Math.random().toString().slice(2),
-      // TODO: Allow clientId to be a string.
-      // clientId: params.clientId || Math.random().toString(36).slice(2),
-    };
-    let signature: string | undefined = params.signature;
-    if (!signature) {
-      if (!this.starkKeyPair) {
-        throw new Error('Withdrawal is not signed and client was not initialized with starkPrivateKey');
-      }
-      signature = StarkExWithdrawal.fromInternal({
-        ...possiblyUnsignedWithdrawal,
-        expiresAt: params.expiration,
-      }).sign(this.starkKeyPair);
-    }
-    return this.post('withdrawals', {
-      ...possiblyUnsignedWithdrawal,
-      signature,
-    });
-  }
+  // TODO: Fix. See createOrder above.
+  // async createWithdrawal(
+  //   params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
+  // ): Promise<{}> {
+  //   const possiblyUnsignedWithdrawal: PartialBy<ApiWithdrawal, 'signature'> = {
+  //     ...params,
+  //     clientId: params.clientId || Math.random().toString().slice(2),
+  //     // TODO: Allow clientId to be a string.
+  //     // clientId: params.clientId || Math.random().toString(36).slice(2),
+  //   };
+  //   let signature: string | undefined = params.signature;
+  //   if (!signature) {
+  //     if (!this.starkKeyPair) {
+  //       throw new Error('Withdrawal is not signed and client was not initialized with starkPrivateKey');
+  //     }
+  //     signature = StarkExWithdrawal.fromInternal({
+  //       ...possiblyUnsignedWithdrawal,
+  //       expiresAt: params.expiration,
+  //     }).sign(this.starkKeyPair);
+  //   }
+  //   return this.post('withdrawals', {
+  //     ...possiblyUnsignedWithdrawal,
+  //     signature,
+  //   });
+  // }
 
   async createDeposit(): Promise<void> {}
 
