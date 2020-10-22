@@ -23,14 +23,17 @@ export default class Private {
   readonly host: string;
   readonly apiKeyPair: KeyPair;
   readonly starkKeyPair?: KeyPair;
+  readonly expirationBuffer: string;
 
   constructor(
     host: string,
     apiPrivateKey: string | KeyPair,
+    expirationBuffer: string,
     starkPrivateKey?: string | KeyPair,
   ) {
     this.host = host;
     this.apiKeyPair = asSimpleKeyPair(asEcKeyPair(apiPrivateKey));
+    this.expirationBuffer = expirationBuffer;
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
