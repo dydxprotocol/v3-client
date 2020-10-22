@@ -50,6 +50,7 @@ export default class Private {
     data: {},
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toString();
     return axiosRequest({
       url: `${this.host}${url}`,
       method: RequestMethod.POST,
@@ -58,11 +59,11 @@ export default class Private {
         'DYDX-SIGNATURE': this.generateSignature({
           requestPath: url,
           method: ApiMethod.POST,
-          expiresAt: new Date().toISOString(),
+          expiresAt,
           body: data,
         }),
         'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': new Date().toISOString(),
+        'DYDX-TIMESTAMP': expiresAt,
       },
     });
   }
@@ -71,6 +72,7 @@ export default class Private {
     endpoint: string,
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toString();
     return axiosRequest({
       url: `${this.host}${url}`,
       method: RequestMethod.GET,
@@ -78,10 +80,10 @@ export default class Private {
         'DYDX-SIGNATURE': this.generateSignature({
           requestPath: url,
           method: ApiMethod.GET,
-          expiresAt: new Date().toISOString(),
+          expiresAt,
         }),
         'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': new Date().toISOString(),
+        'DYDX-TIMESTAMP': expiresAt,
       },
     });
   }
@@ -90,6 +92,7 @@ export default class Private {
     endpoint: string,
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toString();
     return axiosRequest({
       url: `${this.host}${url}`,
       method: RequestMethod.DELETE,
@@ -97,10 +100,10 @@ export default class Private {
         'DYDX-SIGNATURE': this.generateSignature({
           requestPath: url,
           method: ApiMethod.DELETE,
-          expiresAt: new Date().toISOString(),
+          expiresAt,
         }),
         'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': new Date().toISOString(),
+        'DYDX-TIMESTAMP': expiresAt,
       },
     });
   }
@@ -335,15 +338,14 @@ export default class Private {
   }
 
   private generateQueryPath(url: string, params: {}): string {
-    if (!Object.keys(params).length) {
+    const entries = Object.entries(params);
+    if (!entries.length) {
       return url;
     }
 
-    let updatedUrl: string = url.concat('?');
-    for (const [key, value] of Object.entries(params)) {
-      updatedUrl = updatedUrl.concat(`${key}=${value}&`);
-    }
-
-    return updatedUrl.slice(0, -1);
+    const paramsString = entries.map(
+      (kv) => `${kv[0]}=${kv[1]}`,
+    ).join('&');
+    return `${url}?${paramsString}`;
   }
 }
