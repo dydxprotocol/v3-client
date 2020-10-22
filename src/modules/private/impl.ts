@@ -15,6 +15,7 @@ import {
 import { getAccountId } from '../../lib/db';
 import {
   ApiOrder,
+  ISO8601,
   PartialBy,
 } from '../../types';
 
@@ -39,15 +40,16 @@ export default class Private {
     endpoint: string,
     data: {},
   ): Promise<{}> {
-    const url: string = `${this.host}/v3/${endpoint}`;
+    const url: string = `/v3/${endpoint}`;
     return axiosRequest({
-      url,
+      url: `${this.host}${url}`,
       method: RequestMethod.POST,
       data,
       headers: {
         'DYDX-SIGNATURE': this.generateSignature({
           requestPath: url,
           method: ApiMethod.POST,
+          expiresAt: new Date().toISOString(),
           body: data,
         }),
         'DYDX-API-KEY': this.apiKeyPair.publicKey,
@@ -59,14 +61,15 @@ export default class Private {
   protected async get(
     endpoint: string,
   ): Promise<{}> {
-    const url: string = `${this.host}/v3/${endpoint}`;
+    const url: string = `/v3/${endpoint}`;
     return axiosRequest({
-      url,
+      url: `${this.host}${url}`,
       method: RequestMethod.GET,
       headers: {
         'DYDX-SIGNATURE': this.generateSignature({
           requestPath: url,
           method: ApiMethod.GET,
+          expiresAt: new Date().toISOString(),
         }),
         'DYDX-API-KEY': this.apiKeyPair.publicKey,
         'DYDX-TIMESTAMP': new Date().toISOString(),
@@ -82,7 +85,7 @@ export default class Private {
 
   // TODO: Remove.
   async createUser(
-    userData: JSON,
+    userData: {},
   ): Promise<{}> {
     return this.post(
       'users',
@@ -194,10 +197,12 @@ export default class Private {
   private generateSignature({
     requestPath,
     method,
+    expiresAt,
     body = {},
   }: {
     requestPath: string,
     method: ApiMethod,
+    expiresAt: ISO8601,
     body?: {},
   }): string {
     return ApiRequest.fromInternal({
@@ -205,7 +210,7 @@ export default class Private {
       requestPath,
       method,
       publicKey: this.apiKeyPair.publicKey,
-      expiresAt: new Date().toISOString(),
+      expiresAt,
     }).sign(this.apiKeyPair.privateKey);
   }
 }
