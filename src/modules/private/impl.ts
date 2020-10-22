@@ -4,15 +4,18 @@ import {
   Order as StarkExOrder,
   asEcKeyPair,
   asSimpleKeyPair,
+  ApiMethod,
+  ApiRequest,
 } from '@dydxprotocol/starkex-lib';
 
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { getUserId } from '../../lib/db';
+import { getAccountId } from '../../lib/db';
 import {
   ApiOrder,
+  ISO8601,
   PartialBy,
 } from '../../types';
 
@@ -36,55 +39,81 @@ export default class Private {
   protected async post(
     endpoint: string,
     data: {},
-    headers: {} = {},
   ): Promise<{}> {
-    // TODO: Sign with API key.
+    const url: string = `/v3/${endpoint}`;
     return axiosRequest({
-      url: `${this.host}/v3/${endpoint}`,
+      url: `${this.host}${url}`,
       method: RequestMethod.POST,
       data,
-      headers,
+      headers: {
+        'DYDX-SIGNATURE': this.generateSignature({
+          requestPath: url,
+          method: ApiMethod.POST,
+          expiresAt: new Date().toISOString(),
+          body: data,
+        }),
+        'DYDX-API-KEY': this.apiKeyPair.publicKey,
+        'DYDX-TIMESTAMP': new Date().toISOString(),
+      },
     });
   }
 
-  async getUser(): Promise<void> {}
+  protected async get(
+    endpoint: string,
+  ): Promise<{}> {
+    const url: string = `/v3/${endpoint}`;
+    return axiosRequest({
+      url: `${this.host}${url}`,
+      method: RequestMethod.GET,
+      headers: {
+        'DYDX-SIGNATURE': this.generateSignature({
+          requestPath: url,
+          method: ApiMethod.GET,
+          expiresAt: new Date().toISOString(),
+        }),
+        'DYDX-API-KEY': this.apiKeyPair.publicKey,
+        'DYDX-TIMESTAMP': new Date().toISOString(),
+      },
+    });
+  }
+
+  async getUser(): Promise<{}> {
+    return this.get(
+      'users',
+    );
+  }
 
   // TODO: Remove.
   async createUser(
-    ethereumAddress: string,
+    userData: {},
   ): Promise<{}> {
     return this.post(
       'users',
-      {},
       {
-        signature: 'mock-signature',
-        ethereumAddress,
-        expiration: new Date().toISOString(),
+        userData,
       },
     );
   }
 
-  async updateUser(): Promise<void> {}
+  async updateUser(): Promise<void> {} // NOT in Librarian yet
 
   async createAccount(
-    ethereumAddress: string,
     starkKey: string,
   ): Promise<{}> {
-    const userId = getUserId(ethereumAddress);
     return this.post(
       'accounts',
       {
         starkKey,
       },
-      {
-        signature: 'mock-signature',
-        userId,
-        expiration: new Date().toISOString(),
-      },
     );
   }
 
-  async getAccounts(): Promise<void> {}
+  async getAccountById(ethereumAddress: string): Promise<{}> {
+    return this.get(
+      `accounts/${getAccountId({ address: ethereumAddress })}`,
+    );
+  }
+
   async getPositions(): Promise<void> {}
   async getOrders(): Promise<void> {}
   async getOrder(): Promise<void> {}
@@ -92,7 +121,6 @@ export default class Private {
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
-    ethereumAddress: string, // TODO: Don't require this.
   ): Promise<{}> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
@@ -125,9 +153,6 @@ export default class Private {
     return this.post(
       'orders',
       order,
-      {
-        owner: ethereumAddress,
-      },
     );
   }
 
@@ -168,4 +193,24 @@ export default class Private {
   async createDeposit(): Promise<void> {}
 
   async getFundingPayments(): Promise<void> {}
+
+  private generateSignature({
+    requestPath,
+    method,
+    expiresAt,
+    body = {},
+  }: {
+    requestPath: string,
+    method: ApiMethod,
+    expiresAt: ISO8601,
+    body?: {},
+  }): string {
+    return ApiRequest.fromInternal({
+      body: JSON.stringify(body),
+      requestPath,
+      method,
+      publicKey: this.apiKeyPair.publicKey,
+      expiresAt,
+    }).sign(this.apiKeyPair.privateKey);
+  }
 }
