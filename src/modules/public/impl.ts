@@ -58,7 +58,7 @@ export default class Public {
     market: Market,
     startingBeforeOrAt?: ISO8601,
   }): Promise<{}> {
-    let uri: string = `v3/stats/${market}`;
+    let uri: string = `v3/trades/${market}`;
 
     if (startingBeforeOrAt) {
       uri = uri.concat(`?startingBeforeOrAt=${startingBeforeOrAt}`);

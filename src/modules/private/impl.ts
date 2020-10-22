@@ -6,6 +6,9 @@ import {
   asSimpleKeyPair,
   ApiMethod,
   ApiRequest,
+  OrderSide,
+  OrderType,
+  Asset,
 } from '@dydxprotocol/starkex-lib';
 
 import {
@@ -14,9 +17,13 @@ import {
 } from '../../lib/axios';
 import { getAccountId } from '../../lib/db';
 import {
+  AccountAction,
   ApiOrder,
   ISO8601,
+  Market,
+  OrderStatus,
   PartialBy,
+  PositionStatus,
 } from '../../types';
 
 export default class Private {
@@ -35,6 +42,8 @@ export default class Private {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
   }
+
+  // ============ Request Helpers ============
 
   protected async post(
     endpoint: string,
@@ -77,6 +86,27 @@ export default class Private {
     });
   }
 
+  protected async delete(
+    endpoint: string,
+  ): Promise<{}> {
+    const url: string = `/v3/${endpoint}`;
+    return axiosRequest({
+      url: `${this.host}${url}`,
+      method: RequestMethod.DELETE,
+      headers: {
+        'DYDX-SIGNATURE': this.generateSignature({
+          requestPath: url,
+          method: ApiMethod.DELETE,
+          expiresAt: new Date().toISOString(),
+        }),
+        'DYDX-API-KEY': this.apiKeyPair.publicKey,
+        'DYDX-TIMESTAMP': new Date().toISOString(),
+      },
+    });
+  }
+
+  // ============ Requests ============
+
   async getUser(): Promise<{}> {
     return this.get(
       'users',
@@ -114,9 +144,45 @@ export default class Private {
     );
   }
 
-  async getPositions(): Promise<void> {}
-  async getOrders(): Promise<void> {}
-  async getOrder(): Promise<void> {}
+  async getPositions(
+    params: {
+      market?: Market,
+      status?: PositionStatus,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('positions', params),
+    );
+  }
+
+  async getOrders(
+    params: {
+      market?: Market,
+      status?: OrderStatus,
+      side?: OrderSide,
+      type?: OrderType,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('orders', params),
+    );
+  }
+
+  async getOrderById(orderId: string): Promise<{}> {
+    return this.get(
+      `orders/${orderId}`,
+    );
+  }
+
+  async getOrderByClientId(clientId: string): Promise<{}> {
+    return this.get(
+      `orders/client/${clientId}`,
+    );
+  }
 
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
@@ -156,11 +222,42 @@ export default class Private {
     );
   }
 
-  async deleteOrder(): Promise<void> {}
-  async cancelOrder(): Promise<void> {}
-  async cancelAllOrders(): Promise<void> {}
-  async getFills(): Promise<void> {}
-  async getTransfers(): Promise<void> {}
+  async deleteOrder(orderId: string): Promise<{}> {
+    return this.delete(
+      `orders/${orderId}`,
+    );
+  }
+
+  async deleteAllOrders(params: { market?: Market }): Promise<{}> {
+    return this.delete(
+      this.generateQueryPath('orders', params),
+    );
+  }
+
+  async getFills(
+    params: {
+      market?: Market,
+      orderId?: string,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('fills', params),
+    );
+  }
+
+  async getTransfers(
+    params: {
+      type?: AccountAction,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('transfers', params),
+    );
+  }
 
   // TODO: Fix. See createOrder above.
   // async createWithdrawal(
@@ -190,9 +287,32 @@ export default class Private {
   //   });
   // }
 
-  async createDeposit(): Promise<void> {}
+  async createDeposit(
+    params: {
+      amount: string,
+      asset: Asset,
+      fromAddress: string,
+    },
+  ): Promise<{}> {
+    return this.post(
+      'deposits',
+      params,
+    );
+  }
 
-  async getFundingPayments(): Promise<void> {}
+  async getFundingPayments(
+    params: {
+      market?: Market,
+      limit?: number,
+      effectiveBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('funding', params),
+    );
+  }
+
+  // ============ Request Generation Helpers ============
 
   private generateSignature({
     requestPath,
@@ -212,5 +332,18 @@ export default class Private {
       publicKey: this.apiKeyPair.publicKey,
       expiresAt,
     }).sign(this.apiKeyPair.privateKey);
+  }
+
+  private generateQueryPath(url: string, params: {}): string {
+    if (!Object.keys(params).length) {
+      return url;
+    }
+
+    let updatedUrl: string = url.concat('?');
+    for (const [key, value] of Object.entries(params)) {
+      updatedUrl = updatedUrl.concat(`${key}=${value}&`);
+    }
+
+    return updatedUrl.slice(0, -1);
   }
 }
