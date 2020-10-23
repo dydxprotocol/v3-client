@@ -26,11 +26,12 @@ import {
   PositionStatus,
 } from '../../types';
 
-const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
+// TODO: Figure out if we can get rid of this.
+const METHOD_ENUM_MAP: Partial<Record<RequestMethod, ApiMethod>> = {
   [RequestMethod.DELETE]: ApiMethod.DELETE,
   [RequestMethod.GET]: ApiMethod.GET,
   [RequestMethod.POST]: ApiMethod.POST,
-  [RequestMethod.PUT]: ApiMethod.PUT,
+  // [RequestMethod.PUT]: ApiMethod.PUT,
 };
 
 export default class Private {
@@ -319,6 +320,10 @@ export default class Private {
     data?: {},
   }): string {
     const apiMethod = METHOD_ENUM_MAP[method];
+    // TODO: Shouldn't need this.
+    if (!apiMethod) {
+      throw new Error(`Unsupported method: ${method}`);
+    }
     return ApiRequest.fromInternal({
       body: data ? JSON.stringify(data) : '',
       requestPath,
