@@ -4,17 +4,35 @@ import {
   Order as StarkExOrder,
   asEcKeyPair,
   asSimpleKeyPair,
+  ApiMethod,
+  ApiRequest,
+  OrderSide,
+  OrderType,
+  Asset,
 } from '@dydxprotocol/starkex-lib';
 
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { getUserId } from '../../lib/db';
+import { getAccountId } from '../../lib/db';
 import {
+  AccountAction,
   ApiOrder,
+  ISO8601,
+  Market,
+  OrderStatus,
   PartialBy,
+  PositionStatus,
 } from '../../types';
+
+// TODO: Figure out if we can get rid of this.
+const METHOD_ENUM_MAP: Partial<Record<RequestMethod, ApiMethod>> = {
+  [RequestMethod.DELETE]: ApiMethod.DELETE,
+  [RequestMethod.GET]: ApiMethod.GET,
+  [RequestMethod.POST]: ApiMethod.POST,
+  // [RequestMethod.PUT]: ApiMethod.PUT,
+};
 
 export default class Private {
   readonly host: string;
@@ -33,66 +51,135 @@ export default class Private {
     }
   }
 
-  protected async post(
+  // ============ Request Helpers ============
+
+  protected async request(
     endpoint: string,
-    data: {},
-    headers: {} = {},
+    method: RequestMethod,
+    data?: {},
   ): Promise<{}> {
-    // TODO: Sign with API key.
+    const requestPath = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toISOString();
+    const headers = {
+      'DYDX-SIGNATURE': this.generateSignature({
+        requestPath,
+        method,
+        expiresAt,
+        data,
+      }),
+      'DYDX-API-KEY': this.apiKeyPair.publicKey,
+      'DYDX-TIMESTAMP': expiresAt,
+    };
     return axiosRequest({
-      url: `${this.host}/v3/${endpoint}`,
-      method: RequestMethod.POST,
+      url: `${this.host}${requestPath}`,
+      method,
       data,
       headers,
     });
   }
 
-  async getUser(): Promise<void> {}
+  protected async get(
+    endpoint: string,
+  ): Promise<{}> {
+    return this.request(endpoint, RequestMethod.GET);
+  }
+
+  protected async post(
+    endpoint: string,
+    data: {},
+  ): Promise<{}> {
+    return this.request(endpoint, RequestMethod.POST, data);
+  }
+
+  protected async delete(
+    endpoint: string,
+  ): Promise<{}> {
+    return this.request(endpoint, RequestMethod.DELETE);
+  }
+
+  // ============ Requests ============
+
+  async getUser(): Promise<{}> {
+    return this.get(
+      'users',
+    );
+  }
 
   // TODO: Remove.
   async createUser(
-    ethereumAddress: string,
+    userData?: {},
   ): Promise<{}> {
     return this.post(
       'users',
-      {},
       {
-        signature: 'mock-signature',
-        ethereumAddress,
-        expiration: new Date().toISOString(),
+        userData,
       },
     );
   }
 
-  async updateUser(): Promise<void> {}
+  async updateUser(): Promise<void> {} // NOT in Librarian yet
 
   async createAccount(
-    ethereumAddress: string,
     starkKey: string,
   ): Promise<{}> {
-    const userId = getUserId(ethereumAddress);
     return this.post(
       'accounts',
       {
         starkKey,
       },
-      {
-        signature: 'mock-signature',
-        userId,
-        expiration: new Date().toISOString(),
-      },
     );
   }
 
-  async getAccounts(): Promise<void> {}
-  async getPositions(): Promise<void> {}
-  async getOrders(): Promise<void> {}
-  async getOrder(): Promise<void> {}
+  async getAccount(ethereumAddress: string): Promise<{}> {
+    return this.get(
+      `accounts/${getAccountId({ address: ethereumAddress })}`,
+    );
+  }
+
+  async getPositions(
+    params: {
+      market?: Market,
+      status?: PositionStatus,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('positions', params),
+    );
+  }
+
+  async getOrders(
+    params: {
+      market?: Market,
+      status?: OrderStatus,
+      side?: OrderSide,
+      type?: OrderType,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('orders', params),
+    );
+  }
+
+  async getOrderById(orderId: string): Promise<{}> {
+    return this.get(
+      `orders/${orderId}`,
+    );
+  }
+
+  async getOrderByClientId(clientId: string): Promise<{}> {
+    return this.get(
+      `orders/client/${clientId}`,
+    );
+  }
 
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
-    ethereumAddress: string, // TODO: Don't require this.
+    ethereumAddress: string,
   ): Promise<{}> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
@@ -111,6 +198,7 @@ export default class Private {
         positionId,
         starkKey: this.starkKeyPair.publicKey,
         expiresAt: params.expiration,
+        accountId: getAccountId({ address: ethereumAddress }),
       };
       const starkOrder = StarkExOrder.fromInternal(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
@@ -125,17 +213,45 @@ export default class Private {
     return this.post(
       'orders',
       order,
-      {
-        owner: ethereumAddress,
-      },
     );
   }
 
-  async deleteOrder(): Promise<void> {}
-  async cancelOrder(): Promise<void> {}
-  async cancelAllOrders(): Promise<void> {}
-  async getFills(): Promise<void> {}
-  async getTransfers(): Promise<void> {}
+  async deleteOrder(orderId: string): Promise<{}> {
+    return this.delete(
+      `orders/${orderId}`,
+    );
+  }
+
+  async deleteAllOrders(params: { market?: Market }): Promise<{}> {
+    return this.delete(
+      this.generateQueryPath('orders', params),
+    );
+  }
+
+  async getFills(
+    params: {
+      market?: Market,
+      orderId?: string,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('fills', params),
+    );
+  }
+
+  async getTransfers(
+    params: {
+      type?: AccountAction,
+      limit?: number,
+      createdBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('transfers', params),
+    );
+  }
 
   // TODO: Fix. See createOrder above.
   // async createWithdrawal(
@@ -165,7 +281,67 @@ export default class Private {
   //   });
   // }
 
-  async createDeposit(): Promise<void> {}
+  async createDeposit(
+    params: {
+      amount: string,
+      asset: Asset,
+      fromAddress: string,
+    },
+  ): Promise<{}> {
+    return this.post(
+      'deposits',
+      params,
+    );
+  }
 
-  async getFundingPayments(): Promise<void> {}
+  async getFundingPayments(
+    params: {
+      market?: Market,
+      limit?: number,
+      effectiveBeforeOrAt?: ISO8601,
+    },
+  ): Promise<{}> {
+    return this.get(
+      this.generateQueryPath('funding', params),
+    );
+  }
+
+  // ============ Request Generation Helpers ============
+
+  private generateSignature({
+    requestPath,
+    method,
+    expiresAt,
+    data,
+  }: {
+    requestPath: string,
+    method: RequestMethod,
+    expiresAt: ISO8601,
+    data?: {},
+  }): string {
+    const apiMethod = METHOD_ENUM_MAP[method];
+    // TODO: Shouldn't need this.
+    if (!apiMethod) {
+      throw new Error(`Unsupported method: ${method}`);
+    }
+    return ApiRequest.fromInternal({
+      body: data ? JSON.stringify(data) : '',
+      requestPath,
+      method: apiMethod,
+      publicKey: this.apiKeyPair.publicKey,
+      expiresAt,
+    }).sign(this.apiKeyPair.privateKey);
+  }
+
+  private generateQueryPath(url: string, params: {}): string {
+    const entries = Object.entries(params);
+    if (!entries.length) {
+      return url;
+    }
+
+    const paramsString = entries.map(
+      (kv) => `${kv[0]}=${kv[1]}`,
+    ).join('&');
+    return `${url}?${paramsString}`;
+  }
 }

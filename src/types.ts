@@ -40,6 +40,25 @@ export enum TimeInForce {
   IOC = 'IOC',
 }
 
+export enum PositionStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  LIQUIDATED = 'LIQUIDATED',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  OPEN = 'OPEN',
+  FILLED = 'FILLED',
+  CANCELED = 'CANCELED',
+  UNTRIGGERED = 'UNTRIGGERED',
+}
+
+export enum AccountAction {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAWAL = 'WITHDRAWAL',
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -48,7 +67,6 @@ interface ApiStarkwareSigned {
 }
 
 export interface ApiOrder extends ApiStarkwareSigned {
-  accountId: string;
   market: PerpetualMarket;
   side: OrderSide;
   type: OrderType;

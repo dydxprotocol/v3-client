@@ -2,7 +2,7 @@ import { axiosRequest } from '../../lib/axios';
 import { ISO8601, Market, MarketStatisticDay } from '../../types';
 
 export default class Public {
-  host: string;
+  readonly host: string;
 
   constructor(host: string) {
     this.host = host;
@@ -58,7 +58,7 @@ export default class Public {
     market: Market,
     startingBeforeOrAt?: ISO8601,
   }): Promise<{}> {
-    let uri: string = `v3/stats/${market}`;
+    let uri: string = `v3/trades/${market}`;
 
     if (startingBeforeOrAt) {
       uri = uri.concat(`?startingBeforeOrAt=${startingBeforeOrAt}`);

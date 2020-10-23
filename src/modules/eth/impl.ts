@@ -1,9 +1,9 @@
 export default class Eth {
-  readonly web3Proivder: {};
+  readonly web3Provider: {};
 
   constructor(
-    web3Proivder: {},
+    web3Provider: {},
   ) {
-    this.web3Proivder = web3Proivder;
+    this.web3Provider = web3Provider;
   }
 }

@@ -26,7 +26,7 @@ export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
   starkPrivateKey?: string | KeyPair;
-  web3Proivder?: {};
+  web3Provider?: {};
 }
 
 export default class DydxClient {
@@ -34,7 +34,7 @@ export default class DydxClient {
   readonly apiTimeout?: number;
   readonly apiPrivateKey?: string | KeyPair;
   readonly starkPrivateKey?: string | KeyPair;
-  readonly web3Proivder?: {};
+  readonly web3Provider?: {};
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -51,7 +51,7 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
-    this.web3Proivder = options.web3Proivder;
+    this.web3Provider = options.web3Provider;
 
     // Modules.
     this._public = new Public(host);
@@ -87,8 +87,8 @@ export default class DydxClient {
    */
   get keys(): Keys {
     if (!this._keys) {
-      if (this.web3Proivder) {
-        this._keys = new Keys(this.web3Proivder);
+      if (this.web3Provider) {
+        this._keys = new Keys(this.host, this.web3Provider);
       } else {
         return keysNotSupported;
       }
@@ -101,8 +101,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.web3Proivder) {
-        this._onboarding = new Onboarding(this.web3Proivder);
+      if (this.web3Provider) {
+        this._onboarding = new Onboarding(this.web3Provider);
       } else {
         return onboardingNotSupported;
       }
@@ -115,8 +115,8 @@ export default class DydxClient {
    */
   get eth() {
     if (!this._eth) {
-      if (this.web3Proivder) {
-        this._eth = new Eth(this.web3Proivder);
+      if (this.web3Provider) {
+        this._eth = new Eth(this.web3Provider);
       } else {
         return ethNotSupported;
       }
