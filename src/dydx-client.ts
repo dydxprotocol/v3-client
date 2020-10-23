@@ -88,7 +88,7 @@ export default class DydxClient {
   get keys(): Keys {
     if (!this._keys) {
       if (this.web3Provider) {
-        this._keys = new Keys(this.web3Provider);
+        this._keys = new Keys(this.host, this.web3Provider);
       } else {
         return keysNotSupported;
       }

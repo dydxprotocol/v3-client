@@ -67,7 +67,6 @@ interface ApiStarkwareSigned {
 }
 
 export interface ApiOrder extends ApiStarkwareSigned {
-  accountId: string;
   market: PerpetualMarket;
   side: OrderSide;
   type: OrderType;

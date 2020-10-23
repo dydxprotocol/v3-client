@@ -26,6 +26,13 @@ import {
   PositionStatus,
 } from '../../types';
 
+const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod>  = {
+  [RequestMethod.DELETE]: ApiMethod.DELETE,
+  [RequestMethod.GET]: ApiMethod.GET,
+  [RequestMethod.POST]: ApiMethod.POST,
+  [RequestMethod.PUT]: ApiMethod.PUT,
+}
+
 export default class Private {
   readonly host: string;
   readonly apiKeyPair: KeyPair;
@@ -45,67 +52,48 @@ export default class Private {
 
   // ============ Request Helpers ============
 
-  protected async post(
+  protected async request(
     endpoint: string,
-    data: {},
+    method: RequestMethod,
+    data?: {},
   ): Promise<{}> {
-    const url: string = `/v3/${endpoint}`;
-    const expiresAt: ISO8601 = new Date().toString();
+    const requestPath = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toISOString();
+    const headers = {
+      'DYDX-SIGNATURE': this.generateSignature({
+        requestPath: requestPath,
+        method,
+        expiresAt,
+        data,
+      }),
+      'DYDX-API-KEY': this.apiKeyPair.publicKey,
+      'DYDX-TIMESTAMP': expiresAt,
+    };
     return axiosRequest({
-      url: `${this.host}${url}`,
-      method: RequestMethod.POST,
+      url: `${this.host}${requestPath}`,
+      method,
       data,
-      headers: {
-        'DYDX-SIGNATURE': this.generateSignature({
-          requestPath: url,
-          method: ApiMethod.POST,
-          expiresAt,
-          body: data,
-        }),
-        'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': expiresAt,
-      },
+      headers,
     });
   }
 
   protected async get(
     endpoint: string,
   ): Promise<{}> {
-    const url: string = `/v3/${endpoint}`;
-    const expiresAt: ISO8601 = new Date().toString();
-    return axiosRequest({
-      url: `${this.host}${url}`,
-      method: RequestMethod.GET,
-      headers: {
-        'DYDX-SIGNATURE': this.generateSignature({
-          requestPath: url,
-          method: ApiMethod.GET,
-          expiresAt,
-        }),
-        'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': expiresAt,
-      },
-    });
+    return this.request(endpoint, RequestMethod.GET);
+  }
+
+  protected async post(
+    endpoint: string,
+    data: {},
+  ): Promise<{}> {
+    return this.request(endpoint, RequestMethod.POST, data);
   }
 
   protected async delete(
     endpoint: string,
   ): Promise<{}> {
-    const url: string = `/v3/${endpoint}`;
-    const expiresAt: ISO8601 = new Date().toString();
-    return axiosRequest({
-      url: `${this.host}${url}`,
-      method: RequestMethod.DELETE,
-      headers: {
-        'DYDX-SIGNATURE': this.generateSignature({
-          requestPath: url,
-          method: ApiMethod.DELETE,
-          expiresAt,
-        }),
-        'DYDX-API-KEY': this.apiKeyPair.publicKey,
-        'DYDX-TIMESTAMP': expiresAt,
-      },
-    });
+    return this.request(endpoint, RequestMethod.DELETE);
   }
 
   // ============ Requests ============
@@ -118,7 +106,7 @@ export default class Private {
 
   // TODO: Remove.
   async createUser(
-    userData: {},
+    userData?: {},
   ): Promise<{}> {
     return this.post(
       'users',
@@ -141,7 +129,7 @@ export default class Private {
     );
   }
 
-  async getAccountById(ethereumAddress: string): Promise<{}> {
+  async getAccount(ethereumAddress: string): Promise<{}> {
     return this.get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
     );
@@ -190,6 +178,7 @@ export default class Private {
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
+    ethereumAddress: string,
   ): Promise<{}> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
@@ -208,9 +197,12 @@ export default class Private {
         positionId,
         starkKey: this.starkKeyPair.publicKey,
         expiresAt: params.expiration,
+        accountId: getAccountId({ address: ethereumAddress }),
       };
       const starkOrder = StarkExOrder.fromInternal(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
+      console.log('orderToSign', orderToSign)
+      console.log('signature', signature);
     }
 
     const order: ApiOrder = {
@@ -321,17 +313,18 @@ export default class Private {
     requestPath,
     method,
     expiresAt,
-    body = {},
+    data,
   }: {
     requestPath: string,
-    method: ApiMethod,
+    method: RequestMethod,
     expiresAt: ISO8601,
-    body?: {},
+    data?: {},
   }): string {
+    const apiMethod = METHOD_ENUM_MAP[method];
     return ApiRequest.fromInternal({
-      body: JSON.stringify(body),
+      body: data ? JSON.stringify(data) : '',
       requestPath,
-      method,
+      method: apiMethod,
       publicKey: this.apiKeyPair.publicKey,
       expiresAt,
     }).sign(this.apiKeyPair.privateKey);

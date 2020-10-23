@@ -2,7 +2,7 @@ import { axiosRequest } from '../../lib/axios';
 import { ISO8601, Market, MarketStatisticDay } from '../../types';
 
 export default class Public {
-  host: string;
+  readonly host: string;
 
   constructor(host: string) {
     this.host = host;
