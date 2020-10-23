@@ -26,12 +26,12 @@ import {
   PositionStatus,
 } from '../../types';
 
-const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod>  = {
+const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
   [RequestMethod.DELETE]: ApiMethod.DELETE,
   [RequestMethod.GET]: ApiMethod.GET,
   [RequestMethod.POST]: ApiMethod.POST,
   [RequestMethod.PUT]: ApiMethod.PUT,
-}
+};
 
 export default class Private {
   readonly host: string;
@@ -61,7 +61,7 @@ export default class Private {
     const expiresAt: ISO8601 = new Date().toISOString();
     const headers = {
       'DYDX-SIGNATURE': this.generateSignature({
-        requestPath: requestPath,
+        requestPath,
         method,
         expiresAt,
         data,
@@ -201,8 +201,6 @@ export default class Private {
       };
       const starkOrder = StarkExOrder.fromInternal(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
-      console.log('orderToSign', orderToSign)
-      console.log('signature', signature);
     }
 
     const order: ApiOrder = {
