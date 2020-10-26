@@ -9,6 +9,7 @@ import {
   OrderSide,
   OrderType,
   Asset,
+  Withdrawal as StarkExWithdrawal,
 } from '@dydxprotocol/starkex-lib';
 
 import {
@@ -19,6 +20,7 @@ import { getAccountId } from '../../lib/db';
 import {
   AccountAction,
   ApiOrder,
+  ApiWithdrawal,
   ISO8601,
   Market,
   OrderStatus,
@@ -200,7 +202,7 @@ export default class Private {
         expiresAt: params.expiration,
         accountId: getAccountId({ address: ethereumAddress }),
       };
-      const starkOrder = StarkExOrder.fromInternal(orderToSign);
+      const starkOrder: StarkExOrder = StarkExOrder.fromInternal(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
     }
 
@@ -254,33 +256,44 @@ export default class Private {
     );
   }
 
-  // TODO: Fix. See createOrder above.
-  // async createWithdrawal(
-  //   params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
-  // ): Promise<{}> {
-  //   const possiblyUnsignedWithdrawal: PartialBy<ApiWithdrawal, 'signature'> = {
-  //     ...params,
-  //     clientId: params.clientId || Math.random().toString().slice(2),
-  //     // TODO: Allow clientId to be a string.
-  //     // clientId: params.clientId || Math.random().toString(36).slice(2),
-  //   };
-  //   let signature: string | undefined = params.signature;
-  //   if (!signature) {
-  //     if (!this.starkKeyPair) {
-  //       throw new Error(
-  //         'Withdrawal is not signed and client was not initialized with starkPrivateKey',
-  //       );
-  //     }
-  //     signature = StarkExWithdrawal.fromInternal({
-  //       ...possiblyUnsignedWithdrawal,
-  //       expiresAt: params.expiration,
-  //     }).sign(this.starkKeyPair);
-  //   }
-  //   return this.post('withdrawals', {
-  //     ...possiblyUnsignedWithdrawal,
-  //     signature,
-  //   });
-  // }
+  async createWithdrawal(
+    params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
+  ): Promise<{}> {
+    // TODO: Allow clientId to be a string.
+    // const clientId = params.clientId || Math.random().toString(36).slice(2);
+    //
+    // Have to strip leading zeroes since clientId is being mis-processed as a number.
+    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+
+    let signature: string | undefined = params.signature;
+    if (!signature) {
+      if (!this.starkKeyPair) {
+        throw new Error(
+          'Withdrawal is not signed and client was not initialized with starkPrivateKey',
+        );
+      }
+      const withdrawalToSign = {
+        ...params,
+        clientId,
+        starkKey: this.starkKeyPair.publicKey,
+        debitAmount: params.amount,
+        expiresAt: params.expiration,
+      };
+      const starkWithdrawal: StarkExWithdrawal = StarkExWithdrawal.fromInternal(withdrawalToSign);
+      signature = starkWithdrawal.sign(this.starkKeyPair);
+    }
+
+    const withdrawal: ApiWithdrawal = {
+      ...params,
+      clientId,
+      signature,
+    };
+
+    return this.post(
+      'withdrawals',
+      withdrawal,
+    );
+  }
 
   async createDeposit(
     params: {
