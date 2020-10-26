@@ -75,8 +75,6 @@ export interface ApiWithdrawal extends ApiStarkwareSigned {
   asset: Asset,
   toAddress: string,
   clientId: string;
-  positionId: string;
-  debitAmount: string;
 }
 
 // ============ Utility Types ============

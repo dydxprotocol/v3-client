@@ -258,6 +258,7 @@ export default class Private {
 
   async createWithdrawal(
     params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
+    positionId: string,
   ): Promise<{}> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
@@ -278,6 +279,7 @@ export default class Private {
         starkKey: this.starkKeyPair.publicKey,
         debitAmount: params.amount,
         expiresAt: params.expiration,
+        positionId,
       };
       const starkWithdrawal: StarkExWithdrawal = StarkExWithdrawal.fromInternal(withdrawalToSign);
       signature = starkWithdrawal.sign(this.starkKeyPair);
