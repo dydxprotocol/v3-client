@@ -157,11 +157,11 @@ export default class Private {
       type?: OrderType,
       limit?: number,
       createdBeforeOrAt?: ISO8601,
-    },
-  ): Promise<{}> {
+    } = {},
+  ): Promise<{}[]> {
     return this.get(
       this.generateQueryPath('orders', params),
-    );
+    ) as unknown as {}[];
   }
 
   async getOrderById(orderId: string): Promise<{}> {
@@ -216,13 +216,14 @@ export default class Private {
     );
   }
 
-  async deleteOrder(orderId: string): Promise<{}> {
+  async cancelOrder(orderId: string): Promise<{}> {
     return this.delete(
       `orders/${orderId}`,
     );
   }
 
-  async deleteAllOrders(params: { market?: Market }): Promise<{}> {
+  async cancelAllOrders(market?: Market): Promise<{}> {
+    const params = market ? { market } : {};
     return this.delete(
       this.generateQueryPath('orders', params),
     );

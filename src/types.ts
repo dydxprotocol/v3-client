@@ -1,9 +1,10 @@
 import {
+  Asset,
   OrderSide,
   PerpetualMarket,
 } from '@dydxprotocol/starkex-lib';
 
-export { OrderSide } from '@dydxprotocol/starkex-lib';
+export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
 
 export type ISO8601 = string;
 
@@ -11,15 +12,6 @@ export type ISO8601 = string;
 
 export type Market = PerpetualMarket;
 export const Market = PerpetualMarket;
-
-export enum Asset {
-  ETH = 'ETH',
-  LINK = 'LINK',
-  BTC = 'BTC',
-  USDC = 'USDC',
-  USDT = 'USDT',
-  USD = 'USD',
-}
 
 export enum MarketStatisticDay {
   ONE = '1',
