@@ -1,11 +1,28 @@
 {
-  "extends": "./node_modules/@dydxprotocol/node-service-base-dev/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "CommonJS",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "es2018",
+      "es2019"
+    ],
+    "outDir": "build",
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSourceMap": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "resolveJsonModule": true,
+    "strict": true
+  },
   "include": [
     "__tests__",
     "scripts",
     "src"
   ],
-  "compilerOptions": {
-    "outDir": "build"
-  }
+  "compileOnSave": true
 }
