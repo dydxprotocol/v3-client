@@ -84,7 +84,7 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/build/.npmrc
       - run:
           command: |
-            ./node_modules/@dydxprotocol/node-service-base-dev/scripts/publish-if-not-exists.sh
+            ./scripts/publish-if-not-exists.sh
 workflows:
   version: 2
   build_and_test:
