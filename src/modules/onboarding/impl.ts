@@ -5,6 +5,7 @@ import {
   axiosRequest,
 } from '../../lib/axios';
 import { ONBOARDING_STATIC_STRING } from '../../lib/constants';
+import { AccountResponseObject, Data, UserResponseObject } from '../../types';
 
 export default class Onboarding {
   readonly host: string;
@@ -23,7 +24,7 @@ export default class Onboarding {
     data: {},
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<Data> {
     const signature: string = await this.signRequest(ethereumAddress);
 
     const url: string = `/v3/${endpoint}`;
@@ -44,7 +45,11 @@ export default class Onboarding {
       apiKey: string,
     },
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<{
+      apiKey: string,
+      user: UserResponseObject,
+      account: AccountResponseObject,
+    }> {
     return this.post(
       'onboarding',
       params,

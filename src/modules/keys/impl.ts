@@ -4,6 +4,7 @@ import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
+import { Data } from '../../types';
 
 export default class Keys {
   readonly host: string;
@@ -25,7 +26,7 @@ export default class Keys {
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
     data?: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     const url: string = `/v3/${endpoint}`;
     return axiosRequest({
       url: `${this.host}${url}`,
@@ -40,7 +41,7 @@ export default class Keys {
   protected async get(
     endpoint: string,
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.GET, endpoint, ethereumAddress);
   }
 
@@ -48,14 +49,14 @@ export default class Keys {
     endpoint: string,
     ethereumAddress: string,
     data: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.POST, endpoint, ethereumAddress, data);
   }
 
   protected async delete(
     endpoint: string,
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.DELETE, endpoint, ethereumAddress);
   }
 
@@ -63,14 +64,14 @@ export default class Keys {
 
   getApiKeys(
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<{ apiKeys: string[] }> {
     return this.get('api-keys', ethereumAddress);
   }
 
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<{ apiKey: string }> {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
