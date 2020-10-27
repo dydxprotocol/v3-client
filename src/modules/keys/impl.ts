@@ -15,15 +15,19 @@ export default class Keys {
     this.web3Provider = web3Provider;
   }
 
-  protected async post(
+  // ============ Request Helpers ============
+
+  protected async request(
+    method: RequestMethod,
     endpoint: string,
-    data: {},
+    // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
+    data?: {},
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
     return axiosRequest({
       url: `${this.host}${url}`,
-      method: RequestMethod.POST,
+      method,
       data,
       headers: {
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
@@ -31,13 +35,41 @@ export default class Keys {
     });
   }
 
-  getApiKeys(): void {}
+  protected async get(
+    endpoint: string,
+    ethereumAddress: string,
+  ): Promise<{}> {
+    return this.request(RequestMethod.GET, endpoint, ethereumAddress);
+  }
+
+  protected async post(
+    endpoint: string,
+    ethereumAddress: string,
+    data: {},
+  ): Promise<{}> {
+    return this.request(RequestMethod.POST, endpoint, ethereumAddress, data);
+  }
+
+  protected async delete(
+    endpoint: string,
+    ethereumAddress: string,
+  ): Promise<{}> {
+    return this.request(RequestMethod.DELETE, endpoint, ethereumAddress);
+  }
+
+  // ============ Requests ============
+
+  getApiKeys(
+    ethereumAddress: string,
+  ): Promise<{}> {
+    return this.get('api-keys', ethereumAddress);
+  }
 
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
   ): Promise<{}> {
-    return this.post('api-keys', { apiKey }, ethereumAddress);
+    return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
   deleteApiKey(): void {}
