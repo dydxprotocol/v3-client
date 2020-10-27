@@ -108,6 +108,12 @@ export default class Private {
 
   // ============ Requests ============
 
+  async getRegistration(): Promise<{}> {
+    return this.get(
+      'users',
+    );
+  }
+
   async getUser(): Promise<{}> {
     return this.get(
       'users',
