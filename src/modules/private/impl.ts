@@ -83,8 +83,9 @@ export default class Private {
 
   protected async get(
     endpoint: string,
+    params: {},
   ): Promise<{}> {
-    return this.request(RequestMethod.GET, endpoint);
+    return this.request(RequestMethod.GET, generateQueryPath(endpoint, params));
   }
 
   protected async post(
@@ -103,21 +104,24 @@ export default class Private {
 
   protected async delete(
     endpoint: string,
+    params: {},
   ): Promise<{}> {
-    return this.request(RequestMethod.DELETE, endpoint);
+    return this.request(RequestMethod.DELETE, generateQueryPath(endpoint, params));
   }
 
   // ============ Requests ============
 
   async getRegistration(): Promise<{}> {
     return this.get(
-      'users',
+      'registration',
+      {},
     );
   }
 
   async getUser(): Promise<{}> {
     return this.get(
       'users',
+      {},
     );
   }
 
@@ -154,12 +158,14 @@ export default class Private {
   async getAccount(ethereumAddress: string): Promise<{}> {
     return this.get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
+      {},
     );
   }
 
   async getAccounts(): Promise<{}> {
     return this.get(
       'accounts',
+      {},
     );
   }
 
@@ -172,7 +178,8 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      generateQueryPath('positions', params),
+      'positions',
+      params,
     );
   }
 
@@ -187,19 +194,22 @@ export default class Private {
     } = {},
   ): Promise<{}[]> {
     return this.get(
-      generateQueryPath('orders', params),
+      'orders',
+      params,
     ) as unknown as {}[];
   }
 
   async getOrderById(orderId: string): Promise<{}> {
     return this.get(
       `orders/${orderId}`,
+      {},
     );
   }
 
   async getOrderByClientId(clientId: string): Promise<{}> {
     return this.get(
       `orders/client/${clientId}`,
+      {},
     );
   }
 
@@ -246,13 +256,15 @@ export default class Private {
   async cancelOrder(orderId: string): Promise<{}> {
     return this.delete(
       `orders/${orderId}`,
+      {},
     );
   }
 
   async cancelAllOrders(market?: Market): Promise<{}> {
     const params = market ? { market } : {};
     return this.delete(
-      generateQueryPath('orders', params),
+      'orders',
+      params,
     );
   }
 
@@ -265,7 +277,8 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      generateQueryPath('fills', params),
+      'fills',
+      params,
     );
   }
 
@@ -277,7 +290,8 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      generateQueryPath('transfers', params),
+      'transfers',
+      params,
     );
   }
 
@@ -343,7 +357,8 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      generateQueryPath('funding', params),
+      'funding',
+      params,
     );
   }
 
