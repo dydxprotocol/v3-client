@@ -18,6 +18,8 @@ export default class Onboarding {
     this.web3 = web3;
   }
 
+  // ============ Request Helpers ============
+
   protected async post(
     endpoint: string,
     data: {},
@@ -38,6 +40,8 @@ export default class Onboarding {
     });
   }
 
+  // ============ Requests ============
+
   async createUser(
     params: {
       starkKey: string,
@@ -51,6 +55,8 @@ export default class Onboarding {
       ethereumAddress,
     );
   }
+
+  // ============ Validation Helpers ============
 
   async signRequest(address: string): Promise<string> {
     const onboardingHash: string | null = this.web3.utils.sha3(ONBOARDING_STATIC_STRING);

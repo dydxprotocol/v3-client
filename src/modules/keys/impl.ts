@@ -1,9 +1,11 @@
 import Web3 from 'web3';
 
+import { generateQueryPath } from '../../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
+import { ISO8601 } from '../../types';
 
 export default class Keys {
   readonly host: string;
@@ -27,11 +29,18 @@ export default class Keys {
     data?: {},
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toISOString();
     return axiosRequest({
       url: `${this.host}${url}`,
       method,
       data,
       headers: {
+        'DYDX-SIGNATURE': this.signRequest({
+          action: method,
+          expiration: expiresAt,
+          address: ethereumAddress,
+        }),
+        'DYDX-TIMESTAMP': expiresAt,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -55,8 +64,9 @@ export default class Keys {
   protected async delete(
     endpoint: string,
     ethereumAddress: string,
+    params: {},
   ): Promise<{}> {
-    return this.request(RequestMethod.DELETE, endpoint, ethereumAddress);
+    return this.request(RequestMethod.DELETE, generateQueryPath(endpoint, params), ethereumAddress);
   }
 
   // ============ Requests ============
@@ -74,5 +84,29 @@ export default class Keys {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
-  deleteApiKey(): void {}
+  deleteApiKey(
+    ethereumAddress: string,
+    apiKey: string,
+  ): Promise<{}> {
+    return this.delete('api-keys', ethereumAddress, { apiKey });
+  }
+
+  // ============ Validation Helpers ============
+
+  async signRequest({
+    action,
+    expiration,
+    address,
+  }: {
+    action: RequestMethod,
+    expiration: ISO8601,
+    address: string,
+  }): Promise<string> {
+    const hash: string | null = this.web3.utils.sha3(action + expiration);
+    if (!hash) {
+      throw new Error(`Could not generate an api-key request hash for address: ${address}`);
+    }
+
+    return this.web3.eth.sign(hash, address);
+  }
 }
