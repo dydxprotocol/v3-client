@@ -8,14 +8,14 @@ import { ONBOARDING_STATIC_STRING } from '../../lib/constants';
 
 export default class Onboarding {
   readonly host: string;
-  readonly web3Provider: Web3;
+  readonly web3: Web3;
 
   constructor(
     host: string,
-    web3Provider: Web3,
+    web3: Web3,
   ) {
     this.host = host;
-    this.web3Provider = web3Provider;
+    this.web3 = web3;
   }
 
   protected async post(
@@ -53,6 +53,11 @@ export default class Onboarding {
   }
 
   async signRequest(address: string): Promise<string> {
-    return this.web3Provider.eth.sign(ONBOARDING_STATIC_STRING, address);
+    const onboardingHash: string | null = this.web3.utils.sha3(ONBOARDING_STATIC_STRING);
+    if (!onboardingHash) {
+      throw new Error(`Could not generate an onboarding hash for address: ${address}`);
+    }
+
+    return this.web3.eth.sign(onboardingHash, address);
   }
 }
