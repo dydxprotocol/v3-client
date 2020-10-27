@@ -1,3 +1,4 @@
+import { generateQueryPath } from '../../helpers/request-helpers';
 import { axiosRequest } from '../../lib/axios';
 import { ISO8601, Market, MarketStatisticDay } from '../../types';
 
@@ -8,27 +9,27 @@ export default class Public {
     this.host = host;
   }
 
-  getAccount(
-    accountId: string,
-    ethereumAddress: string, // TODO: Should not require this.
+  checkIfUserExists(
+    ethereumAddress: string,
   ): Promise<{}> {
-    const uri: string = `v3/accounts/${accountId}`;
+    const uri: string = 'v3/users/exists';
     return this.sendPublicGetRequest(
-      uri,
-      {
-        owner: ethereumAddress,
-      },
+      generateQueryPath(uri, { ethereumAddress }),
+    );
+  }
+
+  checkIfUsernameExists(
+    username: string,
+  ): Promise<{}> {
+    const uri: string = 'v3/usernames';
+    return this.sendPublicGetRequest(
+      generateQueryPath(uri, { username }),
     );
   }
 
   getMarkets(market?: Market): Promise<{}> {
-    let uri: string = 'v3/markets';
-
-    if (market) {
-      uri = uri.concat(`?market=${market}`);
-    }
-
-    return this.sendPublicGetRequest(uri);
+    const uri: string = 'v3/markets';
+    return this.sendPublicGetRequest(generateQueryPath(uri, { market }));
   }
 
   getOrderBook(market: Market): Promise<{}> {
@@ -42,13 +43,9 @@ export default class Public {
     market: Market,
     days?: MarketStatisticDay,
   }): Promise<{}> {
-    let uri: string = `v3/stats/${market}`;
+    const uri: string = `v3/stats/${market}`;
 
-    if (days) {
-      uri = uri.concat(`?days=${days}`);
-    }
-
-    return this.sendPublicGetRequest(uri);
+    return this.sendPublicGetRequest(generateQueryPath(uri, { days }));
   }
 
   getTrades({
@@ -58,26 +55,23 @@ export default class Public {
     market: Market,
     startingBeforeOrAt?: ISO8601,
   }): Promise<{}> {
-    let uri: string = `v3/trades/${market}`;
+    const uri: string = `v3/trades/${market}`;
 
-    if (startingBeforeOrAt) {
-      uri = uri.concat(`?startingBeforeOrAt=${startingBeforeOrAt}`);
-    }
+    return this.sendPublicGetRequest(generateQueryPath(uri, { startingBeforeOrAt }));
 
-    return this.sendPublicGetRequest(uri);
   }
 
-  getHistoricalFunding(market: Market): Promise<{}> {
-    return this.sendPublicGetRequest(`v3/historical-funding/${market}`);
+  getHistoricalFunding(market: Market, effectiveBeforeOrAt: ISO8601): Promise<{}> {
+    const uri: string = `v3/historical-funding/${market}`;
+
+    return this.sendPublicGetRequest(generateQueryPath(uri, { effectiveBeforeOrAt }));
   }
 
   private sendPublicGetRequest(
     requestPath: string,
-    headers: {} = {},
   ): Promise<{}> {
     return axiosRequest({
       method: 'GET',
-      headers,
       url: `${this.host}/${requestPath}`,
     });
   }

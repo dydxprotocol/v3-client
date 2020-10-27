@@ -12,6 +12,7 @@ import {
   Withdrawal as StarkExWithdrawal,
 } from '@dydxprotocol/starkex-lib';
 
+import { generateQueryPath } from '../../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
@@ -120,12 +121,20 @@ export default class Private {
     );
   }
 
-  async updateUser(
+  async updateUser({
+    email,
+    username,
+    userData,
+  }: {
+    email: string,
+    username: string,
     userData: {},
-  ): Promise<{}> {
+  }): Promise<{}> {
     return this.put(
       'users',
       {
+        email,
+        username,
         userData: JSON.stringify(userData),
       },
     );
@@ -148,6 +157,12 @@ export default class Private {
     );
   }
 
+  async getAccounts(): Promise<{}> {
+    return this.get(
+      'accounts',
+    );
+  }
+
   async getPositions(
     params: {
       market?: Market,
@@ -157,7 +172,7 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      this.generateQueryPath('positions', params),
+      generateQueryPath('positions', params),
     );
   }
 
@@ -172,7 +187,7 @@ export default class Private {
     } = {},
   ): Promise<{}[]> {
     return this.get(
-      this.generateQueryPath('orders', params),
+      generateQueryPath('orders', params),
     ) as unknown as {}[];
   }
 
@@ -237,7 +252,7 @@ export default class Private {
   async cancelAllOrders(market?: Market): Promise<{}> {
     const params = market ? { market } : {};
     return this.delete(
-      this.generateQueryPath('orders', params),
+      generateQueryPath('orders', params),
     );
   }
 
@@ -250,7 +265,7 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      this.generateQueryPath('fills', params),
+      generateQueryPath('fills', params),
     );
   }
 
@@ -262,7 +277,7 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      this.generateQueryPath('transfers', params),
+      generateQueryPath('transfers', params),
     );
   }
 
@@ -328,7 +343,7 @@ export default class Private {
     },
   ): Promise<{}> {
     return this.get(
-      this.generateQueryPath('funding', params),
+      generateQueryPath('funding', params),
     );
   }
 
@@ -357,17 +372,5 @@ export default class Private {
       publicKey: this.apiKeyPair.publicKey,
       expiresAt,
     }).sign(this.apiKeyPair.privateKey);
-  }
-
-  private generateQueryPath(url: string, params: {}): string {
-    const entries = Object.entries(params);
-    if (!entries.length) {
-      return url;
-    }
-
-    const paramsString = entries.map(
-      (kv) => `${kv[0]}=${kv[1]}`,
-    ).join('&');
-    return `${url}?${paramsString}`;
   }
 }
