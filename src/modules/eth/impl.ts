@@ -1,9 +1,11 @@
+import Web3 from 'web3';
+
 export default class Eth {
-  readonly web3Provider: {};
+  readonly web3: Web3;
 
   constructor(
-    web3Provider: {},
+    web3: Web3,
   ) {
-    this.web3Provider = web3Provider;
+    this.web3 = web3;
   }
 }

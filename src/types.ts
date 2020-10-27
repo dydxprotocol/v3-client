@@ -3,10 +3,13 @@ import {
   OrderSide,
   PerpetualMarket,
 } from '@dydxprotocol/starkex-lib';
+import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3/providers';
 
 export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
 
 export type ISO8601 = string;
+
+export type Provider = HttpProvider | IpcProvider | WebsocketProvider;
 
 // ============ Enums ============
 

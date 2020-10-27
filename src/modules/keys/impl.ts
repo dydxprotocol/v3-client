@@ -1,3 +1,5 @@
+import Web3 from 'web3';
+
 import {
   RequestMethod,
   axiosRequest,
@@ -5,14 +7,14 @@ import {
 
 export default class Keys {
   readonly host: string;
-  readonly web3Provider: {};
+  readonly web3: Web3;
 
   constructor(
     host: string,
-    web3Provider: {},
+    web3: Web3,
   ) {
     this.host = host;
-    this.web3Provider = web3Provider;
+    this.web3 = web3;
   }
 
   // ============ Request Helpers ============

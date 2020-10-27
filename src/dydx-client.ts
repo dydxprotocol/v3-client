@@ -1,6 +1,7 @@
 import {
   KeyPair,
 } from '@dydxprotocol/starkex-lib';
+import Web3 from 'web3';
 
 import {
   Eth,
@@ -21,12 +22,13 @@ import {
 import {
   Public,
 } from './modules/public';
+import { Provider } from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
   starkPrivateKey?: string | KeyPair;
-  web3Provider?: {};
+  web3Provider?: Provider;
 }
 
 export default class DydxClient {
@@ -34,7 +36,7 @@ export default class DydxClient {
   readonly apiTimeout?: number;
   readonly apiPrivateKey?: string | KeyPair;
   readonly starkPrivateKey?: string | KeyPair;
-  readonly web3Provider?: {};
+  readonly web3?: Web3;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -51,7 +53,8 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
-    this.web3Provider = options.web3Provider;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.web3 = new Web3(options.web3Provider as any);
 
     // Modules.
     this._public = new Public(host);
@@ -87,8 +90,8 @@ export default class DydxClient {
    */
   get keys(): Keys {
     if (!this._keys) {
-      if (this.web3Provider) {
-        this._keys = new Keys(this.host, this.web3Provider);
+      if (this.web3) {
+        this._keys = new Keys(this.host, this.web3);
       } else {
         return keysNotSupported;
       }
@@ -101,8 +104,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.web3Provider) {
-        this._onboarding = new Onboarding(this.host, this.web3Provider);
+      if (this.web3) {
+        this._onboarding = new Onboarding(this.host, this.web3);
       } else {
         return onboardingNotSupported;
       }
@@ -115,8 +118,8 @@ export default class DydxClient {
    */
   get eth() {
     if (!this._eth) {
-      if (this.web3Provider) {
-        this._eth = new Eth(this.web3Provider);
+      if (this.web3) {
+        this._eth = new Eth(this.web3);
       } else {
         return ethNotSupported;
       }
