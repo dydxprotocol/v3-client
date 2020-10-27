@@ -56,8 +56,8 @@ export default class Private {
   // ============ Request Helpers ============
 
   protected async request(
-    endpoint: string,
     method: RequestMethod,
+    endpoint: string,
     data?: {},
   ): Promise<{}> {
     const requestPath = `/v3/${endpoint}`;
@@ -83,20 +83,27 @@ export default class Private {
   protected async get(
     endpoint: string,
   ): Promise<{}> {
-    return this.request(endpoint, RequestMethod.GET);
+    return this.request(RequestMethod.GET, endpoint);
   }
 
   protected async post(
     endpoint: string,
     data: {},
   ): Promise<{}> {
-    return this.request(endpoint, RequestMethod.POST, data);
+    return this.request(RequestMethod.POST, endpoint, data);
+  }
+
+  protected async put(
+    endpoint: string,
+    data: {},
+  ): Promise<{}> {
+    return this.request(RequestMethod.PUT, endpoint, data);
   }
 
   protected async delete(
     endpoint: string,
   ): Promise<{}> {
-    return this.request(endpoint, RequestMethod.DELETE);
+    return this.request(RequestMethod.DELETE, endpoint);
   }
 
   // ============ Requests ============
@@ -107,19 +114,16 @@ export default class Private {
     );
   }
 
-  // TODO: Remove.
-  async createUser(
-    userData?: {},
+  async updateUser(
+    userData: {},
   ): Promise<{}> {
-    return this.post(
+    return this.put(
       'users',
       {
-        userData,
+        userData: JSON.stringify(userData),
       },
     );
   }
-
-  async updateUser(): Promise<void> {} // NOT in Librarian yet
 
   async createAccount(
     starkKey: string,

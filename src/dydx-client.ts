@@ -102,7 +102,7 @@ export default class DydxClient {
   get onboarding(): Onboarding {
     if (!this._onboarding) {
       if (this.web3Provider) {
-        this._onboarding = new Onboarding(this.web3Provider);
+        this._onboarding = new Onboarding(this.host, this.web3Provider);
       } else {
         return onboardingNotSupported;
       }
