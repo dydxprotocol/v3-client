@@ -1,6 +1,7 @@
 import {
   KeyPair,
 } from '@dydxprotocol/starkex-lib';
+import Web3 from 'web3';
 
 import {
   Eth,
@@ -26,7 +27,7 @@ export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
   starkPrivateKey?: string | KeyPair;
-  web3Provider?: {};
+  web3Provider?: Web3;
 }
 
 export default class DydxClient {
@@ -34,7 +35,7 @@ export default class DydxClient {
   readonly apiTimeout?: number;
   readonly apiPrivateKey?: string | KeyPair;
   readonly starkPrivateKey?: string | KeyPair;
-  readonly web3Provider?: {};
+  readonly web3Provider?: Web3;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
