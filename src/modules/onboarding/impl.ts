@@ -32,7 +32,7 @@ export default class Onboarding {
     });
   }
 
-  createUser(
+  async createUser(
     params: {
       starkKey: string,
       apiKey: string,
