@@ -261,14 +261,14 @@ export default class Private {
     );
   }
 
-  async cancelOrder(orderId: string): Promise<{}> {
+  async cancelOrder(orderId: string): Promise<void> {
     return this.delete(
       `orders/${orderId}`,
       {},
     );
   }
 
-  async cancelAllOrders(market?: Market): Promise<{}> {
+  async cancelAllOrders(market?: Market): Promise<void> {
     const params = market ? { market } : {};
     return this.delete(
       'orders',

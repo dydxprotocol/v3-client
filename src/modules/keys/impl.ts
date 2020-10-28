@@ -1,10 +1,15 @@
 import Web3 from 'web3';
 
+import { generateQueryPath } from '../../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { Data } from '../../types';
+import {
+  Data,
+  EthereumAccount,
+  ISO8601,
+} from '../../types';
 
 export default class Keys {
   readonly host: string;
@@ -28,11 +33,20 @@ export default class Keys {
     data?: {},
   ): Promise<Data> {
     const url: string = `/v3/${endpoint}`;
+    const expiresAt: ISO8601 = new Date().toISOString();
     return axiosRequest({
       url: `${this.host}${url}`,
       method,
       data,
       headers: {
+        'DYDX-SIGNATURE': await this.signRequest({
+          requestPath: url,
+          method,
+          expiresAt,
+          address: ethereumAddress,
+          data,
+        }),
+        'DYDX-TIMESTAMP': expiresAt,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -56,13 +70,14 @@ export default class Keys {
   protected async delete(
     endpoint: string,
     ethereumAddress: string,
+    params: {},
   ): Promise<Data> {
-    return this.request(RequestMethod.DELETE, endpoint, ethereumAddress);
+    return this.request(RequestMethod.DELETE, generateQueryPath(endpoint, params), ethereumAddress);
   }
 
   // ============ Requests ============
 
-  getApiKeys(
+  async getApiKeys(
     ethereumAddress: string,
   ): Promise<{ apiKeys: string[] }> {
     return this.get('api-keys', ethereumAddress);
@@ -75,5 +90,48 @@ export default class Keys {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
-  deleteApiKey(): void {}
+  async deleteApiKey(
+    ethereumAddress: string,
+    apiKey: string,
+  ): Promise<void> {
+    return this.delete('api-keys', ethereumAddress, { apiKey });
+  }
+
+  // ============ Validation Helpers ============
+
+  async signRequest({
+    requestPath,
+    method,
+    expiresAt,
+    address,
+    data,
+  }: {
+    requestPath: string,
+    method: RequestMethod,
+    expiresAt: ISO8601,
+    address: string,
+    data?: {},
+  }): Promise<string> {
+    const body: string = data ? JSON.stringify(data) : '';
+    const hash: string | null = this.web3.utils.sha3(
+      body +
+      requestPath +
+      method +
+      expiresAt,
+    ); // TODO EIP 712 compliant
+
+    if (!hash) {
+      throw new Error(`Could not generate an api-key request hash for address: ${address}`);
+    }
+
+    // If the address is in the wallet, use it to sign so we don't have to use the web3 provider.
+    const walletAccount: EthereumAccount | undefined = (
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      (this.web3.eth.accounts.wallet as any)[address] // TODO: Fix types.
+    );
+    if (walletAccount) {
+      return walletAccount.sign(hash).signature;
+    }
+    return this.web3.eth.sign(hash, address);
+  }
 }

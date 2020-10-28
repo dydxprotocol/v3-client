@@ -28,6 +28,7 @@ export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
   starkPrivateKey?: string | KeyPair;
+  web3?: Web3;
   web3Provider?: Provider;
 }
 
@@ -53,8 +54,10 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.web3 = new Web3(options.web3Provider as any);
+    if (options.web3 || options.web3Provider) {
+      // Non-null assertion is safe due to if-condition.
+      this.web3 = options.web3 || new Web3(options.web3Provider!);
+    }
 
     // Modules.
     this._public = new Public(host);
