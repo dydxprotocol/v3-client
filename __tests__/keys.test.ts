@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 import Web3 from 'web3';
 
 import { DydxClient, EthereumAccount } from '../src';
-import { asMock } from './util';
+import { asMock } from './helpers/util';
 
 describe('API Keys Module', () => {
 
