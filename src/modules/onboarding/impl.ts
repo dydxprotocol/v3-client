@@ -5,17 +5,31 @@ import {
   axiosRequest,
 } from '../../lib/axios';
 import { ONBOARDING_STATIC_STRING } from '../../lib/constants';
+import { EthereumAccount } from '../../types';
 
 export default class Onboarding {
   readonly host: string;
   readonly web3: Web3;
+  readonly ethereumAccount?: EthereumAccount;
 
   constructor(
     host: string,
     web3: Web3,
+    ethereumAccount: EthereumAccount | undefined,
+  );
+  constructor(
+    host: string,
+    web3: Web3 | undefined,
+    ethereumAccount: EthereumAccount,
+  );
+  constructor(
+    host: string,
+    web3?: Web3,
+    ethereumAccount?: EthereumAccount,
   ) {
     this.host = host;
-    this.web3 = web3;
+    this.web3 = web3 || new Web3();
+    this.ethereumAccount = ethereumAccount;
   }
 
   // ============ Request Helpers ============
@@ -65,6 +79,9 @@ export default class Onboarding {
       throw new Error(`Could not generate an onboarding hash for address: ${address}`);
     }
 
+    if (this.ethereumAccount) {
+      return this.ethereumAccount.sign(onboardingHash).signature;
+    }
     return this.web3.eth.sign(onboardingHash, address);
   }
 }

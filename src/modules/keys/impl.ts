@@ -5,18 +5,24 @@ import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { ISO8601 } from '../../types';
+import {
+  EthereumAccount,
+  ISO8601,
+} from '../../types';
 
 export default class Keys {
   readonly host: string;
   readonly web3: Web3;
+  readonly ethereumAccount?: EthereumAccount;
 
   constructor(
     host: string,
-    web3: Web3,
+    web3?: Web3,
+    ethereumAccount?: EthereumAccount,
   ) {
     this.host = host;
-    this.web3 = web3;
+    this.web3 = web3 || new Web3();
+    this.ethereumAccount = ethereumAccount;
   }
 
   // ============ Request Helpers ============
@@ -120,6 +126,9 @@ export default class Keys {
       throw new Error(`Could not generate an api-key request hash for address: ${address}`);
     }
 
+    if (this.ethereumAccount) {
+      return this.ethereumAccount.sign(hash).signature;
+    }
     return this.web3.eth.sign(hash, address);
   }
 }

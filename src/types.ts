@@ -3,9 +3,10 @@ import {
   OrderSide,
   PerpetualMarket,
 } from '@dydxprotocol/starkex-lib';
-import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3/providers';
+import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3-core';
 
 export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
+export { Account as EthereumAccount } from 'web3/eth/accounts';
 
 export type ISO8601 = string;
 

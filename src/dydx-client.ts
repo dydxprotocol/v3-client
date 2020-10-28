@@ -22,13 +22,17 @@ import {
 import {
   Public,
 } from './modules/public';
-import { Provider } from './types';
+import {
+  EthereumAccount,
+  Provider,
+} from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
   starkPrivateKey?: string | KeyPair;
   web3Provider?: Provider;
+  ethereumAccount?: EthereumAccount;
 }
 
 export default class DydxClient {
@@ -37,6 +41,7 @@ export default class DydxClient {
   readonly apiPrivateKey?: string | KeyPair;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
+  readonly ethereumAccount?: EthereumAccount;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -53,8 +58,10 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.web3 = new Web3(options.web3Provider as any);
+    if (options.web3Provider) {
+      this.web3 = new Web3(options.web3Provider);
+    }
+    this.ethereumAccount = options.ethereumAccount;
 
     // Modules.
     this._public = new Public(host);
@@ -90,8 +97,8 @@ export default class DydxClient {
    */
   get keys(): Keys {
     if (!this._keys) {
-      if (this.web3) {
-        this._keys = new Keys(this.host, this.web3);
+      if (this.web3 || this.ethereumAccount) {
+        this._keys = new Keys(this.host, this.web3, this.ethereumAccount);
       } else {
         return keysNotSupported;
       }
@@ -104,8 +111,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.web3) {
-        this._onboarding = new Onboarding(this.host, this.web3);
+      if (this.web3 || this.ethereumAccount) {
+        this._onboarding = new Onboarding(this.host, this.web3, this.ethereumAccount);
       } else {
         return onboardingNotSupported;
       }
