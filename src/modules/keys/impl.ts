@@ -125,6 +125,7 @@ export default class Keys {
 
     // If the address is in the wallet, use it to sign so we don't have to use the web3 provider.
     const walletAccount: EthereumAccount | undefined = (
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       (this.web3.eth.accounts.wallet as any)[address] // TODO: Fix types.
     );
     if (walletAccount) {
