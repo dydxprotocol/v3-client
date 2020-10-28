@@ -5,7 +5,10 @@ import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { ISO8601 } from '../../types';
+import {
+  EthereumAccount,
+  ISO8601,
+} from '../../types';
 
 export default class Keys {
   readonly host: string;
@@ -35,7 +38,7 @@ export default class Keys {
       method,
       data,
       headers: {
-        'DYDX-SIGNATURE': this.signRequest({
+        'DYDX-SIGNATURE': await this.signRequest({
           requestPath: url,
           method,
           expiresAt,
@@ -73,7 +76,7 @@ export default class Keys {
 
   // ============ Requests ============
 
-  getApiKeys(
+  async getApiKeys(
     ethereumAddress: string,
   ): Promise<{}> {
     return this.get('api-keys', ethereumAddress);
@@ -86,7 +89,7 @@ export default class Keys {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
-  deleteApiKey(
+  async deleteApiKey(
     ethereumAddress: string,
     apiKey: string,
   ): Promise<{}> {
@@ -120,6 +123,14 @@ export default class Keys {
       throw new Error(`Could not generate an api-key request hash for address: ${address}`);
     }
 
+    // If the address is in the wallet, use it to sign so we don't have to use the web3 provider.
+    const walletAccount: EthereumAccount | undefined = (
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      (this.web3.eth.accounts.wallet as any)[address] // TODO: Fix types.
+    );
+    if (walletAccount) {
+      return walletAccount.sign(hash).signature;
+    }
     return this.web3.eth.sign(hash, address);
   }
 }
