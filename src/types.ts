@@ -3,11 +3,17 @@ import {
   OrderSide,
   PerpetualMarket,
 } from '@dydxprotocol/starkex-lib';
-import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3/providers';
+import BigNumber from 'bignumber.js';
+import { IpcProvider } from 'ethers/providers';
+import { HttpProvider, WebsocketProvider } from 'web3/providers';
 
 export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
 
 export type ISO8601 = string;
+
+export type Address = string;
+
+export type Integer = BigNumber;
 
 export type Provider = HttpProvider | IpcProvider | WebsocketProvider;
 
@@ -52,6 +58,22 @@ export enum OrderStatus {
 export enum AccountAction {
   DEPOSIT = 'DEPOSIT',
   WITHDRAWAL = 'WITHDRAWAL',
+}
+
+export enum SigningMethod {
+  Compatibility = 'Compatibility',   // picks intelligently between UnsafeHash and Hash
+  UnsafeHash = 'UnsafeHash',         // raw hash signed
+  Hash = 'Hash',                     // hash prepended according to EIP-191
+  TypedData = 'TypedData',           // order hashed according to EIP-712
+  MetaMask = 'MetaMask',             // order hashed according to EIP-712 (MetaMask-only)
+  MetaMaskLatest = 'MetaMaskLatest', // ... according to latest version of EIP-712 (MetaMask-only)
+  CoinbaseWallet = 'CoinbaseWallet', // ... according to latest version of EIP-712 (CoinbaseWallet)
+}
+
+export enum SignatureTypes {
+  NO_PREPEND = 0,
+  DECIMAL = 1,
+  HEXADECIMAL = 2,
 }
 
 // ============ API Request Types ============

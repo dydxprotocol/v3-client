@@ -1,48 +1,58 @@
+import { ApiMethod } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
 import { generateQueryPath } from '../../helpers/request-helpers';
 import {
-  RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { ISO8601 } from '../../types';
+import { generateApiKeyAction } from '../../lib/eth-validation/actions';
+import { SigningMethod } from '../../types';
+import { SignOffChainAction } from '../sign-off-chain-action';
 
 export default class Keys {
   readonly host: string;
   readonly web3: Web3;
+  readonly signOffChainAction: SignOffChainAction;
 
   constructor(
     host: string,
     web3: Web3,
+    signOffChainAction: SignOffChainAction,
   ) {
     this.host = host;
     this.web3 = web3;
+    this.signOffChainAction = signOffChainAction;
   }
 
   // ============ Request Helpers ============
 
   protected async request(
-    method: RequestMethod,
+    method: ApiMethod,
     endpoint: string,
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
     data?: {},
   ): Promise<{}> {
     const url: string = `/v3/${endpoint}`;
-    const expiresAt: ISO8601 = new Date().toISOString();
+    const expiresAt: Date = new Date();
+    const signature: string = await this.signOffChainAction.signOffChainAction(
+      expiresAt,
+      ethereumAddress,
+      SigningMethod.Hash,
+      generateApiKeyAction({
+        requestPath: url,
+        method,
+        data,
+      }),
+    );
+
     return axiosRequest({
       url: `${this.host}${url}`,
       method,
       data,
       headers: {
-        'DYDX-SIGNATURE': this.signRequest({
-          requestPath: url,
-          method,
-          expiresAt,
-          address: ethereumAddress,
-          data,
-        }),
-        'DYDX-TIMESTAMP': expiresAt,
+        'DYDX-SIGNATURE': signature,
+        'DYDX-TIMESTAMP': expiresAt.toISOString(),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -52,7 +62,7 @@ export default class Keys {
     endpoint: string,
     ethereumAddress: string,
   ): Promise<{}> {
-    return this.request(RequestMethod.GET, endpoint, ethereumAddress);
+    return this.request(ApiMethod.GET, endpoint, ethereumAddress);
   }
 
   protected async post(
@@ -60,7 +70,7 @@ export default class Keys {
     ethereumAddress: string,
     data: {},
   ): Promise<{}> {
-    return this.request(RequestMethod.POST, endpoint, ethereumAddress, data);
+    return this.request(ApiMethod.POST, endpoint, ethereumAddress, data);
   }
 
   protected async delete(
@@ -68,7 +78,7 @@ export default class Keys {
     ethereumAddress: string,
     params: {},
   ): Promise<{}> {
-    return this.request(RequestMethod.DELETE, generateQueryPath(endpoint, params), ethereumAddress);
+    return this.request(ApiMethod.DELETE, generateQueryPath(endpoint, params), ethereumAddress);
   }
 
   // ============ Requests ============
@@ -91,35 +101,5 @@ export default class Keys {
     apiKey: string,
   ): Promise<{}> {
     return this.delete('api-keys', ethereumAddress, { apiKey });
-  }
-
-  // ============ Validation Helpers ============
-
-  async signRequest({
-    requestPath,
-    method,
-    expiresAt,
-    address,
-    data,
-  }: {
-    requestPath: string,
-    method: RequestMethod,
-    expiresAt: ISO8601,
-    address: string,
-    data?: {},
-  }): Promise<string> {
-    const body: string = data ? JSON.stringify(data) : '';
-    const hash: string | null = this.web3.utils.sha3(
-      body +
-      requestPath +
-      method +
-      expiresAt,
-    ); // TODO EIP 712 compliant
-
-    if (!hash) {
-      throw new Error(`Could not generate an api-key request hash for address: ${address}`);
-    }
-
-    return this.web3.eth.sign(hash, address);
   }
 }
