@@ -59,6 +59,7 @@ export default class Onboarding {
   // ============ Validation Helpers ============
 
   async signRequest(address: string): Promise<string> {
+    // TODO Consider making EIP 712 compliant
     const onboardingHash: string | null = this.web3.utils.sha3(ONBOARDING_STATIC_STRING);
     if (!onboardingHash) {
       throw new Error(`Could not generate an onboarding hash for address: ${address}`);

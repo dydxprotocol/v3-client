@@ -36,9 +36,11 @@ export default class Keys {
       data,
       headers: {
         'DYDX-SIGNATURE': this.signRequest({
-          action: method,
-          expiration: expiresAt,
+          requestPath: url,
+          method,
+          expiresAt,
           address: ethereumAddress,
+          data,
         }),
         'DYDX-TIMESTAMP': expiresAt,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
@@ -94,15 +96,26 @@ export default class Keys {
   // ============ Validation Helpers ============
 
   async signRequest({
-    action,
-    expiration,
+    requestPath,
+    method,
+    expiresAt,
     address,
+    data,
   }: {
-    action: RequestMethod,
-    expiration: ISO8601,
+    requestPath: string,
+    method: RequestMethod,
+    expiresAt: ISO8601,
     address: string,
+    data?: {},
   }): Promise<string> {
-    const hash: string | null = this.web3.utils.sha3(action + expiration);
+    const body: string = data ? JSON.stringify(data) : '';
+    const hash: string | null = this.web3.utils.sha3(
+      body +
+      requestPath +
+      method +
+      expiresAt,
+    ); // TODO EIP 712 compliant
+
     if (!hash) {
       throw new Error(`Could not generate an api-key request hash for address: ${address}`);
     }
