@@ -3,7 +3,7 @@ import {
   OrderSide,
   PerpetualMarket,
 } from '@dydxprotocol/starkex-lib';
-import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3/providers';
+import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3-core';
 
 export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
 

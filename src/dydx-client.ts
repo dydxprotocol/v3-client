@@ -53,8 +53,7 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.web3 = new Web3(options.web3Provider as any);
+    this.web3 = new Web3(options.web3Provider);
 
     // Modules.
     this._public = new Public(host);
