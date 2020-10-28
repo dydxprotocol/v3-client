@@ -6,6 +6,7 @@ import {
 import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3-core';
 
 export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
+export { Account as EthereumAccount } from 'web3-core';
 
 export type ISO8601 = string;
 
