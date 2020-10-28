@@ -83,7 +83,7 @@ export default class Keys {
 
   // ============ Requests ============
 
-  getApiKeys(
+  async getApiKeys(
     ethereumAddress: string,
   ): Promise<{}> {
     return this.get('api-keys', ethereumAddress);
@@ -96,7 +96,7 @@ export default class Keys {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
-  deleteApiKey(
+  async deleteApiKey(
     ethereumAddress: string,
     apiKey: string,
   ): Promise<{}> {
