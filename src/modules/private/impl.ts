@@ -20,13 +20,21 @@ import {
 import { getAccountId } from '../../lib/db';
 import {
   AccountAction,
+  AccountResponseObject,
   ApiOrder,
   ApiWithdrawal,
+  Data,
+  FillResponseObject,
+  FundingResponseObject,
   ISO8601,
   Market,
+  OrderResponseObject,
   OrderStatus,
   PartialBy,
+  PositionResponseObject,
   PositionStatus,
+  TransferResponseObject,
+  UserResponseObject,
 } from '../../types';
 
 // TODO: Figure out if we can get rid of this.
@@ -60,7 +68,7 @@ export default class Private {
     method: RequestMethod,
     endpoint: string,
     data?: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     const requestPath = `/v3/${endpoint}`;
     const expiresAt: ISO8601 = new Date().toISOString();
     const headers = {
@@ -84,41 +92,41 @@ export default class Private {
   protected async get(
     endpoint: string,
     params: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.GET, generateQueryPath(endpoint, params));
   }
 
   protected async post(
     endpoint: string,
     data: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.POST, endpoint, data);
   }
 
   protected async put(
     endpoint: string,
     data: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.PUT, endpoint, data);
   }
 
   protected async delete(
     endpoint: string,
     params: {},
-  ): Promise<{}> {
+  ): Promise<Data> {
     return this.request(RequestMethod.DELETE, generateQueryPath(endpoint, params));
   }
 
   // ============ Requests ============
 
-  async getRegistration(): Promise<{}> {
+  async getRegistration(): Promise<{ signature: string }> {
     return this.get(
       'registration',
       {},
     );
   }
 
-  async getUser(): Promise<{}> {
+  async getUser(): Promise<{ user: UserResponseObject }> {
     return this.get(
       'users',
       {},
@@ -133,7 +141,7 @@ export default class Private {
     email: string,
     username: string,
     userData: {},
-  }): Promise<{}> {
+  }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
       {
@@ -146,7 +154,7 @@ export default class Private {
 
   async createAccount(
     starkKey: string,
-  ): Promise<{}> {
+  ): Promise<{ account: AccountResponseObject }> {
     return this.post(
       'accounts',
       {
@@ -155,14 +163,14 @@ export default class Private {
     );
   }
 
-  async getAccount(ethereumAddress: string): Promise<{}> {
+  async getAccount(ethereumAddress: string): Promise<{ account: AccountResponseObject }> {
     return this.get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
       {},
     );
   }
 
-  async getAccounts(): Promise<{}> {
+  async getAccounts(): Promise<{ account: AccountResponseObject[] }> {
     return this.get(
       'accounts',
       {},
@@ -176,7 +184,7 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     },
-  ): Promise<{}> {
+  ): Promise<{ positions: PositionResponseObject[] }> {
     return this.get(
       'positions',
       params,
@@ -192,21 +200,21 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     } = {},
-  ): Promise<{}[]> {
+  ): Promise<{ orders: OrderResponseObject[] }> {
     return this.get(
       'orders',
       params,
-    ) as unknown as {}[];
+    );
   }
 
-  async getOrderById(orderId: string): Promise<{}> {
+  async getOrderById(orderId: string): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/${orderId}`,
       {},
     );
   }
 
-  async getOrderByClientId(clientId: string): Promise<{}> {
+  async getOrderByClientId(clientId: string): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/client/${clientId}`,
       {},
@@ -217,7 +225,7 @@ export default class Private {
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
     ethereumAddress: string,
-  ): Promise<{}> {
+  ): Promise<{ order: OrderResponseObject }> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
@@ -253,14 +261,14 @@ export default class Private {
     );
   }
 
-  async cancelOrder(orderId: string): Promise<{}> {
+  async cancelOrder(orderId: string): Promise<void> {
     return this.delete(
       `orders/${orderId}`,
       {},
     );
   }
 
-  async cancelAllOrders(market?: Market): Promise<{}> {
+  async cancelAllOrders(market?: Market): Promise<void> {
     const params = market ? { market } : {};
     return this.delete(
       'orders',
@@ -275,7 +283,7 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     },
-  ): Promise<{}> {
+  ): Promise<{ fills: FillResponseObject[] }> {
     return this.get(
       'fills',
       params,
@@ -288,7 +296,7 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     },
-  ): Promise<{}> {
+  ): Promise<{ transfers: TransferResponseObject[] }> {
     return this.get(
       'transfers',
       params,
@@ -298,7 +306,7 @@ export default class Private {
   async createWithdrawal(
     params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
     positionId: string,
-  ): Promise<{}> {
+  ): Promise<{ withdrawal: TransferResponseObject }> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
@@ -342,7 +350,7 @@ export default class Private {
       asset: Asset,
       fromAddress: string,
     },
-  ): Promise<{}> {
+  ): Promise<{ deposit: TransferResponseObject }> {
     return this.post(
       'deposits',
       params,
@@ -355,7 +363,7 @@ export default class Private {
       limit?: number,
       effectiveBeforeOrAt?: ISO8601,
     },
-  ): Promise<{}> {
+  ): Promise<{ fundingPayments: FundingResponseObject }> {
     return this.get(
       'funding',
       params,
