@@ -15,9 +15,7 @@ export function generateApiKeyAction({
   method: ApiMethod,
   data?: {},
 }): string {
-
-  const body: string = data ? JSON.stringify(data) : '';
-  return body +
+  return (data ? JSON.stringify(data) : '') +
   requestPath +
   method;
 }

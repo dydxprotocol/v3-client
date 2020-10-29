@@ -1,5 +1,4 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
-import Web3 from 'web3';
 
 import { generateQueryPath } from '../../helpers/request-helpers';
 import {
@@ -9,23 +8,18 @@ import { generateApiKeyAction } from '../../lib/eth-validation/actions';
 import {
   SigningMethod,
   Data,
-  EthereumAccount,
-  ISO8601,
 } from '../../types';
 import { SignOffChainAction } from '../sign-off-chain-action';
 
 export default class Keys {
   readonly host: string;
-  readonly web3: Web3;
   readonly signOffChainAction: SignOffChainAction;
 
   constructor(
     host: string,
-    web3: Web3,
     signOffChainAction: SignOffChainAction,
   ) {
     this.host = host;
-    this.web3 = web3;
     this.signOffChainAction = signOffChainAction;
   }
 

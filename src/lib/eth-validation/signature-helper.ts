@@ -139,7 +139,7 @@ export function addressesAreEqual(
 export function hashString(input: string): string {
   const hash: string | null = Web3.utils.soliditySha3({ t: 'string', v: input });
   if (!hash) {
-    throw new Error(`Invalid input: ${input} cannot be hashed`);
+    throw new Error(`ecrecover failed due to invalid signature length: ${input}`);
   }
 
   return hash;

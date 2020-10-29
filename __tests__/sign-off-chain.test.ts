@@ -19,9 +19,8 @@ describe('signOffChainAction', () => {
   beforeAll(async () => {
     signer = DUMMY_ADDRESS;
     const web3 = new Web3();
-    const signOffChainActionOption = new SignOffChainAction(web3, 1);
 
-    const client = new DydxClient('https://example.com', { web3, signOffChainAction: signOffChainActionOption });
+    const client = new DydxClient('https://example.com', { web3 });
     signOffChainAction = client.signOffChainAction!;
   });
 

@@ -1,5 +1,3 @@
-import Web3 from 'web3';
-
 import {
   RequestMethod,
   axiosRequest,
@@ -15,16 +13,13 @@ import { SignOffChainAction } from '../sign-off-chain-action';
 
 export default class Onboarding {
   readonly host: string;
-  readonly web3: Web3;
   readonly signOffChainAction: SignOffChainAction;
 
   constructor(
     host: string,
-    web3: Web3,
     signOffChainAction: SignOffChainAction,
   ) {
     this.host = host;
-    this.web3 = web3;
     this.signOffChainAction = signOffChainAction;
   }
 

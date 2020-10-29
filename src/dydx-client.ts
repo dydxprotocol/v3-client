@@ -31,7 +31,6 @@ export interface ClientOptions {
   starkPrivateKey?: string | KeyPair;
   web3?: Web3;
   web3Provider?: Provider;
-  signOffChainAction?: SignOffChainAction
 }
 
 export default class DydxClient {
@@ -62,9 +61,11 @@ export default class DydxClient {
       this.web3 = options.web3 || new Web3(options.web3Provider!);
     }
 
-    if (options.signOffChainAction || this.web3) {
-      this.signOffChainAction = options.signOffChainAction ||
-         new SignOffChainAction(this.web3 as Web3, 1); // TODO get actual networkId
+    if (this.web3) {
+      this.signOffChainAction = new SignOffChainAction(
+        this.web3 as Web3,
+        1,
+      ); // TODO get actual networkId
     }
 
     // Modules.
@@ -101,12 +102,8 @@ export default class DydxClient {
    */
   get keys(): Keys {
     if (!this._keys) {
-      if (this.web3) {
-        if (!this.signOffChainAction) {
-          throw new Error('No ability to sign offChainActions');
-        }
-
-        this._keys = new Keys(this.host, this.web3, this.signOffChainAction);
+      if (this.signOffChainAction) {
+        this._keys = new Keys(this.host, this.signOffChainAction);
       } else {
         return keysNotSupported;
       }
@@ -119,12 +116,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.web3) {
-        if (!this.signOffChainAction) {
-          throw new Error('No ability to sign offChainActions');
-        }
-
-        this._onboarding = new Onboarding(this.host, this.web3, this.signOffChainAction);
+      if (this.signOffChainAction) {
+        this._onboarding = new Onboarding(this.host, this.signOffChainAction);
       } else {
         return onboardingNotSupported;
       }
