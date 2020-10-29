@@ -60,12 +60,11 @@ export default class DydxClient {
     if (options.web3 || options.web3Provider) {
       // Non-null assertion is safe due to if-condition.
       this.web3 = options.web3 || new Web3(options.web3Provider!);
+    }
 
-      if (options.signOffChainAction || this.web3) {
-        this.signOffChainAction = options.signOffChainAction ||
-         new SignOffChainAction(this.web3, 1); // TODO get actual networkId
-
-      }
+    if (options.signOffChainAction || this.web3) {
+      this.signOffChainAction = options.signOffChainAction ||
+         new SignOffChainAction(this.web3 as Web3, 1); // TODO get actual networkId
     }
 
     // Modules.
