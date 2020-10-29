@@ -4,8 +4,6 @@ import Web3 from 'web3';
  * Utilities for writing unit tests with Jest.
  */
 
-export const DUMMY_ADDRESS: string = '0x5944ca68fb9dc1cbfb82f69cb435e44c5b577364';
-
 export const PROVIDER = new Web3.providers.HttpProvider('http://0.0.0.0:8445');
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

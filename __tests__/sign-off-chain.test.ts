@@ -8,25 +8,24 @@ import {
 } from '../src';
 import {
   SigningMethod,
-  Address,
+  EthereumAccount,
 } from '../src/types';
-import { DUMMY_ADDRESS } from './helpers/util';
 
-let signer: Address;
 let signOffChainAction: SignOffChainAction;
+let account: EthereumAccount;
 
 describe('signOffChainAction', () => {
   beforeAll(async () => {
-    signer = DUMMY_ADDRESS;
     const web3 = new Web3();
+    account = web3.eth.accounts.wallet.create(1)[0];
 
     const client = new DydxClient('https://example.com', { web3 });
     signOffChainAction = client.signOffChainAction!;
   });
 
-  it.only('Succeeds with onboarding hash', async () => {
+  it('Succeeds with onboarding hash', async () => {
     const signature = await signOffChainAction.signOffChainAction(
-      signer,
+      account.address,
       SigningMethod.Hash,
       generateOnboardingAction(),
     );
@@ -45,7 +44,7 @@ describe('signOffChainAction', () => {
     const method: ApiMethod = ApiMethod.POST;
 
     const signature = await signOffChainAction.signOffChainAction(
-      signer,
+      account.address,
       SigningMethod.Hash,
       generateApiKeyAction({
         requestPath: url,
@@ -56,7 +55,7 @@ describe('signOffChainAction', () => {
     expect(
       signOffChainAction.signOffChainActionIsValid(
         signature,
-        signer,
+        account.address,
         generateApiKeyAction({
           requestPath: url,
           method,
@@ -72,7 +71,7 @@ describe('signOffChainAction', () => {
     const method: ApiMethod = ApiMethod.POST;
 
     const signature = await signOffChainAction.signOffChainAction(
-      signer,
+      account.address,
       SigningMethod.Hash,
       generateApiKeyAction({
         requestPath: url,
@@ -83,13 +82,13 @@ describe('signOffChainAction', () => {
     expect(
       signOffChainAction.signOffChainActionIsValid(
         signature,
-        signer,
+        account.address,
         generateApiKeyAction({
           requestPath: url,
           method,
         }),
         expiration,
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 });

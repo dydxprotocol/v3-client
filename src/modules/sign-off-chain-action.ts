@@ -14,6 +14,7 @@ import {
   SigningMethod,
   SignatureTypes,
   Address,
+  EthereumAccount,
 } from '../types';
 import { Signer } from './signer';
 
@@ -60,7 +61,18 @@ export class SignOffChainAction extends Signer {
       case SigningMethod.UnsafeHash:
       case SigningMethod.Compatibility: {
         const hash = this.getOffChainActionHash(action, expiration);
-        const rawSignature = await this.web3.eth.sign(hash, signer);
+
+        // If the address is in the wallet, use it to sign so we don't have to use the
+        // web3 provider.
+        const walletAccount: EthereumAccount | undefined = (
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          (this.web3.eth.accounts.wallet as any)[signer] // TODO: Fix types.
+        );
+        let rawSignature: string | null = null;
+        if (walletAccount) {
+          rawSignature = walletAccount.sign(hash).signature;
+        }
+        rawSignature = rawSignature || await this.web3.eth.sign(hash, signer);
         const hashSig = createTypedSignature(rawSignature, SignatureTypes.DECIMAL);
         if (signingMethod === SigningMethod.Hash) {
           return hashSig;
