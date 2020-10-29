@@ -26,6 +26,7 @@ export default class Onboarding {
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
   ): Promise<{}> {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const signature: string = await this.signRequest(ethereumAddress);
 
     const url: string = `/v3/${endpoint}`;
