@@ -35,7 +35,8 @@ export default class Onboarding {
       method: RequestMethod.POST,
       data,
       headers: {
-        'DYDX-SIGNATURE': signature,
+        // TODO: Include signature after we get it working.
+        // 'DYDX-SIGNATURE': signature,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });

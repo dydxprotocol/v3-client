@@ -39,13 +39,14 @@ export default class Keys {
       method,
       data,
       headers: {
-        'DYDX-SIGNATURE': await this.signRequest({
-          requestPath: url,
-          method,
-          expiresAt,
-          address: ethereumAddress,
-          data,
-        }),
+        // TODO: Include signature after we get it working.
+        // 'DYDX-SIGNATURE': await this.signRequest({
+        //   requestPath: url,
+        //   method,
+        //   expiresAt,
+        //   address: ethereumAddress,
+        //   data,
+        // }),
         'DYDX-TIMESTAMP': expiresAt,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
