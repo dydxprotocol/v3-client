@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { Mixed } from 'web3/utils';
 
 import {
   createTypedSignature,
@@ -49,16 +50,16 @@ export class SignOffChainAction extends Signer {
   }
 
   public async signOffChainAction(
-    expiration: Date,
     signer: string,
     signingMethod: SigningMethod,
     action: string,
+    expiration?: Date,
   ): Promise<string> {
     switch (signingMethod) {
       case SigningMethod.Hash:
       case SigningMethod.UnsafeHash:
       case SigningMethod.Compatibility: {
-        const hash = this.getOffChainActionHash(expiration, action);
+        const hash = this.getOffChainActionHash(action, expiration);
         const rawSignature = await this.web3.eth.sign(hash, signer);
         const hashSig = createTypedSignature(rawSignature, SignatureTypes.DECIMAL);
         if (signingMethod === SigningMethod.Hash) {
@@ -68,7 +69,7 @@ export class SignOffChainAction extends Signer {
         if (signingMethod === SigningMethod.UnsafeHash) {
           return unsafeHashSig;
         }
-        if (this.signOffChainActionIsValid(expiration, unsafeHashSig, signer, action)) {
+        if (this.signOffChainActionIsValid(unsafeHashSig, signer, action, expiration)) {
           return unsafeHashSig;
         }
         return hashSig;
@@ -87,7 +88,7 @@ export class SignOffChainAction extends Signer {
           primaryType: this.domain,
           message: {
             action,
-            expiration: expiration.toUTCString(),
+            expiration: expiration ? expiration.toUTCString() : null,
           },
         };
         return this.ethSignTypedDataInternal(
@@ -103,14 +104,15 @@ export class SignOffChainAction extends Signer {
   }
 
   public signOffChainActionIsValid(
-    expiration: Date,
     typedSignature: string,
     expectedSigner: Address,
     action: string,
+    expiration?: Date,
   ): boolean {
-    const hash = this.getOffChainActionHash(expiration, action);
+    const hash = this.getOffChainActionHash(action, expiration);
     const signer = ecRecoverTypedSignature(hash, typedSignature);
-    return (addressesAreEqual(signer, expectedSigner) && expiration > new Date());
+    return (addressesAreEqual(signer, expectedSigner) &&
+      expiration ? expiration > new Date() : true);
   }
 
   public getDomainHash(): string {
@@ -129,14 +131,19 @@ export class SignOffChainAction extends Signer {
   }
 
   public getOffChainActionHash(
-    expiration: Date,
     action: string,
+    expiration?: Date,
   ): string {
-    const structHash: string | null = Web3.utils.soliditySha3(
+    const mixed: Mixed[] = [
       { t: 'bytes32', v: hashString(this.EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING) },
       { t: 'bytes32', v: hashString(action) },
-      { t: 'bytes32', v: hashString(expiration.toUTCString()) },
-    );
+    ];
+
+    if (expiration) {
+      mixed.push({ t: 'bytes32', v: hashString(expiration.toUTCString()) });
+    }
+
+    const structHash: string | null = Web3.utils.soliditySha3(...mixed);
 
     if (!structHash) {
       throw new Error(`Cannot get OffchainAction for: ${action}`);

@@ -31,9 +31,7 @@ export default class Onboarding {
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
   ): Promise<{}> {
-    const expiresAt: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
-      expiresAt,
       ethereumAddress,
       SigningMethod.Hash,
       generateOnboardingAction(),
@@ -46,8 +44,6 @@ export default class Onboarding {
       data,
       headers: {
         'DYDX-SIGNATURE': signature,
-        'DYDX-TIMESTAMP': expiresAt.toISOString(),
-
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });

@@ -36,7 +36,6 @@ export default class Keys {
     const url: string = `/v3/${endpoint}`;
     const expiresAt: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
-      expiresAt,
       ethereumAddress,
       SigningMethod.Hash,
       generateApiKeyAction({
@@ -44,6 +43,7 @@ export default class Keys {
         method,
         data,
       }),
+      expiresAt,
     );
 
     return axiosRequest({
