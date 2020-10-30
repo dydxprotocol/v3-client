@@ -1,10 +1,6 @@
-import Web3 from 'web3';
-
 /**
  * Utilities for writing unit tests with Jest.
  */
-
-export const PROVIDER = new Web3.providers.HttpProvider('http://0.0.0.0:8445');
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Fn = (...args: any[]) => any;

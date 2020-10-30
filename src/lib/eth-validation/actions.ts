@@ -1,4 +1,5 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
+import lodash from 'lodash';
 
 const ONBOARDING_STATIC_STRING: string = 'DYDX-ONBOARDING';
 
@@ -9,13 +10,15 @@ export function generateOnboardingAction(): string {
 export function generateApiKeyAction({
   requestPath,
   method,
-  data,
+  data = {},
 }: {
   requestPath: string,
   method: ApiMethod,
   data?: {},
 }): string {
-  return (data ? JSON.stringify(data) : '') +
-  requestPath +
-  method;
+  return (
+    (lodash.isEmpty(data) ? '' : JSON.stringify(data)) +
+    requestPath +
+    method
+  );
 }
