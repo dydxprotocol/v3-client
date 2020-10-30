@@ -1,22 +1,26 @@
-import Web3 from 'web3';
-
 import {
   RequestMethod,
   axiosRequest,
 } from '../../lib/axios';
-import { ONBOARDING_STATIC_STRING } from '../../lib/constants';
-import { AccountResponseObject, Data, UserResponseObject } from '../../types';
+import { generateOnboardingAction } from '../../lib/eth-validation/actions';
+import {
+  SigningMethod,
+  AccountResponseObject,
+  Data,
+  UserResponseObject,
+} from '../../types';
+import { SignOffChainAction } from '../sign-off-chain-action';
 
 export default class Onboarding {
   readonly host: string;
-  readonly web3: Web3;
+  readonly signOffChainAction: SignOffChainAction;
 
   constructor(
     host: string,
-    web3: Web3,
+    signOffChainAction: SignOffChainAction,
   ) {
     this.host = host;
-    this.web3 = web3;
+    this.signOffChainAction = signOffChainAction;
   }
 
   // ============ Request Helpers ============
@@ -27,8 +31,11 @@ export default class Onboarding {
     // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
   ): Promise<Data> {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const signature: string = await this.signRequest(ethereumAddress);
+    const signature: string = await this.signOffChainAction.signOffChainAction(
+      ethereumAddress,
+      SigningMethod.Hash,
+      generateOnboardingAction(),
+    );
 
     const url: string = `/v3/${endpoint}`;
     return axiosRequest({
@@ -36,8 +43,7 @@ export default class Onboarding {
       method: RequestMethod.POST,
       data,
       headers: {
-        // TODO: Include signature after we get it working.
-        // 'DYDX-SIGNATURE': signature,
+        'DYDX-SIGNATURE': signature,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -61,17 +67,5 @@ export default class Onboarding {
       params,
       ethereumAddress,
     );
-  }
-
-  // ============ Validation Helpers ============
-
-  async signRequest(address: string): Promise<string> {
-    // TODO Consider making EIP 712 compliant
-    const onboardingHash: string | null = this.web3.utils.sha3(ONBOARDING_STATIC_STRING);
-    if (!onboardingHash) {
-      throw new Error(`Could not generate an onboarding hash for address: ${address}`);
-    }
-
-    return this.web3.eth.sign(onboardingHash, address);
   }
 }

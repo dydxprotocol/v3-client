@@ -1,1 +1,0 @@
-export const ONBOARDING_STATIC_STRING: string = 'DYDX-ONBOARDING';

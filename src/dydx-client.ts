@@ -22,6 +22,7 @@ import {
 import {
   Public,
 } from './modules/public';
+import { SignOffChainAction } from './modules/sign-off-chain-action';
 import { Provider } from './types';
 
 export interface ClientOptions {
@@ -38,6 +39,7 @@ export default class DydxClient {
   readonly apiPrivateKey?: string | KeyPair;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
+  readonly signOffChainAction?: SignOffChainAction;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -57,6 +59,11 @@ export default class DydxClient {
     if (options.web3 || options.web3Provider) {
       // Non-null assertion is safe due to if-condition.
       this.web3 = options.web3 || new Web3(options.web3Provider!);
+
+      this.signOffChainAction = new SignOffChainAction(
+        this.web3 as Web3,
+        1,
+      ); // TODO get actual networkId
     }
 
     // Modules.
@@ -93,8 +100,8 @@ export default class DydxClient {
    */
   get keys(): Keys {
     if (!this._keys) {
-      if (this.web3) {
-        this._keys = new Keys(this.host, this.web3);
+      if (this.signOffChainAction) {
+        this._keys = new Keys(this.host, this.signOffChainAction);
       } else {
         return keysNotSupported;
       }
@@ -107,8 +114,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.web3) {
-        this._onboarding = new Onboarding(this.host, this.web3);
+      if (this.signOffChainAction) {
+        this._onboarding = new Onboarding(this.host, this.signOffChainAction);
       } else {
         return onboardingNotSupported;
       }
