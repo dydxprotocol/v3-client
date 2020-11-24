@@ -32,21 +32,21 @@ export default class Keys {
     ethereumAddress: string,
     data?: {},
   ): Promise<Data> {
-    const url: string = `/v3/${endpoint}`;
+    const requestPath: string = `/v3/${endpoint}`;
     const timestamp: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
       ethereumAddress,
       SigningMethod.Hash,
       generateApiKeyAction({
-        requestPath: url,
         method,
+        requestPath,
         data,
       }),
       timestamp,
     );
 
     return axiosRequest({
-      url: `${this.host}${url}`,
+      url: `${this.host}${requestPath}`,
       method,
       data,
       headers: {
