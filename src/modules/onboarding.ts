@@ -28,7 +28,6 @@ export default class Onboarding {
   protected async post(
     endpoint: string,
     data: {},
-    // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
   ): Promise<Data> {
     const signature: string = await this.signOffChainAction.signOffChainAction(

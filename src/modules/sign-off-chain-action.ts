@@ -18,6 +18,7 @@ import {
 } from '../types';
 import { Signer } from './signer';
 
+// TODO: Rename expiration to timestamp?
 const EIP712_WALLET_OFF_CHAIN_ACTION_ALL_STRUCT = [
   { type: 'string', name: 'action' },
   { type: 'string', name: 'expiration' },

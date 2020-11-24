@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   KeyPair,
   Order as StarkExOrder,
@@ -39,11 +38,11 @@ import {
 } from '../types';
 
 // TODO: Figure out if we can get rid of this.
-const METHOD_ENUM_MAP: Partial<Record<RequestMethod, ApiMethod>> = {
+const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
   [RequestMethod.DELETE]: ApiMethod.DELETE,
   [RequestMethod.GET]: ApiMethod.GET,
   [RequestMethod.POST]: ApiMethod.POST,
-  // [RequestMethod.PUT]: ApiMethod.PUT,
+  [RequestMethod.PUT]: ApiMethod.PUT,
 };
 
 export default class Private {
@@ -71,16 +70,16 @@ export default class Private {
     data?: {},
   ): Promise<Data> {
     const requestPath = `/v3/${endpoint}`;
-    const expiresAt: ISO8601 = new Date().toISOString();
+    const timestamp: ISO8601 = new Date().toISOString();
     const headers = {
-      'DYDX-SIGNATURE': this.generateSignature({
+      'DYDX-SIGNATURE': this.sign({
         requestPath,
         method,
-        expiresAt,
+        timestamp,
         data,
       }),
       'DYDX-API-KEY': this.apiKeyPair.publicKey,
-      'DYDX-TIMESTAMP': expiresAt,
+      'DYDX-TIMESTAMP': timestamp,
     };
     return axiosRequest({
       url: `${this.host}${requestPath}`,
@@ -371,28 +370,23 @@ export default class Private {
 
   // ============ Request Generation Helpers ============
 
-  private generateSignature({
+  private sign({
     requestPath,
     method,
-    expiresAt,
+    timestamp,
     data,
   }: {
     requestPath: string,
     method: RequestMethod,
-    expiresAt: ISO8601,
+    timestamp: ISO8601,
     data?: {},
   }): string {
-    const apiMethod = METHOD_ENUM_MAP[method];
-    // TODO: Shouldn't need this.
-    if (!apiMethod) {
-      throw new Error(`Unsupported method: ${method}`);
-    }
     return ApiRequest.fromInternal({
       body: data ? JSON.stringify(data) : '',
       requestPath,
-      method: apiMethod,
+      method: METHOD_ENUM_MAP[method],
       publicKey: this.apiKeyPair.publicKey,
-      expiresAt,
+      expiresAt: timestamp,
     }).sign(this.apiKeyPair.privateKey);
   }
 }

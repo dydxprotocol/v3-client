@@ -33,7 +33,7 @@ export default class Keys {
     data?: {},
   ): Promise<Data> {
     const url: string = `/v3/${endpoint}`;
-    const expiresAt: Date = new Date();
+    const timestamp: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
       ethereumAddress,
       SigningMethod.Hash,
@@ -42,7 +42,7 @@ export default class Keys {
         method,
         data,
       }),
-      expiresAt,
+      timestamp,
     );
 
     return axiosRequest({
@@ -51,7 +51,7 @@ export default class Keys {
       data,
       headers: {
         'DYDX-SIGNATURE': signature,
-        'DYDX-TIMESTAMP': expiresAt.toISOString(),
+        'DYDX-TIMESTAMP': timestamp.toISOString(),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
