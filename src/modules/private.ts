@@ -13,12 +13,12 @@ import {
   InternalOrder,
 } from '@dydxprotocol/starkex-lib';
 
-import { generateQueryPath } from '../../helpers/request-helpers';
+import { generateQueryPath } from '../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
-} from '../../lib/axios';
-import { getAccountId } from '../../lib/db';
+} from '../lib/axios';
+import { getAccountId } from '../lib/db';
 import {
   AccountAction,
   AccountResponseObject,
@@ -36,7 +36,7 @@ import {
   PositionStatus,
   TransferResponseObject,
   UserResponseObject,
-} from '../../types';
+} from '../types';
 
 // TODO: Figure out if we can get rid of this.
 const METHOD_ENUM_MAP: Partial<Record<RequestMethod, ApiMethod>> = {
@@ -225,7 +225,6 @@ export default class Private {
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
-    ethereumAddress: string,
   ): Promise<{ order: OrderResponseObject }> {
     // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);

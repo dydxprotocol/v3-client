@@ -1,5 +1,5 @@
-import { generateQueryPath } from '../../helpers/request-helpers';
-import { axiosRequest } from '../../lib/axios';
+import { generateQueryPath } from '../helpers/request-helpers';
+import { axiosRequest } from '../lib/axios';
 import {
   Data,
   HistoricalFundingResponseObject,
@@ -10,7 +10,7 @@ import {
   MarketStatisticResponseObject,
   OrderbookResponseOrder,
   Trade,
-} from '../../types';
+} from '../types';
 
 export default class Public {
   readonly host: string;

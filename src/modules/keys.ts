@@ -1,15 +1,15 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
 
-import { generateQueryPath } from '../../helpers/request-helpers';
+import { generateQueryPath } from '../helpers/request-helpers';
 import {
   axiosRequest,
-} from '../../lib/axios';
-import { generateApiKeyAction } from '../../lib/eth-validation/actions';
+} from '../lib/axios';
+import { generateApiKeyAction } from '../lib/eth-validation/actions';
 import {
   SigningMethod,
   Data,
-} from '../../types';
-import { SignOffChainAction } from '../sign-off-chain-action';
+} from '../types';
+import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class Keys {
   readonly host: string;

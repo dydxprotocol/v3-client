@@ -1,5 +1,12 @@
 import { promisify } from 'es6-promisify';
 import Web3 from 'web3';
+import {
+  AbstractProvider,
+} from 'web3-core';
+import {
+  JsonRpcPayload,
+  JsonRpcResponse,
+} from 'web3-core-helpers';
 
 import {
   stripHexPrefix,
@@ -8,13 +15,6 @@ import {
   SignatureTypes,
   SigningMethod,
 } from '../types';
-import {
-  AbstractProvider,
-} from 'web3-core';
-import {
-  JsonRpcPayload,
-  JsonRpcResponse,
-} from 'web3-core-helpers';
 
 export abstract class Signer {
   protected web3: Web3;

@@ -1,15 +1,15 @@
 import {
   RequestMethod,
   axiosRequest,
-} from '../../lib/axios';
-import { generateOnboardingAction } from '../../lib/eth-validation/actions';
+} from '../lib/axios';
+import { generateOnboardingAction } from '../lib/eth-validation/actions';
 import {
   SigningMethod,
   AccountResponseObject,
   Data,
   UserResponseObject,
-} from '../../types';
-import { SignOffChainAction } from '../sign-off-chain-action';
+} from '../types';
+import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class Onboarding {
   readonly host: string;
