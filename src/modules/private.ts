@@ -368,9 +368,9 @@ export default class Private {
     );
   }
 
-  // ============ Request Generation Helpers ============
+  // ============ Signing ============
 
-  private sign({
+  protected sign({
     requestPath,
     method,
     timestamp,

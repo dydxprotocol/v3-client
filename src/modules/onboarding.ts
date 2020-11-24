@@ -29,20 +29,16 @@ export default class Onboarding {
     endpoint: string,
     data: {},
     ethereumAddress: string,
+    signature: string | null = null,
+    signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<Data> {
-    const signature: string = await this.signOffChainAction.signOffChainAction(
-      ethereumAddress,
-      SigningMethod.Hash,
-      generateOnboardingAction(),
-    );
-
     const url: string = `/v3/${endpoint}`;
     return axiosRequest({
       url: `${this.host}${url}`,
       method: RequestMethod.POST,
       data,
       headers: {
-        'DYDX-SIGNATURE': signature,
+        'DYDX-SIGNATURE': signature || await this.sign(ethereumAddress, signingMethod),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -65,6 +61,19 @@ export default class Onboarding {
       'onboarding',
       params,
       ethereumAddress,
+    );
+  }
+
+  // ============ Signing ============
+
+  public async sign(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
+  ): Promise<string> {
+    return this.signOffChainAction.signOffChainAction(
+      ethereumAddress,
+      signingMethod,
+      generateOnboardingAction(),
     );
   }
 }
