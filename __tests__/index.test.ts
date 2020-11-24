@@ -2,7 +2,12 @@ import { DydxClient } from '../src';
 
 describe('DydxClient', () => {
 
-  it('creates a client', () => {
-    new DydxClient('https://example.com');
+  it('has separate modules', () => {
+    const client = new DydxClient('https://example.com');
+    expect(client.eth).toBeTruthy();
+    expect(client.keys).toBeTruthy();
+    expect(client.onboarding).toBeTruthy();
+    expect(client.private).toBeTruthy();
+    expect(client.public).toBeTruthy();
   });
 });
