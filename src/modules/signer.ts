@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { promisify } from 'es6-promisify';
 import Web3 from 'web3';
 
@@ -9,6 +8,13 @@ import {
   SignatureTypes,
   SigningMethod,
 } from '../types';
+import {
+  AbstractProvider,
+} from 'web3-core';
+import {
+  JsonRpcPayload,
+  JsonRpcResponse,
+} from 'web3-core-helpers';
 
 export abstract class Signer {
   protected web3: Web3;
@@ -55,12 +61,20 @@ export abstract class Signer {
     let rpcMethod: string;
     let rpcData: {};
 
-    const provider: any = this.web3.currentProvider!;
-    let sendAsync: any;
+    let provider = this.web3.currentProvider;
+    if (provider === null) {
+      throw new Error('Cannot sign since Web3 currentProvider is null');
+    }
+    if (typeof provider === 'string') {
+      throw new Error('Cannot sign since Web3 currentProvider is a string');
+    }
+    provider = provider as AbstractProvider;
+
+    let sendAsync: (param: JsonRpcPayload) => Promise<JsonRpcResponse>;
 
     switch (signingMethod) {
       case SigningMethod.TypedData:
-        sendAsync = promisify(provider.send).bind(provider);
+        sendAsync = promisify(provider.send!).bind(provider);
         rpcMethod = 'eth_signTypedData';
         rpcData = data;
         break;
@@ -91,7 +105,8 @@ export abstract class Signer {
     });
 
     if (response.error) {
-      throw new Error(response.error.message);
+      // TODO: Is this right?
+      throw new Error((response.error as unknown as { message: string }).message);
     }
     return `0x${stripHexPrefix(response.result)}0${SignatureTypes.NO_PREPEND}`;
   }
