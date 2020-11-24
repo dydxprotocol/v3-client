@@ -29,7 +29,6 @@ export default class Keys {
   protected async request(
     method: ApiMethod,
     endpoint: string,
-    // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
     data?: {},
   ): Promise<Data> {
@@ -97,8 +96,8 @@ export default class Keys {
   }
 
   async deleteApiKey(
-    ethereumAddress: string,
     apiKey: string,
+    ethereumAddress: string,
   ): Promise<void> {
     return this.delete('api-keys', ethereumAddress, { apiKey });
   }
