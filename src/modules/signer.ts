@@ -17,7 +17,7 @@ import {
 } from '../types';
 
 export abstract class Signer {
-  protected web3: Web3;
+  protected readonly web3: Web3;
 
   // ============ Constructor ============
 

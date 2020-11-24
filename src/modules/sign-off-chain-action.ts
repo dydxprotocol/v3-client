@@ -25,10 +25,10 @@ const EIP712_WALLET_OFF_CHAIN_ACTION_ALL_STRUCT = [
 ];
 
 export class SignOffChainAction extends Signer {
-  private domain: string;
-  private version: string;
-  private networkId: number;
-  private EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING: string;
+  private readonly domain: string;
+  private readonly version: string;
+  private readonly networkId: number;
+  private readonly EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING: string;
 
   constructor(
     web3: Web3,
