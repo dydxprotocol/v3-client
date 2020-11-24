@@ -44,10 +44,12 @@ export class SignOffChainAction extends Signer {
     this.domain = domain;
     this.networkId = networkId;
     this.version = version;
-    this.EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING = 'dYdX(' +
+    this.EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING = (
+      'dYdX(' +
       'string action,' +
       'string expiration' +
-      ')';
+      ')'
+    );
   }
 
   public async signOffChainAction(
@@ -62,25 +64,26 @@ export class SignOffChainAction extends Signer {
       case SigningMethod.Compatibility: {
         const hash = this.getOffChainActionHash(action, expiration);
 
-        // If the address is in the wallet, use it to sign so we don't have to use the
-        // web3 provider.
+        // If the address is in the wallet, sign with it so we don't have to use the web3 provider.
         const walletAccount: EthereumAccount | undefined = (
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          (this.web3.eth.accounts.wallet as any)[signer] // TODO: Fix types.
+          // Hack: wallet type incorrectly has index signature on number but not string
+          this.web3.eth.accounts.wallet[signer as unknown as number]
         );
-        let rawSignature: string | null = null;
-        if (walletAccount) {
-          rawSignature = walletAccount.sign(hash).signature;
-        }
-        rawSignature = rawSignature || await this.web3.eth.sign(hash, signer);
+
+        const rawSignature = walletAccount
+          ? walletAccount.sign(hash).signature
+          : await this.web3.eth.sign(hash, signer);
+
         const hashSig = createTypedSignature(rawSignature, SignatureTypes.DECIMAL);
         if (signingMethod === SigningMethod.Hash) {
           return hashSig;
         }
+
         const unsafeHashSig = createTypedSignature(rawSignature, SignatureTypes.NO_PREPEND);
         if (signingMethod === SigningMethod.UnsafeHash) {
           return unsafeHashSig;
         }
+
         if (this.signOffChainActionIsValid(unsafeHashSig, signer, action, expiration)) {
           return unsafeHashSig;
         }
