@@ -19,6 +19,7 @@ export type Provider = HttpProvider | IpcProvider | WebsocketProvider;
 
 export type PositionsMap = { [market: string]: PositionResponseObject };
 
+// TODO: Find a better way.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Data = any;
 

@@ -10,6 +10,7 @@ import {
   OrderType,
   Asset,
   Withdrawal as StarkExWithdrawal,
+  InternalOrder,
 } from '@dydxprotocol/starkex-lib';
 
 import { generateQueryPath } from '../../helpers/request-helpers';
@@ -237,13 +238,12 @@ export default class Private {
       if (!this.starkKeyPair) {
         throw new Error('Order is not signed and client was not initialized with starkPrivateKey');
       }
-      const orderToSign = {
+      const orderToSign: InternalOrder = {
         ...params,
         clientId,
         positionId,
         starkKey: this.starkKeyPair.publicKey,
         expiresAt: params.expiration,
-        accountId: getAccountId({ address: ethereumAddress }),
       };
       const starkOrder: StarkExOrder = StarkExOrder.fromInternal(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
