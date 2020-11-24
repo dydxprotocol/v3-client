@@ -110,6 +110,10 @@ export interface ApiWithdrawal extends ApiStarkwareSigned {
 
 // ============ API Response Types ============
 
+export interface ApiKeyResponseObject {
+  apiKey: string;
+}
+
 export interface MarketResponseObject {
   market: PerpetualMarket;
   status: string;

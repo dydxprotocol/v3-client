@@ -6,6 +6,7 @@ import {
 } from '../lib/axios';
 import { generateApiKeyAction } from '../lib/eth-validation/actions';
 import {
+  ApiKeyResponseObject,
   SigningMethod,
   Data,
 } from '../types';
@@ -84,14 +85,14 @@ export default class Keys {
 
   async getApiKeys(
     ethereumAddress: string,
-  ): Promise<{ apiKeys: string[] }> {
+  ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
     return this.get('api-keys', ethereumAddress);
   }
 
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
-  ): Promise<{ apiKey: string }> {
+  ): Promise<{ apiKey: ApiKeyResponseObject }> {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
