@@ -1,5 +1,5 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
-import lodash from 'lodash';
+import _ from 'lodash';
 
 const ONBOARDING_STATIC_STRING: string = 'DYDX-ONBOARDING';
 
@@ -16,8 +16,9 @@ export function generateApiKeyAction({
   method: ApiMethod,
   data?: {},
 }): string {
+  // TODO: The signed data should be consistent with the other private endpoints.
   return (
-    (lodash.isEmpty(data) ? '' : JSON.stringify(data)) +
+    (_.isEmpty(data) ? '' : JSON.stringify(data)) +
     requestPath +
     method
   );

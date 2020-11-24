@@ -1,15 +1,15 @@
 import {
   RequestMethod,
   axiosRequest,
-} from '../../lib/axios';
-import { generateOnboardingAction } from '../../lib/eth-validation/actions';
+} from '../lib/axios';
+import { generateOnboardingAction } from '../lib/eth-validation/actions';
 import {
   SigningMethod,
   AccountResponseObject,
   Data,
   UserResponseObject,
-} from '../../types';
-import { SignOffChainAction } from '../sign-off-chain-action';
+} from '../types';
+import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class Onboarding {
   readonly host: string;
@@ -28,7 +28,6 @@ export default class Onboarding {
   protected async post(
     endpoint: string,
     data: {},
-    // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
   ): Promise<Data> {
     const signature: string = await this.signOffChainAction.signOffChainAction(

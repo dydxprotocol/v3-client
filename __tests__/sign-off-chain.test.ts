@@ -1,7 +1,6 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 import {
-  DydxClient,
   generateApiKeyAction,
   generateOnboardingAction,
   SignOffChainAction,
@@ -15,12 +14,11 @@ let signOffChainAction: SignOffChainAction;
 let account: EthereumAccount;
 
 describe('signOffChainAction', () => {
+
   beforeAll(async () => {
     const web3 = new Web3();
+    signOffChainAction = new SignOffChainAction(web3, 1);
     account = web3.eth.accounts.wallet.create(1)[0];
-
-    const client = new DydxClient('https://example.com', { web3 });
-    signOffChainAction = client.signOffChainAction!;
   });
 
   it('Succeeds with onboarding hash', async () => {

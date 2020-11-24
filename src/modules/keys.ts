@@ -1,15 +1,16 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
 
-import { generateQueryPath } from '../../helpers/request-helpers';
+import { generateQueryPath } from '../helpers/request-helpers';
 import {
   axiosRequest,
-} from '../../lib/axios';
-import { generateApiKeyAction } from '../../lib/eth-validation/actions';
+} from '../lib/axios';
+import { generateApiKeyAction } from '../lib/eth-validation/actions';
 import {
+  ApiKeyResponseObject,
   SigningMethod,
   Data,
-} from '../../types';
-import { SignOffChainAction } from '../sign-off-chain-action';
+} from '../types';
+import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class Keys {
   readonly host: string;
@@ -28,30 +29,29 @@ export default class Keys {
   protected async request(
     method: ApiMethod,
     endpoint: string,
-    // TODO: Get ethereumAddress from the provider (same address used for signing).
     ethereumAddress: string,
     data?: {},
   ): Promise<Data> {
-    const url: string = `/v3/${endpoint}`;
-    const expiresAt: Date = new Date();
+    const requestPath: string = `/v3/${endpoint}`;
+    const timestamp: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
       ethereumAddress,
       SigningMethod.Hash,
       generateApiKeyAction({
-        requestPath: url,
         method,
+        requestPath,
         data,
       }),
-      expiresAt,
+      timestamp,
     );
 
     return axiosRequest({
-      url: `${this.host}${url}`,
+      url: `${this.host}${requestPath}`,
       method,
       data,
       headers: {
         'DYDX-SIGNATURE': signature,
-        'DYDX-TIMESTAMP': expiresAt.toISOString(),
+        'DYDX-TIMESTAMP': timestamp.toISOString(),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -84,20 +84,20 @@ export default class Keys {
 
   async getApiKeys(
     ethereumAddress: string,
-  ): Promise<{ apiKeys: string[] }> {
+  ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
     return this.get('api-keys', ethereumAddress);
   }
 
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
-  ): Promise<{ apiKey: string }> {
+  ): Promise<{ apiKey: ApiKeyResponseObject }> {
     return this.post('api-keys', ethereumAddress, { apiKey });
   }
 
   async deleteApiKey(
-    ethereumAddress: string,
     apiKey: string,
+    ethereumAddress: string,
   ): Promise<void> {
     return this.delete('api-keys', ethereumAddress, { apiKey });
   }

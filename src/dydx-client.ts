@@ -3,31 +3,18 @@ import {
 } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
-import {
-  Eth,
-  ethNotSupported,
-} from './modules/eth';
-import {
-  Keys,
-  keysNotSupported,
-} from './modules/keys';
-import {
-  Onboarding,
-  onboardingNotSupported,
-} from './modules/onboarding';
-import {
-  Private,
-  privateNotSupported,
-} from './modules/private';
-import {
-  Public,
-} from './modules/public';
+import Eth from './modules/eth';
+import Keys from './modules/keys';
+import Onboarding from './modules/onboarding';
+import Private from './modules/private';
+import Public from './modules/public';
 import { SignOffChainAction } from './modules/sign-off-chain-action';
 import { Provider } from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
+  networkId?: number;
   starkPrivateKey?: string | KeyPair;
   web3?: Web3;
   web3Provider?: Provider;
@@ -56,14 +43,15 @@ export default class DydxClient {
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
     this.starkPrivateKey = options.starkPrivateKey;
+
     if (options.web3 || options.web3Provider) {
+      const networkId = typeof options.networkId === 'number' ? options.networkId : 1;
       // Non-null assertion is safe due to if-condition.
       this.web3 = options.web3 || new Web3(options.web3Provider!);
-
       this.signOffChainAction = new SignOffChainAction(
-        this.web3 as Web3,
-        1,
-      ); // TODO get actual networkId
+        this.web3,
+        networkId,
+      );
     }
 
     // Modules.
@@ -89,7 +77,9 @@ export default class DydxClient {
           this.starkPrivateKey,
         );
       } else {
-        return privateNotSupported;
+        return notSupported(
+          'Private endpoints are not supported since apiPrivateKey was not provided',
+        ) as Private;
       }
     }
     return this._private;
@@ -103,7 +93,9 @@ export default class DydxClient {
       if (this.signOffChainAction) {
         this._keys = new Keys(this.host, this.signOffChainAction);
       } else {
-        return keysNotSupported;
+        return notSupported(
+          'API key endpoints are not supported since neither web3 nor web3Provider was provided',
+        ) as Keys;
       }
     }
     return this._keys;
@@ -117,7 +109,9 @@ export default class DydxClient {
       if (this.signOffChainAction) {
         this._onboarding = new Onboarding(this.host, this.signOffChainAction);
       } else {
-        return onboardingNotSupported;
+        return notSupported(
+          'Onboarding endpoints are not supported since neither web3 nor web3Provider was provided',
+        ) as Onboarding;
       }
     }
     return this._onboarding;
@@ -131,9 +125,25 @@ export default class DydxClient {
       if (this.web3) {
         this._eth = new Eth(this.web3);
       } else {
-        return ethNotSupported;
+        return notSupported(
+          'Eth endpoints are not supported since neither web3 nor web3Provider was provided',
+        ) as Eth;
       }
     }
     return this._eth;
   }
+}
+
+/**
+ * Returns a proxy object that throws with the given message when trying to call a function on it.
+ */
+function notSupported(
+  errorMessage: string,
+): {} {
+  const handler = {
+    get() {
+      throw new Error(errorMessage);
+    },
+  };
+  return new Proxy({}, handler);
 }

@@ -1,3 +1,5 @@
+// TODO: Get rid of this file.
+
 import * as uuid from 'uuid';
 
 export function getUserId(
