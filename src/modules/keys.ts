@@ -30,13 +30,14 @@ export default class Keys {
     method: ApiMethod,
     endpoint: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod,
     data?: {},
   ): Promise<Data> {
     const requestPath: string = `/v3/${endpoint}`;
     const timestamp: Date = new Date();
     const signature: string = await this.signOffChainAction.signOffChainAction(
       ethereumAddress,
-      SigningMethod.Hash,
+      signingMethod,
       generateApiKeyAction({
         method,
         requestPath,
@@ -60,45 +61,52 @@ export default class Keys {
   protected async get(
     endpoint: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<Data> {
-    return this.request(ApiMethod.GET, endpoint, ethereumAddress);
+    return this.request(ApiMethod.GET, endpoint, ethereumAddress, signingMethod);
   }
 
   protected async post(
     endpoint: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
     data: {},
   ): Promise<Data> {
-    return this.request(ApiMethod.POST, endpoint, ethereumAddress, data);
+    return this.request(ApiMethod.POST, endpoint, ethereumAddress, signingMethod, data);
   }
 
   protected async delete(
     endpoint: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
     params: {},
   ): Promise<Data> {
-    return this.request(ApiMethod.DELETE, generateQueryPath(endpoint, params), ethereumAddress);
+    const requestPath = generateQueryPath(endpoint, params);
+    return this.request(ApiMethod.DELETE, requestPath, ethereumAddress, signingMethod);
   }
 
   // ============ Requests ============
 
   async getApiKeys(
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
-    return this.get('api-keys', ethereumAddress);
+    return this.get('api-keys', ethereumAddress, signingMethod);
   }
 
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<{ apiKey: ApiKeyResponseObject }> {
-    return this.post('api-keys', ethereumAddress, { apiKey });
+    return this.post('api-keys', ethereumAddress, signingMethod, { apiKey });
   }
 
   async deleteApiKey(
     apiKey: string,
     ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<void> {
-    return this.delete('api-keys', ethereumAddress, { apiKey });
+    return this.delete('api-keys', ethereumAddress, signingMethod, { apiKey });
   }
 }
