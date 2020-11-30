@@ -52,6 +52,7 @@ export default class Onboarding {
       apiKey: string,
     },
     ethereumAddress: string,
+    signature?: string,
   ): Promise<{
       apiKey: string,
       user: UserResponseObject,
@@ -61,6 +62,7 @@ export default class Onboarding {
       'onboarding',
       params,
       ethereumAddress,
+      signature,
     );
   }
 
