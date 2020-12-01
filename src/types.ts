@@ -99,6 +99,9 @@ export interface ApiOrder extends ApiStarkwareSigned {
   timeInForce: TimeInForce;
   postOnly: boolean;
   limitFee: string;
+  cancelId?: string;
+  triggerPrice?: string;
+  trailingPercent?: string;
 }
 
 export interface ApiWithdrawal extends ApiStarkwareSigned {

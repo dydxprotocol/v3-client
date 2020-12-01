@@ -87,6 +87,12 @@ export default class Keys {
 
   // ============ Requests ============
 
+  /**
+   * @description get the apiKeys associated with an ethereumAddress
+   *
+   * @param ethereumAddress the apiKeys are for
+   * @param signingMethod used for the signature that validates the request
+   */
   async getApiKeys(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
@@ -94,6 +100,13 @@ export default class Keys {
     return this.get('api-keys', ethereumAddress, signingMethod);
   }
 
+  /**
+   *@description register an apiKey for an ethereumAddress
+   *
+   * @param apiKey to be registered for an ethereumAddress
+   * @param ethereumAddress the apiKey is for
+   * @param signingMethod used to validate the request
+   */
   async registerApiKey(
     apiKey: string,
     ethereumAddress: string,
@@ -102,6 +115,12 @@ export default class Keys {
     return this.post('api-keys', ethereumAddress, signingMethod, { apiKey });
   }
 
+  /**
+   *
+   * @param apiKey to be deleted
+   * @param ethereumAddress the apiKey is for
+   * @param signingMethod used to validate the request
+   */
   async deleteApiKey(
     apiKey: string,
     ethereumAddress: string,

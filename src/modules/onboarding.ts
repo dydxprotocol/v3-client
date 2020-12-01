@@ -46,6 +46,17 @@ export default class Onboarding {
 
   // ============ Requests ============
 
+  /**
+   * @description create a user, account and apiKey in one onboarding request
+   *
+   * @param {
+   * @starkKey is the unique public key for starkwareLib operations used in the future
+   * @apiKey is the unique public key for starkwareLib apiKey operations used in the future
+   * }
+   * @param ethereumAddress of the account
+   * @param signature validating the request
+   * @param signingMethod for the request
+   */
   async createUser(
     params: {
       starkKey: string,

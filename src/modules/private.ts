@@ -119,6 +119,9 @@ export default class Private {
 
   // ============ Requests ============
 
+  /**
+   * @description get a signature for the ethereumAddress if registered
+   */
   async getRegistration(): Promise<{ signature: string }> {
     return this.get(
       'registration',
@@ -126,6 +129,9 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get the user associated with the ethereumAddress
+   */
   async getUser(): Promise<{ user: UserResponseObject }> {
     return this.get(
       'users',
@@ -133,6 +139,15 @@ export default class Private {
     );
   }
 
+  /**
+   * @description update information for the user
+   *
+   * @param {
+   * @email associated with the user
+   * @username for the user
+   * @userData specifiying information about the user
+   * }
+   */
   async updateUser({
     email,
     username,
@@ -152,6 +167,12 @@ export default class Private {
     );
   }
 
+  /**
+   * @description create an account for an ethereumAddress
+   *
+   * @param starkKey for the account that will be used as the public key in starkwareEx-Lib requests
+   * going forward for this account.
+   */
   async createAccount(
     starkKey: string,
   ): Promise<{ account: AccountResponseObject }> {
@@ -163,6 +184,11 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get account associated with an ethereumAddress and accountNumber 0
+   *
+   * @param ethereumAddress the account is associated with
+   */
   async getAccount(ethereumAddress: string): Promise<{ account: AccountResponseObject }> {
     return this.get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
@@ -170,6 +196,9 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get all accounts associated with an ethereumAddress
+   */
   async getAccounts(): Promise<{ account: AccountResponseObject[] }> {
     return this.get(
       'accounts',
@@ -177,6 +206,16 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get all positions for an account, meeting query parameters
+   *
+   * @param {
+   * @market the positions are for
+   * @status of the positions
+   * @limit to the number of positions returned
+   * @createdBeforeOrAt latest the positions could have been created
+   * }
+   */
   async getPositions(
     params: {
       market?: Market,
@@ -191,6 +230,17 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get orders for a user by a set of query parameters
+   *
+   * @param {
+   * @market the orders are for
+   * @status the orders have
+   * @side of the book the orders are on
+   * @type of order
+   * @limit to the number of orders returned
+   * @createdBeforeOrAt sets the time of the last fill that will be received   * }
+   */
   async getOrders(
     params: {
       market?: Market,
@@ -207,6 +257,11 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get an order by a unique id
+   *
+   * @param orderId of the order
+   */
   async getOrderById(orderId: string): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/${orderId}`,
@@ -214,6 +269,11 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get an order by a clientId
+   *
+   * @param clientId of the order
+   */
   async getOrderByClientId(clientId: string): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/client/${clientId}`,
@@ -221,6 +281,25 @@ export default class Private {
     );
   }
 
+  /**
+   *@description place a new order
+   *
+   * @param {
+   * @market of the order
+   * @side of the order
+   * @type of the order
+   * @timeInForce of the order
+   * @postOnly of the order
+   * @size of the order
+   * @price of the order
+   * @limitFee of the order
+   * @expiration of the order
+   * @cancelId if the order is replacing an existing one
+   * @triggerPrice of the order if the order is a triggerable order
+   * @trailingPercent of the order if the order is a trailing stop order
+   * }
+   * @param positionId associated with the order
+   */
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
@@ -259,6 +338,11 @@ export default class Private {
     );
   }
 
+  /**
+   * @description cancel a specific order for a user by the order's unique id
+   *
+   * @param orderId of the order being canceled
+   */
   async cancelOrder(orderId: string): Promise<void> {
     return this.delete(
       `orders/${orderId}`,
@@ -266,6 +350,11 @@ export default class Private {
     );
   }
 
+  /**
+   * @description cancel all orders for a user for a specific market
+   *
+   * @param market of the orders being canceled
+   */
   async cancelAllOrders(market?: Market): Promise<void> {
     const params = market ? { market } : {};
     return this.delete(
@@ -274,6 +363,16 @@ export default class Private {
     );
   }
 
+  /**
+   *@description get fills for a user by a set of query parameters
+   *
+   * @param {
+   * @market the fills are for
+   * @orderId associated with the fills
+   * @limit to the number of fills returned
+   * @createdBeforeOrAt sets the time of the last fill that will be received
+   * }
+   */
   async getFills(
     params: {
       market?: Market,
@@ -288,6 +387,15 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get transfers for a user by a set of query parameters
+   *
+   * @param {
+   * @type of transfer
+   * @limit to the number of transfers returned
+   * @createdBeforeOrAt sets the time of the last transfer that will be received
+   * }
+   */
   async getTransfers(
     params: {
       type?: AccountAction,
@@ -301,6 +409,17 @@ export default class Private {
     );
   }
 
+  /**
+   * @description post a new withdrawal
+   *
+   * @param {
+   * @amount specifies the size of the withdrawal
+   * @asset specifies the asset being withdrawn
+   * @toAddress is the address being withdrawn to
+   * @clientId specifies the clientId for the address
+   * }
+   * @param positionId specifies the associated position for the transfer
+   */
   async createWithdrawal(
     params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
     positionId: string,
@@ -342,6 +461,15 @@ export default class Private {
     );
   }
 
+  /**
+   * @description post a new deposit
+   *
+   * @param {
+   * @amount specifies the size of the deposit
+   * @asset specifies the asset being deposited
+   * @fromAddress is the address being deposited from
+   * }
+   */
   async createDeposit(
     params: {
       amount: string,
@@ -355,6 +483,15 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get a user's funding payments by a set of query parameters
+   *
+   * @param {
+   * @market the funding payments are for
+   * @limit to the number of funding payments returned
+   * @effectiveBeforeOrAt sets the latest funding payment received
+   * }
+   */
   async getFundingPayments(
     params: {
       market?: Market,
