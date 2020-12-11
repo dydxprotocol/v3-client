@@ -5,10 +5,10 @@ import {
   HistoricalFundingResponseObject,
   ISO8601,
   Market,
-  MarketResponseObject,
+  MarketsResponseObject,
   MarketStatisticDay,
   MarketStatisticResponseObject,
-  OrderbookResponseOrder,
+  OrderbookResponseObject,
   Trade,
 } from '../types';
 
@@ -19,16 +19,30 @@ export default class Public {
     this.host = host;
   }
 
+  // ============ Request Helpers ============
+
+  private get(
+    requestPath: string,
+    params: {},
+  ): Promise<Data> {
+    return axiosRequest({
+      method: 'GET',
+      url: `${this.host}/v3/${generateQueryPath(requestPath, params)}`,
+    });
+  }
+
+  // ============ Requests ============
+
   /**
    * @description check if a user exists for an ethereum address
    *
    * @param ethereumAddress of the user
    */
-  checkIfUserExists(
+  doesUserExistWithAddress(
     ethereumAddress: string,
   ): Promise<{ exists: boolean }> {
-    const uri: string = 'v3/users/exists';
-    return this.sendPublicGetRequest(uri, { ethereumAddress });
+    const uri: string = 'users/exists';
+    return this.get(uri, { ethereumAddress });
   }
 
   /**
@@ -36,11 +50,11 @@ export default class Public {
    *
    * @param username being queried
    */
-  checkIfUsernameExists(
+  doesUserExistWithUsername(
     username: string,
   ): Promise<{ exists: boolean }> {
-    const uri: string = 'v3/usernames';
-    return this.sendPublicGetRequest(uri, { username });
+    const uri: string = 'usernames';
+    return this.get(uri, { username });
   }
 
   /**
@@ -48,9 +62,9 @@ export default class Public {
    *
    * @param market if only one market should be returned
    */
-  getMarkets(market?: Market): Promise<{ markets: MarketResponseObject }> {
-    const uri: string = 'v3/markets';
-    return this.sendPublicGetRequest(uri, { market });
+  getMarkets(market?: Market): Promise<{ markets: MarketsResponseObject }> {
+    const uri: string = 'markets';
+    return this.get(uri, { market });
   }
 
   /**
@@ -58,13 +72,8 @@ export default class Public {
    *
    * @param market being queried
    */
-  getOrderBook(market: Market): Promise<{
-    orderbook: {
-      bids: OrderbookResponseOrder[],
-      asks: OrderbookResponseOrder[],
-    }
-  }> {
-    return this.sendPublicGetRequest(`v3/orderbook/${market}`, {});
+  getOrderBook(market: Market): Promise<{ orderbook: OrderbookResponseObject }> {
+    return this.get(`orderbook/${market}`, {});
   }
 
   /**
@@ -82,9 +91,8 @@ export default class Public {
     market: Market,
     days?: MarketStatisticDay,
   }): Promise<{ markets: MarketStatisticResponseObject }> {
-    const uri: string = `v3/stats/${market}`;
-
-    return this.sendPublicGetRequest(uri, { days });
+    const uri: string = `stats/${market}`;
+    return this.get(uri, { days });
   }
 
   /**
@@ -100,10 +108,8 @@ export default class Public {
     market: Market,
     startingBeforeOrAt?: ISO8601,
   }): Promise<{ trades: Trade[] }> {
-    const uri: string = `v3/trades/${market}`;
-
-    return this.sendPublicGetRequest(uri, { startingBeforeOrAt });
-
+    const uri: string = `trades/${market}`;
+    return this.get(uri, { startingBeforeOrAt });
   }
 
   /**
@@ -112,20 +118,14 @@ export default class Public {
    * @param market being checked
    * @param effectiveBeforeOrAt latest historical funding rate being returned
    */
-  getHistoricalFunding(market: Market, effectiveBeforeOrAt: ISO8601):
-  Promise<{ historicalFunding: HistoricalFundingResponseObject }> {
-    const uri: string = `v3/historical-funding/${market}`;
-
-    return this.sendPublicGetRequest(uri, { effectiveBeforeOrAt });
-  }
-
-  private sendPublicGetRequest(
-    requestPath: string,
-    params: {},
-  ): Promise<Data> {
-    return axiosRequest({
-      method: 'GET',
-      url: `${this.host}/${generateQueryPath(requestPath, params)}`,
-    });
+  getHistoricalFunding({
+    market,
+    effectiveBeforeOrAt,
+  }: {
+    market: Market,
+    effectiveBeforeOrAt?: ISO8601,
+  }): Promise<{ historicalFunding: HistoricalFundingResponseObject }> {
+    const uri: string = `historical-funding/${market}`;
+    return this.get(uri, { effectiveBeforeOrAt });
   }
 }
