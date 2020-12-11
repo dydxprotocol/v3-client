@@ -1,15 +1,12 @@
 import {
+  ApiMethod,
   KeyPair,
-  Order as StarkExOrder,
+  OrderWithClientId,
+  SignableApiRequest,
+  SignableOrder,
+  SignableWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
-  ApiMethod,
-  ApiRequest,
-  OrderSide,
-  OrderType,
-  Asset,
-  Withdrawal as StarkExWithdrawal,
-  InternalOrder,
 } from '@dydxprotocol/starkex-lib';
 
 import { generateQueryPath } from '../helpers/request-helpers';
@@ -23,13 +20,16 @@ import {
   AccountResponseObject,
   ApiOrder,
   ApiWithdrawal,
+  Asset,
   Data,
   FillResponseObject,
   FundingResponseObject,
   ISO8601,
   Market,
   OrderResponseObject,
+  OrderSide,
   OrderStatus,
+  OrderType,
   PartialBy,
   PositionResponseObject,
   PositionStatus,
@@ -70,16 +70,16 @@ export default class Private {
     data?: {},
   ): Promise<Data> {
     const requestPath = `/v3/${endpoint}`;
-    const timestamp: ISO8601 = new Date().toISOString();
+    const isoTimestamp: ISO8601 = new Date().toISOString();
     const headers = {
       'DYDX-SIGNATURE': this.sign({
         requestPath,
         method,
-        timestamp,
+        isoTimestamp,
         data,
       }),
       'DYDX-API-KEY': this.apiKeyPair.publicKey,
-      'DYDX-TIMESTAMP': timestamp,
+      'DYDX-TIMESTAMP': isoTimestamp,
     };
     return axiosRequest({
       url: `${this.host}${requestPath}`,
@@ -315,14 +315,17 @@ export default class Private {
       if (!this.starkKeyPair) {
         throw new Error('Order is not signed and client was not initialized with starkPrivateKey');
       }
-      const orderToSign: InternalOrder = {
-        ...params,
+      const orderToSign: OrderWithClientId = {
+        humanSize: params.size,
+        humanPrice: params.price,
+        humanLimitFee: params.limitFee,
+        market: params.market,
+        side: params.side,
+        expirationIsoTimestamp: params.expiration,
         clientId,
         positionId,
-        starkKey: this.starkKeyPair.publicKey,
-        expiresAt: params.expiration,
       };
-      const starkOrder: StarkExOrder = StarkExOrder.fromInternal(orderToSign);
+      const starkOrder = SignableOrder.fromOrder(orderToSign);
       signature = starkOrder.sign(this.starkKeyPair);
     }
 
@@ -401,7 +404,7 @@ export default class Private {
       type?: AccountAction,
       limit?: number,
       createdBeforeOrAt?: ISO8601,
-    },
+    } = {},
   ): Promise<{ transfers: TransferResponseObject[] }> {
     return this.get(
       'transfers',
@@ -438,14 +441,12 @@ export default class Private {
         );
       }
       const withdrawalToSign = {
-        ...params,
+        humanAmount: params.amount,
+        expirationIsoTimestamp: params.expiration,
         clientId,
-        starkKey: this.starkKeyPair.publicKey,
-        debitAmount: params.amount,
-        expiresAt: params.expiration,
         positionId,
       };
-      const starkWithdrawal: StarkExWithdrawal = StarkExWithdrawal.fromInternal(withdrawalToSign);
+      const starkWithdrawal = SignableWithdrawal.fromWithdrawal(withdrawalToSign);
       signature = starkWithdrawal.sign(this.starkKeyPair);
     }
 
@@ -510,20 +511,19 @@ export default class Private {
   protected sign({
     requestPath,
     method,
-    timestamp,
+    isoTimestamp,
     data,
   }: {
     requestPath: string,
     method: RequestMethod,
-    timestamp: ISO8601,
+    isoTimestamp: ISO8601,
     data?: {},
   }): string {
-    return ApiRequest.fromInternal({
+    return new SignableApiRequest({
       body: data ? JSON.stringify(data) : '',
       requestPath,
       method: METHOD_ENUM_MAP[method],
-      publicKey: this.apiKeyPair.publicKey,
-      expiresAt: timestamp,
+      isoTimestamp,
     }).sign(this.apiKeyPair.privateKey);
   }
 }

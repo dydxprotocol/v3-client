@@ -1,12 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { Data } from '../../types';
 import {
   AxiosServerError,
   AxiosError,
 } from './errors';
 
-export async function axiosRequest(options: AxiosRequestConfig): Promise<Data> {
+export async function axiosRequest(options: AxiosRequestConfig): Promise<unknown> {
   try {
     const response = await axios(options);
     return response.data;

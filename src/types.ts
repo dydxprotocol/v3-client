@@ -1,12 +1,11 @@
 import {
-  Asset,
-  OrderSide,
-  PerpetualMarket,
+  DydxAsset,
+  DydxMarket,
+  StarkwareOrderSide,
 } from '@dydxprotocol/starkex-lib';
 import BigNumber from 'bignumber.js';
 import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3-core';
 
-export { Asset, OrderSide } from '@dydxprotocol/starkex-lib';
 export { Account as EthereumAccount } from 'web3-core';
 
 export type ISO8601 = string;
@@ -25,8 +24,12 @@ export type Data = any;
 
 // ============ Enums ============
 
-export type Market = PerpetualMarket;
-export const Market = PerpetualMarket;
+export type Market = DydxMarket;
+export const Market = DydxMarket;
+export type Asset = DydxAsset;
+export const Asset = DydxAsset;
+export type OrderSide = StarkwareOrderSide;
+export const OrderSide = StarkwareOrderSide;
 
 export enum MarketStatisticDay {
   ONE = '1',
@@ -90,7 +93,7 @@ interface ApiStarkwareSigned {
 }
 
 export interface ApiOrder extends ApiStarkwareSigned {
-  market: PerpetualMarket;
+  market: Market;
   side: OrderSide;
   type: OrderType;
   size: string;
@@ -118,7 +121,7 @@ export interface ApiKeyResponseObject {
 }
 
 export interface MarketResponseObject {
-  market: PerpetualMarket;
+  market: Market;
   status: string;
   baseAsset: Asset;
   quoteAsset: Asset;
@@ -134,8 +137,12 @@ export interface MarketResponseObject {
   maintenanceMarginFraction: string;
 }
 
+export interface MarketsResponseObject {
+  [market: string]: MarketResponseObject;
+}
+
 export interface MarketStatisticResponseObject {
-  market: PerpetualMarket;
+  market: Market;
   open: string;
   high: string;
   low: string;
@@ -150,7 +157,7 @@ export interface OrderResponseObject {
   id: string;
   clientId: string;
   accountId: string;
-  market: PerpetualMarket;
+  market: Market;
   side: OrderSide;
   price: string;
   triggerPrice?: string | null;
@@ -168,8 +175,7 @@ export interface OrderResponseObject {
 }
 
 export interface PositionResponseObject {
-  accountId: string;
-  market: PerpetualMarket;
+  market: Market;
   status: PositionStatus;
   side: string;
   size: string;
@@ -187,7 +193,7 @@ export interface FillResponseObject {
   accountId: string;
   side: OrderSide;
   liquidity: string;
-  market: PerpetualMarket;
+  market: Market;
   orderId: string;
   price: string;
   size: string;
@@ -230,7 +236,7 @@ export interface TransferResponseObject {
 
 export interface FundingResponseObject {
   accountId: string;
-  market: PerpetualMarket;
+  market: Market;
   payment: string;
   rate: string;
   positionSize: string;
@@ -239,7 +245,7 @@ export interface FundingResponseObject {
 }
 
 export interface HistoricalFundingResponseObject {
-  market: PerpetualMarket;
+  market: Market;
   rate: string;
   price: string;
   effectiveAt: ISO8601;
@@ -248,6 +254,11 @@ export interface HistoricalFundingResponseObject {
 export interface OrderbookResponseOrder {
   price: string;
   size: string;
+}
+
+export interface OrderbookResponseObject {
+  bids: OrderbookResponseOrder[],
+  asks: OrderbookResponseOrder[],
 }
 
 export interface Trade {
