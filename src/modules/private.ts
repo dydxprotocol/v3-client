@@ -20,7 +20,6 @@ import {
   AccountResponseObject,
   ApiOrder,
   ApiWithdrawal,
-  Asset,
   Data,
   FillResponseObject,
   FundingResponseObject,
