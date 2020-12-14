@@ -463,28 +463,6 @@ export default class Private {
   }
 
   /**
-   * @description post a new deposit
-   *
-   * @param {
-   * @amount specifies the size of the deposit
-   * @asset specifies the asset being deposited
-   * @fromAddress is the address being deposited from
-   * }
-   */
-  async createDeposit(
-    params: {
-      amount: string,
-      asset: Asset,
-      fromAddress: string,
-    },
-  ): Promise<{ deposit: TransferResponseObject }> {
-    return this.post(
-      'deposits',
-      params,
-    );
-  }
-
-  /**
    * @description get a user's funding payments by a set of query parameters
    *
    * @param {
