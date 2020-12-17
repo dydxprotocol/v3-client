@@ -471,10 +471,11 @@ export default class Private {
     * @fromAddress is the address being deposited from
     * }
     */
-  async createDeposit(
+  async createTestDeposit(
     params: {
-      amount: string,
-      asset: Asset,
+      creditAmount: string,
+      debitAmount: string,
+      debitAsset: Asset,
       fromAddress: string,
     },
   ): Promise<{ deposit: TransferResponseObject }> {
