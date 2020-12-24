@@ -72,7 +72,7 @@ export default class Public {
    *
    * @param market being queried
    */
-  getOrderBook(market: Market): Promise<{ orderbook: OrderbookResponseObject }> {
+  getOrderBook(market: Market): Promise<OrderbookResponseObject> {
     return this.get(`orderbook/${market}`, {});
   }
 
