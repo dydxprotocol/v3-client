@@ -37,6 +37,11 @@ export enum MarketStatisticDay {
   THIRTY = '30',
 }
 
+export enum CandleResolution {
+  ONE_DAY = '1DAY',
+  ONE_HOUR = '1HOUR',
+}
+
 export enum OrderType {
   LIMIT = 'LIMIT',
   STOP = 'STOP',

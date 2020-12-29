@@ -13,9 +13,9 @@ import { Provider } from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
-  apiKeyPair?: string | KeyPair;
+  apiPrivateKey?: string | KeyPair;
   networkId?: number;
-  starkKeyPair?: string | KeyPair;
+  starkPrivateKey?: string | KeyPair;
   web3?: Web3;
   web3Provider?: Provider;
 }
@@ -23,8 +23,8 @@ export interface ClientOptions {
 export default class DydxClient {
   readonly host: string;
   readonly apiTimeout?: number;
-  readonly apiKeyPair?: string | KeyPair;
-  readonly starkKeyPair?: string | KeyPair;
+  readonly apiPrivateKey?: string | KeyPair;
+  readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
   readonly signOffChainAction?: SignOffChainAction;
 
@@ -41,8 +41,8 @@ export default class DydxClient {
   ) {
     this.host = host;
     this.apiTimeout = options.apiTimeout;
-    this.apiKeyPair = options.apiKeyPair;
-    this.starkKeyPair = options.starkKeyPair;
+    this.apiPrivateKey = options.apiPrivateKey;
+    this.starkPrivateKey = options.starkPrivateKey;
 
     if (options.web3 || options.web3Provider) {
       const networkId = typeof options.networkId === 'number' ? options.networkId : 1;
@@ -70,15 +70,15 @@ export default class DydxClient {
    */
   get private(): Private {
     if (!this._private) {
-      if (this.apiKeyPair) {
+      if (this.apiPrivateKey) {
         this._private = new Private(
           this.host,
-          this.apiKeyPair,
-          this.starkKeyPair,
+          this.apiPrivateKey,
+          this.starkPrivateKey,
         );
       } else {
         return notSupported(
-          'Private endpoints are not supported since apiKeyPair was not provided',
+          'Private endpoints are not supported since apiPrivateKey was not provided',
         ) as Private;
       }
     }

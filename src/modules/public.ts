@@ -1,6 +1,7 @@
 import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
+  CandleResolution,
   Data,
   HistoricalFundingResponseObject,
   ISO8601,
@@ -127,5 +128,39 @@ export default class Public {
   }): Promise<{ historicalFunding: HistoricalFundingResponseObject }> {
     const uri: string = `historical-funding/${market}`;
     return this.get(uri, { effectiveBeforeOrAt });
+  }
+
+  /**
+   * @description get candles for a specific market
+   *
+   * @param market being checked
+   * @param resolution Specific candle resolution being returned
+   * @param fromISO is starting time candles are from
+   * @param toISO is ending time candles go up to
+   * @param limit to number of candles returned
+   */
+  getCandles({
+    market,
+    resolution,
+    fromISO,
+    toISO,
+    limit,
+  }: {
+    market: Market,
+    resolution?: CandleResolution,
+    fromISO?: ISO8601,
+    toISO?: ISO8601,
+    limit?: number,
+  }): Promise<{ historicalFunding: HistoricalFundingResponseObject }> {
+    const uri: string = `candles/${market}`;
+    return this.get(
+      uri,
+      {
+        resolution,
+        fromISO,
+        toISO,
+        limit,
+      },
+    );
   }
 }
