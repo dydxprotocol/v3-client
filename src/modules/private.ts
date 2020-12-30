@@ -18,6 +18,7 @@ import { getAccountId } from '../lib/db';
 import {
   AccountAction,
   AccountResponseObject,
+  ApiFastWithdrawal,
   ApiOrder,
   ApiWithdrawal,
   Asset,
@@ -459,6 +460,37 @@ export default class Private {
     return this.post(
       'withdrawals',
       withdrawal,
+    );
+  }
+
+  /**
+   * @description post a new fast-withdrawal
+   *
+   * @param {
+    * @creditAmount specifies the size of the withdrawal
+    * @debitAmoutn specifies the amount to be debited
+    * @creditAsset specifies the asset being withdrawn
+    * @toAddress is the address being withdrawn to
+    * @lpPositionId is the LP positionId for the fast withdrawal
+    * @clientId specifies the clientId for the address
+    * @signature starkware specific signature for fast-withdrawal
+    * }
+    */
+  createFastWithdrawal(
+    params: PartialBy<ApiFastWithdrawal, 'clientId' | 'signature'>,
+  ): Promise<{ withdrawal: TransferResponseObject }> {
+    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    // TODO meet starkware specification
+    const signature = params.signature || Math.random().toString().slice(2).replace(/^0+/, '');
+    const fastWithdrawal: ApiFastWithdrawal = {
+      ...params,
+      clientId,
+      signature,
+    };
+
+    return this.post(
+      'fast-withdrawals',
+      fastWithdrawal,
     );
   }
 
