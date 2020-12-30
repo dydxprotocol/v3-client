@@ -480,6 +480,7 @@ export default class Private {
     params: PartialBy<ApiFastWithdrawal, 'clientId' | 'signature'>,
   ): Promise<{ withdrawal: TransferResponseObject }> {
     const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    // TODO meet starkware specification
     const signature = params.signature || Math.random().toString().slice(2).replace(/^0+/, '');
     const fastWithdrawal: ApiFastWithdrawal = {
       ...params,

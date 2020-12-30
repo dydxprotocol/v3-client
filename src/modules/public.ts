@@ -131,9 +131,9 @@ export default class Public {
   }
 
   /**
-   * @description get all fast withdrawal account information
+   * @description Get the amount of funds available for fast withdrawals, denominated in USDC.
    */
-  getFastWithdrawal(): Promise<{ [lpAccountId: string]: string }> {
+  getFastWithdrawalAvailableFunds(): Promise<{ [lpAccountId: string]: string }> {
     return this.get('fast-withdrawals', {});
   }
 
