@@ -31,6 +31,10 @@ export const Asset = DydxAsset;
 export type OrderSide = StarkwareOrderSide;
 export const OrderSide = StarkwareOrderSide;
 
+export enum TransferAsset {
+  USDC = 'USDC',
+}
+
 export enum MarketStatisticDay {
   ONE = '1',
   SEVEN = '7',
@@ -113,9 +117,18 @@ export interface ApiOrder extends ApiStarkwareSigned {
 }
 
 export interface ApiWithdrawal extends ApiStarkwareSigned {
-  amount: string,
-  asset: Asset,
-  toAddress: string,
+  amount: string;
+  asset: Asset;
+  toAddress: string;
+  clientId: string;
+}
+
+export interface ApiFastWithdrawal extends ApiStarkwareSigned {
+  creditAsset: TransferAsset;
+  creditAmount: string;
+  debitAmount: string;
+  toAddress: string;
+  lpPositionId: string;
   clientId: string;
 }
 

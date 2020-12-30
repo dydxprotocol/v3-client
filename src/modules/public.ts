@@ -131,6 +131,13 @@ export default class Public {
   }
 
   /**
+   * @description get all fast withdrawal account information
+   */
+  getFastWithdrawal(): Promise<{ [lpAccountId: string]: string }> {
+    return this.get('fast-withdrawals', {});
+  }
+
+  /**
    * @description get candles for a specific market
    *
    * @param market being checked
