@@ -18,8 +18,8 @@
     "type": "git",
     "url": "git+https://github.com/dydxprotocol/v3-client.git"
   },
-  "author": "dYdX",
-  "license": "UNLICENSED",
+  "author": "dYdX Trading Inc.",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/dydxprotocol/v3-client/issues"
   },
