@@ -3,8 +3,8 @@ import {
 } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
+import ApiKeys from './modules/api-keys';
 import Eth from './modules/eth';
-import Keys from './modules/keys';
 import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
@@ -31,7 +31,7 @@ export default class DydxClient {
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
   private _private?: Private;
-  private _keys?: Keys;
+  private _apiKeys?: ApiKeys;
   private _onboarding?: Onboarding;
   private _eth?: Eth;
 
@@ -88,17 +88,17 @@ export default class DydxClient {
   /**
    * Get the keys module, used for managing API keys. Requires Ethereum key auth.
    */
-  get keys(): Keys {
-    if (!this._keys) {
+  get apiKeys(): ApiKeys {
+    if (!this._apiKeys) {
       if (this.signOffChainAction) {
-        this._keys = new Keys(this.host, this.signOffChainAction);
+        this._apiKeys = new ApiKeys(this.host, this.signOffChainAction);
       } else {
         return notSupported(
           'API key endpoints are not supported since neither web3 nor web3Provider was provided',
-        ) as Keys;
+        ) as ApiKeys;
       }
     }
-    return this._keys;
+    return this._apiKeys;
   }
 
   /**

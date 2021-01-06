@@ -12,7 +12,7 @@ import {
 } from '../types';
 import { SignOffChainAction } from './sign-off-chain-action';
 
-export default class Keys {
+export default class ApiKeys {
   readonly host: string;
   readonly signOffChainAction: SignOffChainAction;
 
