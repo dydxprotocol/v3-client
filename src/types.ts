@@ -279,6 +279,19 @@ export interface OrderbookResponseObject {
   asks: OrderbookResponseOrder[],
 }
 
+export interface CandleResponseObject {
+  startedAt: ISO8601;
+  market: Market;
+  resolution: CandleResolution;
+  low: string;
+  high: string;
+  open: string;
+  close: string;
+  baseTokenVolume: string;
+  trades: string;
+  usdVolume: string;
+}
+
 export interface Trade {
   side: OrderSide,
   size: string,
