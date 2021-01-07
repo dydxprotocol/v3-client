@@ -1,16 +1,5 @@
 module.exports = {
-  roots: [
-    '<rootDir>/build/__tests__',
-  ],
-  testRegex: 'build/__tests__\\/.*\\.test\\.js$',
-  moduleFileExtensions: [
-    'js',
-    'json',
-    'node',
-  ],
-  globalSetup: './jest.globalSetup.js',
-  resetMocks: true,
-  setupFilesAfterEnv: ['./jest.setup.js'],
-  testEnvironment: 'node',
-  testTimeout: 5000,
+  /* eslint-disable global-require */
+  ...require('./node_modules/@dydxprotocol/node-service-base-dev/jest.config.js'),
+  name: 'v3-client',
 };
