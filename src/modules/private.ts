@@ -468,7 +468,7 @@ export default class Private {
    *
    * @param {
     * @creditAmount specifies the size of the withdrawal
-    * @debitAmoutn specifies the amount to be debited
+    * @debitAmount specifies the amount to be debited
     * @creditAsset specifies the asset being withdrawn
     * @toAddress is the address being withdrawn to
     * @lpPositionId is the LP positionId for the fast withdrawal

@@ -2,6 +2,7 @@ import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
   CandleResolution,
+  CandleResponseObject,
   Data,
   HistoricalFundingResponseObject,
   ISO8601,
@@ -158,7 +159,7 @@ export default class Public {
     fromISO?: ISO8601,
     toISO?: ISO8601,
     limit?: number,
-  }): Promise<{ historicalFunding: HistoricalFundingResponseObject }> {
+  }): Promise<{ candles: CandleResponseObject }> {
     const uri: string = `candles/${market}`;
     return this.get(
       uri,
