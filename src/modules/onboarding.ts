@@ -66,10 +66,10 @@ export default class Onboarding {
     signature?: string,
     signingMethod?: SigningMethod,
   ): Promise<{
-      apiKey: string,
-      user: UserResponseObject,
-      account: AccountResponseObject,
-    }> {
+    apiKey: string,
+    user: UserResponseObject,
+    account: AccountResponseObject,
+  }> {
     return this.post(
       'onboarding',
       params,
