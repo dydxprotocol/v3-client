@@ -16,10 +16,9 @@ export function generateApiKeyAction({
   method: ApiMethod,
   data?: {},
 }): string {
-  // TODO: The signed data should be consistent with the other private endpoints.
   return (
-    (_.isEmpty(data) ? '' : JSON.stringify(data)) +
+    method +
     requestPath +
-    method
+    (_.isEmpty(data) ? '' : JSON.stringify(data))
   );
 }
