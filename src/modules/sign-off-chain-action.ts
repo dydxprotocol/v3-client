@@ -158,7 +158,7 @@ export class SignOffChainAction extends Signer {
     ];
 
     if (expiration) {
-      mixed.push({ t: 'bytes32', v: hashString(expiration.toUTCString()) });
+      mixed.push({ t: 'bytes32', v: hashString(expiration.toISOString()) });
     }
 
     const structHash: string | null = Web3.utils.soliditySha3(...mixed);
