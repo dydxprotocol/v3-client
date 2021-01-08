@@ -1,4 +1,3 @@
-export { default as DydxClient } from './dydx-client';
-export * from './lib/eth-validation/actions';
-export * from './modules/sign-off-chain-action';
+export { DydxClient } from './dydx-client';
+export * from './eth-signing';
 export * from './types';

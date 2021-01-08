@@ -10,7 +10,7 @@ import { asMock } from './helpers/util';
 
 describe('API Keys Module', () => {
 
-  it('Signs a request', async () => {
+  it('signs a request', async () => {
     asMock(axios).mockResolvedValue({} as AxiosResponse);
 
     const web3 = new Web3();

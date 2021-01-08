@@ -1,26 +1,28 @@
+import Web3 from 'web3';
+
+import { SignOnboardingAction } from '../eth-signing';
 import {
   RequestMethod,
   axiosRequest,
 } from '../lib/axios';
-import { generateOnboardingAction } from '../lib/eth-validation/actions';
 import {
   SigningMethod,
   AccountResponseObject,
   Data,
   UserResponseObject,
 } from '../types';
-import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class Onboarding {
   readonly host: string;
-  readonly signOffChainAction: SignOffChainAction;
+  readonly signer: SignOnboardingAction;
 
   constructor(
     host: string,
-    signOffChainAction: SignOffChainAction,
+    web3: Web3,
+    networkId: number,
   ) {
     this.host = host;
-    this.signOffChainAction = signOffChainAction;
+    this.signer = new SignOnboardingAction(web3, networkId);
   }
 
   // ============ Request Helpers ============
@@ -38,7 +40,7 @@ export default class Onboarding {
       method: RequestMethod.POST,
       data,
       headers: {
-        'DYDX-SIGNATURE': signature || await this.sign(ethereumAddress, signingMethod),
+        'DYDX-SIGNATURE': signature || await this.signer.sign(ethereumAddress, signingMethod),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -76,19 +78,6 @@ export default class Onboarding {
       ethereumAddress,
       signature,
       signingMethod,
-    );
-  }
-
-  // ============ Signing ============
-
-  public async sign(
-    ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<string> {
-    return this.signOffChainAction.signOffChainAction(
-      ethereumAddress,
-      signingMethod,
-      generateOnboardingAction(),
     );
   }
 }

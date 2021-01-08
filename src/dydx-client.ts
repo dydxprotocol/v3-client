@@ -1,6 +1,4 @@
-import {
-  KeyPair,
-} from '@dydxprotocol/starkex-lib';
+import { KeyPair } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
 import ApiKeys from './modules/api-keys';
@@ -8,7 +6,6 @@ import Eth from './modules/eth';
 import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
-import { SignOffChainAction } from './modules/sign-off-chain-action';
 import { Provider } from './types';
 
 export interface ClientOptions {
@@ -20,13 +17,13 @@ export interface ClientOptions {
   web3Provider?: Provider;
 }
 
-export default class DydxClient {
+export class DydxClient {
   readonly host: string;
   readonly apiTimeout?: number;
   readonly apiPrivateKey?: string | KeyPair;
+  readonly networkId: number;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
-  readonly signOffChainAction?: SignOffChainAction;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -42,16 +39,12 @@ export default class DydxClient {
     this.host = host;
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
+    this.networkId = typeof options.networkId === 'number' ? options.networkId : 1;
     this.starkPrivateKey = options.starkPrivateKey;
 
     if (options.web3 || options.web3Provider) {
-      const networkId = typeof options.networkId === 'number' ? options.networkId : 1;
       // Non-null assertion is safe due to if-condition.
       this.web3 = options.web3 || new Web3(options.web3Provider!);
-      this.signOffChainAction = new SignOffChainAction(
-        this.web3,
-        networkId,
-      );
     }
 
     // Modules.
@@ -90,8 +83,8 @@ export default class DydxClient {
    */
   get apiKeys(): ApiKeys {
     if (!this._apiKeys) {
-      if (this.signOffChainAction) {
-        this._apiKeys = new ApiKeys(this.host, this.signOffChainAction);
+      if (this.web3) {
+        this._apiKeys = new ApiKeys(this.host, this.web3, this.networkId);
       } else {
         return notSupported(
           'API key endpoints are not supported since neither web3 nor web3Provider was provided',
@@ -106,8 +99,8 @@ export default class DydxClient {
    */
   get onboarding(): Onboarding {
     if (!this._onboarding) {
-      if (this.signOffChainAction) {
-        this._onboarding = new Onboarding(this.host, this.signOffChainAction);
+      if (this.web3) {
+        this._onboarding = new Onboarding(this.host, this.web3, this.networkId);
       } else {
         return notSupported(
           'Onboarding endpoints are not supported since neither web3 nor web3Provider was provided',

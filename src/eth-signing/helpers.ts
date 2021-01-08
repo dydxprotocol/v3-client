@@ -1,8 +1,7 @@
-import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import Web3 from 'web3';
 
-import { Address, SignatureTypes } from '../../types';
+import { Address, SignatureTypes } from '../types';
 
 export const PREPEND_DEC: string = '\x19Ethereum Signed Message:\n32';
 
@@ -71,11 +70,8 @@ export function ecRecoverTypedSignature(
 
   const signature = typedSignature.slice(0, -2);
 
-  if (!prependedHash) {
-    throw new Error(`Invalid hash: ${hash}`);
-  }
-
-  return ethers.utils.recoverAddress(ethers.utils.arrayify(prependedHash), signature);
+  // Non-null assertion operator is safe, hash is null only on empty input.
+  return ethers.utils.recoverAddress(ethers.utils.arrayify(prependedHash!), signature);
 }
 
 export function createTypedSignature(
@@ -138,15 +134,8 @@ export function addressesAreEqual(
 
 export function hashString(input: string): string {
   const hash: string | null = Web3.utils.soliditySha3({ t: 'string', v: input });
-  if (!hash) {
-    throw new Error(`ecrecover failed due to invalid signature length: ${input}`);
+  if (hash === null) {
+    throw new Error(`soliditySha3 input was empty: ${input}`);
   }
-
   return hash;
-}
-
-// ============ General Helpers ============
-
-export function toString(input: number | string | BigNumber) {
-  return new BigNumber(input).toFixed(0);
 }
