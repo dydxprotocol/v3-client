@@ -1,20 +1,16 @@
 import { promisify } from 'es6-promisify';
 import Web3 from 'web3';
-import {
-  AbstractProvider,
-} from 'web3-core';
+import { AbstractProvider } from 'web3-core';
 import {
   JsonRpcPayload,
   JsonRpcResponse,
 } from 'web3-core-helpers';
 
 import {
-  stripHexPrefix,
-} from '../lib/eth-validation/signature-helper';
-import {
   SignatureTypes,
   SigningMethod,
 } from '../types';
+import { stripHexPrefix } from './helpers';
 
 export abstract class Signer {
   protected readonly web3: Web3;
@@ -40,12 +36,8 @@ export abstract class Signer {
       { t: 'bytes32', v: this.getDomainHash() as string },
       { t: 'bytes32', v: structHash },
     );
-
-    if (!hash) {
-      throw new Error(`Invalid structHash: ${structHash}`);
-    }
-
-    return hash;
+    // Non-null assertion operator is safe, hash is null only on empty input.
+    return hash!;
   }
 
   /**

@@ -1,27 +1,29 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
+import _ from 'lodash';
+import Web3 from 'web3';
 
+import { SignApiKeyAction } from '../eth-signing';
 import { generateQueryPath } from '../helpers/request-helpers';
 import {
   axiosRequest,
 } from '../lib/axios';
-import { generateApiKeyAction } from '../lib/eth-validation/actions';
 import {
   ApiKeyResponseObject,
   SigningMethod,
   Data,
 } from '../types';
-import { SignOffChainAction } from './sign-off-chain-action';
 
 export default class ApiKeys {
   readonly host: string;
-  readonly signOffChainAction: SignOffChainAction;
+  readonly signer: SignApiKeyAction;
 
   constructor(
     host: string,
-    signOffChainAction: SignOffChainAction,
+    web3: Web3,
+    networkId: number,
   ) {
     this.host = host;
-    this.signOffChainAction = signOffChainAction;
+    this.signer = new SignApiKeyAction(web3, networkId);
   }
 
   // ============ Request Helpers ============
@@ -31,28 +33,28 @@ export default class ApiKeys {
     endpoint: string,
     ethereumAddress: string,
     signingMethod: SigningMethod,
-    data?: {},
+    data: {} = {},
   ): Promise<Data> {
-    const requestPath: string = `/v3/${endpoint}`;
-    const timestamp: Date = new Date();
-    const signature: string = await this.signOffChainAction.sign(
+    const requestPath = `/v3/${endpoint}`;
+    const timestamp = new Date().toISOString();
+    const body = JSON.stringify(data);
+    const signature: string = await this.signer.sign(
       ethereumAddress,
       signingMethod,
-      generateApiKeyAction({
+      {
         method,
         requestPath,
-        data,
-      }),
-      timestamp,
+        body,
+        timestamp,
+      },
     );
-
     return axiosRequest({
       url: `${this.host}${requestPath}`,
       method,
-      data,
+      data: !_.isEmpty(data) ? body : undefined,
       headers: {
         'DYDX-SIGNATURE': signature,
-        'DYDX-TIMESTAMP': timestamp.toISOString(),
+        'DYDX-TIMESTAMP': timestamp,
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });

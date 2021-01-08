@@ -299,6 +299,15 @@ export interface Trade {
   createdAt: ISO8601,
 }
 
+// ============ Ethereum Signing ============
+
+export interface ApiKeyAction {
+  method: string,
+  requestPath: string,
+  body: string,
+  timestamp: string,
+}
+
 // ============ Utility Types ============
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

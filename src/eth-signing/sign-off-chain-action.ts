@@ -1,38 +1,37 @@
+import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
-import { Mixed } from 'web3/utils';
 
-import {
-  createTypedSignature,
-  EIP712_DOMAIN_STRUCT_NO_CONTRACT,
-  ecRecoverTypedSignature,
-  addressesAreEqual,
-  hashString,
-  EIP712_DOMAIN_STRING_NO_CONTRACT,
-  toString,
-} from '../lib/eth-validation/signature-helper';
 import {
   SigningMethod,
   SignatureTypes,
   Address,
   EthereumAccount,
 } from '../types';
+import {
+  EIP712_DOMAIN_STRING_NO_CONTRACT,
+  EIP712_DOMAIN_STRUCT_NO_CONTRACT,
+  addressesAreEqual,
+  createTypedSignature,
+  ecRecoverTypedSignature,
+  hashString,
+} from './helpers';
 import { Signer } from './signer';
 
-// TODO: Rename expiration to timestamp?
-const EIP712_WALLET_OFF_CHAIN_ACTION_ALL_STRUCT = [
-  { type: 'string', name: 'action' },
-  { type: 'string', name: 'expiration' },
-];
+type EIP712Struct = {
+  type: string;
+  name: string;
+}[];
 
-export class SignOffChainAction extends Signer {
+export abstract class SignOffChainAction<M extends {}> extends Signer {
+  private readonly networkId: number;
+  private readonly actionStruct: EIP712Struct;
   private readonly domain: string;
   private readonly version: string;
-  private readonly networkId: number;
-  private readonly EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING: string;
 
   constructor(
     web3: Web3,
     networkId: number,
+    actionStruct: EIP712Struct,
     {
       domain = 'dYdX',
       version = '1.0',
@@ -42,32 +41,28 @@ export class SignOffChainAction extends Signer {
     } = {},
   ) {
     super(web3);
-    this.domain = domain;
     this.networkId = networkId;
+    this.actionStruct = actionStruct;
+    this.domain = domain;
     this.version = version;
-    this.EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING = (
-      'dYdX(' +
-      'string action,' +
-      'string expiration' +
-      ')'
-    );
   }
+
+  public abstract getHash(message: M): string;
 
   public async sign(
     signer: string,
     signingMethod: SigningMethod,
-    action: string,
-    expiration?: Date,
+    message: M,
   ): Promise<string> {
     switch (signingMethod) {
       case SigningMethod.Hash:
       case SigningMethod.UnsafeHash:
       case SigningMethod.Compatibility: {
-        const hash = this.getHash(action, expiration);
+        const hash = this.getHash(message);
 
         // If the address is in the wallet, sign with it so we don't have to use the web3 provider.
         const walletAccount: EthereumAccount | undefined = (
-          // Hack: wallet type incorrectly has index signature on number but not string
+          // Hack: The TypeScript type incorrectly has index signature on number but not string.
           this.web3.eth.accounts.wallet[signer as unknown as number]
         );
 
@@ -85,7 +80,7 @@ export class SignOffChainAction extends Signer {
           return unsafeHashSig;
         }
 
-        if (this.verify(unsafeHashSig, signer, action, expiration)) {
+        if (this.verify(unsafeHashSig, signer, message)) {
           return unsafeHashSig;
         }
         return hashSig;
@@ -98,14 +93,11 @@ export class SignOffChainAction extends Signer {
         const data = {
           types: {
             EIP712Domain: EIP712_DOMAIN_STRUCT_NO_CONTRACT,
-            [this.domain]: EIP712_WALLET_OFF_CHAIN_ACTION_ALL_STRUCT,
+            [this.domain]: this.actionStruct,
           },
           domain: this.getDomainData(),
           primaryType: this.domain,
-          message: {
-            action,
-            expiration: expiration ? expiration.toUTCString() : null,
-          },
+          message,
         };
         return this.ethSignTypedDataInternal(
           signer,
@@ -122,10 +114,9 @@ export class SignOffChainAction extends Signer {
   public verify(
     typedSignature: string,
     expectedSigner: Address,
-    action: string,
-    expiration?: Date,
+    message: M,
   ): boolean {
-    const hash = this.getHash(action, expiration);
+    const hash = this.getHash(message);
     const signer = ecRecoverTypedSignature(hash, typedSignature);
     return addressesAreEqual(signer, expectedSigner);
   }
@@ -135,36 +126,10 @@ export class SignOffChainAction extends Signer {
       { t: 'bytes32', v: hashString(EIP712_DOMAIN_STRING_NO_CONTRACT) },
       { t: 'bytes32', v: hashString(this.domain) },
       { t: 'bytes32', v: hashString(this.version) },
-      { t: 'uint256', v: toString(this.networkId) },
+      { t: 'uint256', v: new BigNumber(this.networkId).toFixed(0) },
     );
-
-    if (!hash) {
-      throw new Error(`Could not get domain hash with domain: ${this.domain}`);
-    }
-
-    return hash;
-  }
-
-  public getHash(
-    action: string,
-    expiration?: Date,
-  ): string {
-    const mixed: Mixed[] = [
-      { t: 'bytes32', v: hashString(this.EIP712_OFF_CHAIN_ACTION_ALL_STRUCT_STRING) },
-      { t: 'bytes32', v: hashString(action) },
-    ];
-
-    if (expiration) {
-      mixed.push({ t: 'bytes32', v: hashString(expiration.toISOString()) });
-    }
-
-    const structHash: string | null = Web3.utils.soliditySha3(...mixed);
-
-    if (!structHash) {
-      throw new Error(`Cannot get hash for off-chain-action: ${action}`);
-    }
-
-    return this.getEIP712Hash(structHash);
+    // Non-null assertion operator is safe, hash is null only on empty input.
+    return hash!;
   }
 
   private getDomainData() {
