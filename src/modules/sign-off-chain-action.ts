@@ -127,8 +127,10 @@ export class SignOffChainAction extends Signer {
   ): boolean {
     const hash = this.getOffChainActionHash(action, expiration);
     const signer = ecRecoverTypedSignature(hash, typedSignature);
-    return (addressesAreEqual(signer, expectedSigner) &&
-      expiration ? expiration > new Date() : true);
+    return (
+      addressesAreEqual(signer, expectedSigner) &&
+      (expiration ? expiration > new Date() : true)
+    );
   }
 
   public getDomainHash(): string {

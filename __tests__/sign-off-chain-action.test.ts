@@ -30,61 +30,76 @@ describe('signOffChainAction', () => {
     expect(
       signOffChainAction.signOffChainActionIsValid(
         signature,
-        SigningMethod.Hash,
+        account.address,
         generateOnboardingAction(),
       ),
     ).toBe(true);
   });
 
   it('Succeeds with apikey hash', async () => {
-    const expiration = new Date('December 30, 2500 11:20:25');
-    const url: string = 'v3/test';
-    const method: ApiMethod = ApiMethod.POST;
+    const expiration = new Date(Date.now() + 10000); // Add 10 seconds.
+    const action = generateApiKeyAction({
+      requestPath: 'v3/test',
+      method: ApiMethod.POST,
+      data: { key: 'value' },
+    });
 
     const signature = await signOffChainAction.signOffChainAction(
       account.address,
       SigningMethod.Hash,
-      generateApiKeyAction({
-        requestPath: url,
-        method,
-      }),
+      action,
       expiration,
     );
     expect(
       signOffChainAction.signOffChainActionIsValid(
         signature,
         account.address,
-        generateApiKeyAction({
-          requestPath: url,
-          method,
-        }),
+        action,
         expiration,
       ),
     ).toBe(true);
   });
 
-  it('Recognizes expired signatures', async () => {
-    const expiration = new Date('December 30, 2017 11:20:25');
-    const url: string = 'v3/test';
-    const method: ApiMethod = ApiMethod.POST;
+  it('Fails with an invalid signature', async () => {
+    const signature = await signOffChainAction.signOffChainAction(
+      account.address,
+      SigningMethod.Hash,
+      generateOnboardingAction(),
+    );
+
+    // Change the last character.
+    const lastChar = signature.charAt(signature.length - 1);
+    const newLastChar = lastChar === '0' ? '1' : '0';
+    const invalidSignature = `${signature.slice(0, signature.length - 1)}${newLastChar}`;
+
+    expect(
+      signOffChainAction.signOffChainActionIsValid(
+        invalidSignature,
+        account.address,
+        generateOnboardingAction(),
+      ),
+    ).toBe(false);
+  });
+
+  it('Returns invalid if a signature is expired', async () => {
+    const expiration = new Date(Date.now() - 1);
+    const action = generateApiKeyAction({
+      requestPath: 'v3/test',
+      method: ApiMethod.POST,
+      data: { key: 'value' },
+    });
 
     const signature = await signOffChainAction.signOffChainAction(
       account.address,
       SigningMethod.Hash,
-      generateApiKeyAction({
-        requestPath: url,
-        method,
-      }),
+      action,
       expiration,
     );
     expect(
       signOffChainAction.signOffChainActionIsValid(
         signature,
         account.address,
-        generateApiKeyAction({
-          requestPath: url,
-          method,
-        }),
+        action,
         expiration,
       ),
     ).toBe(false);
