@@ -35,9 +35,9 @@ export default class ApiKeys {
     signingMethod: SigningMethod,
     data: {} = {},
   ): Promise<Data> {
-    const requestPath = `/v3/${endpoint}`;
-    const timestamp = new Date().toISOString();
-    const body = JSON.stringify(data);
+    const requestPath: string = `/v3/${endpoint}`;
+    const timestamp: string = new Date().toISOString();
+    const body: string = JSON.stringify(data);
     const signature: string = await this.signer.sign(
       ethereumAddress,
       signingMethod,
