@@ -53,7 +53,7 @@ export class SignOffChainAction extends Signer {
     );
   }
 
-  public async signOffChainAction(
+  public async sign(
     signer: string,
     signingMethod: SigningMethod,
     action: string,
@@ -63,7 +63,7 @@ export class SignOffChainAction extends Signer {
       case SigningMethod.Hash:
       case SigningMethod.UnsafeHash:
       case SigningMethod.Compatibility: {
-        const hash = this.getOffChainActionHash(action, expiration);
+        const hash = this.getHash(action, expiration);
 
         // If the address is in the wallet, sign with it so we don't have to use the web3 provider.
         const walletAccount: EthereumAccount | undefined = (
@@ -85,7 +85,7 @@ export class SignOffChainAction extends Signer {
           return unsafeHashSig;
         }
 
-        if (this.signOffChainActionIsValid(unsafeHashSig, signer, action, expiration)) {
+        if (this.verify(unsafeHashSig, signer, action, expiration)) {
           return unsafeHashSig;
         }
         return hashSig;
@@ -119,13 +119,13 @@ export class SignOffChainAction extends Signer {
     }
   }
 
-  public signOffChainActionIsValid(
+  public verify(
     typedSignature: string,
     expectedSigner: Address,
     action: string,
     expiration?: Date,
   ): boolean {
-    const hash = this.getOffChainActionHash(action, expiration);
+    const hash = this.getHash(action, expiration);
     const signer = ecRecoverTypedSignature(hash, typedSignature);
     return (
       addressesAreEqual(signer, expectedSigner) &&
@@ -148,7 +148,7 @@ export class SignOffChainAction extends Signer {
     return hash;
   }
 
-  public getOffChainActionHash(
+  public getHash(
     action: string,
     expiration?: Date,
   ): string {
@@ -164,7 +164,7 @@ export class SignOffChainAction extends Signer {
     const structHash: string | null = Web3.utils.soliditySha3(...mixed);
 
     if (!structHash) {
-      throw new Error(`Cannot get OffchainAction for: ${action}`);
+      throw new Error(`Cannot get hash for off-chain-action: ${action}`);
     }
 
     return this.getEIP712Hash(structHash);

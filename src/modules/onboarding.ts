@@ -85,7 +85,7 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<string> {
-    return this.signOffChainAction.signOffChainAction(
+    return this.signOffChainAction.sign(
       ethereumAddress,
       signingMethod,
       generateOnboardingAction(),

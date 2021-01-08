@@ -22,13 +22,13 @@ describe('signOffChainAction', () => {
   });
 
   it('Succeeds with onboarding hash', async () => {
-    const signature = await signOffChainAction.signOffChainAction(
+    const signature = await signOffChainAction.sign(
       account.address,
       SigningMethod.Hash,
       generateOnboardingAction(),
     );
     expect(
-      signOffChainAction.signOffChainActionIsValid(
+      signOffChainAction.verify(
         signature,
         account.address,
         generateOnboardingAction(),
@@ -44,14 +44,14 @@ describe('signOffChainAction', () => {
       data: { key: 'value' },
     });
 
-    const signature = await signOffChainAction.signOffChainAction(
+    const signature = await signOffChainAction.sign(
       account.address,
       SigningMethod.Hash,
       action,
       expiration,
     );
     expect(
-      signOffChainAction.signOffChainActionIsValid(
+      signOffChainAction.verify(
         signature,
         account.address,
         action,
@@ -61,7 +61,7 @@ describe('signOffChainAction', () => {
   });
 
   it('Fails with an invalid signature', async () => {
-    const signature = await signOffChainAction.signOffChainAction(
+    const signature = await signOffChainAction.sign(
       account.address,
       SigningMethod.Hash,
       generateOnboardingAction(),
@@ -73,7 +73,7 @@ describe('signOffChainAction', () => {
     const invalidSignature = `${signature.slice(0, signature.length - 1)}${newLastChar}`;
 
     expect(
-      signOffChainAction.signOffChainActionIsValid(
+      signOffChainAction.verify(
         invalidSignature,
         account.address,
         generateOnboardingAction(),
@@ -89,14 +89,14 @@ describe('signOffChainAction', () => {
       data: { key: 'value' },
     });
 
-    const signature = await signOffChainAction.signOffChainAction(
+    const signature = await signOffChainAction.sign(
       account.address,
       SigningMethod.Hash,
       action,
       expiration,
     );
     expect(
-      signOffChainAction.signOffChainActionIsValid(
+      signOffChainAction.verify(
         signature,
         account.address,
         action,

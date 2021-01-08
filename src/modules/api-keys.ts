@@ -35,7 +35,7 @@ export default class ApiKeys {
   ): Promise<Data> {
     const requestPath: string = `/v3/${endpoint}`;
     const timestamp: Date = new Date();
-    const signature: string = await this.signOffChainAction.signOffChainAction(
+    const signature: string = await this.signOffChainAction.sign(
       ethereumAddress,
       signingMethod,
       generateApiKeyAction({
