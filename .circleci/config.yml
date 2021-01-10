@@ -49,6 +49,8 @@ jobs:
   test:
     docker:
       - image: dydxprotocol/node:12.18.3-alpine
+      - image: trufflesuite/ganache-cli:v6.8.2
+        command: -d -k=istanbul -i 1001
     working_directory: ~/build
     steps:
       - restore_cache:
@@ -59,6 +61,8 @@ jobs:
   coverage:
     docker:
       - image: dydxprotocol/node:12.18.3-alpine
+      - image: trufflesuite/ganache-cli:v6.8.2
+        command: -d -k=istanbul -i 1001
     working_directory: ~/build
     steps:
       - restore_cache:
