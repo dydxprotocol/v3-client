@@ -21,7 +21,6 @@ import {
   ApiFastWithdrawal,
   ApiOrder,
   ApiWithdrawal,
-  Asset,
   Data,
   FillResponseObject,
   FundingResponseObject,
@@ -491,29 +490,6 @@ export default class Private {
     return this.post(
       'fast-withdrawals',
       fastWithdrawal,
-    );
-  }
-
-  /**
-   * @description post a new deposit
-   *
-   * @param {
-    * @amount specifies the size of the deposit
-    * @asset specifies the asset being deposited
-    * @fromAddress is the address being deposited from
-    * }
-    */
-  async createTestDeposit(
-    params: {
-      creditAmount: string,
-      debitAmount: string,
-      debitAsset: Asset,
-      fromAddress: string,
-    },
-  ): Promise<{ deposit: TransferResponseObject }> {
-    return this.post(
-      'deposits',
-      params,
     );
   }
 
