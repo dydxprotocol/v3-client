@@ -1,26 +1,31 @@
+import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import { KeyPair } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
 import ApiKeys from './modules/api-keys';
-import Eth from './modules/eth';
 import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
-import { Provider } from './types';
+import {
+  EthereumSendOptions,
+  Provider,
+} from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
   apiPrivateKey?: string | KeyPair;
+  ethSendOptions?: EthereumSendOptions;
   networkId?: number;
   starkPrivateKey?: string | KeyPair;
   web3?: Web3;
-  web3Provider?: Provider;
+  web3Provider?: string | Provider;
 }
 
 export class DydxClient {
   readonly host: string;
   readonly apiTimeout?: number;
   readonly apiPrivateKey?: string | KeyPair;
+  readonly ethSendOptions?: EthereumSendOptions;
   readonly networkId: number;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
@@ -30,7 +35,7 @@ export class DydxClient {
   private _private?: Private;
   private _apiKeys?: ApiKeys;
   private _onboarding?: Onboarding;
-  private _eth?: Eth;
+  private _eth?: StarkwareLib;
 
   constructor(
     host: string,
@@ -39,6 +44,7 @@ export class DydxClient {
     this.host = host;
     this.apiTimeout = options.apiTimeout;
     this.apiPrivateKey = options.apiPrivateKey;
+    this.ethSendOptions = options.ethSendOptions;
     this.networkId = typeof options.networkId === 'number' ? options.networkId : 1;
     this.starkPrivateKey = options.starkPrivateKey;
 
@@ -116,11 +122,15 @@ export class DydxClient {
   get eth() {
     if (!this._eth) {
       if (this.web3) {
-        this._eth = new Eth(this.web3);
+        this._eth = new StarkwareLib(
+          this.web3.currentProvider,
+          this.networkId,
+          this.ethSendOptions,
+        );
       } else {
         return notSupported(
           'Eth endpoints are not supported since neither web3 nor web3Provider was provided',
-        ) as Eth;
+        ) as StarkwareLib;
       }
     }
     return this._eth;

@@ -22,6 +22,8 @@ export type PositionsMap = { [market: string]: PositionResponseObject };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Data = any;
 
+export { SendOptions as EthereumSendOptions } from '@dydxprotocol/starkex-eth';
+
 // ============ Enums ============
 
 export type Market = DydxMarket;
