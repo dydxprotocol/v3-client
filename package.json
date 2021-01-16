@@ -26,7 +26,7 @@
   "homepage": "https://github.com/dydxprotocol/v3-client#readme",
   "dependencies": {
     "@dydxprotocol/starkex-eth": "^0.3.1",
-    "@dydxprotocol/starkex-lib": "^0.5.0",
+    "@dydxprotocol/starkex-lib": "^0.6.3",
     "@types/web3": "1.0.18",
     "axios": "^0.21.1",
     "bignumber.js": "^8.1.1",
