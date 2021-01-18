@@ -145,6 +145,7 @@ export interface MarketResponseObject {
   status: string;
   baseAsset: Asset;
   quoteAsset: Asset;
+  stepSize: string;
   tickSize: string;
   makerFee: string;
   takerFee: string;
@@ -155,6 +156,10 @@ export interface MarketResponseObject {
   type: string;
   initialMarginFraction: string;
   maintenanceMarginFraction: string;
+  priceChange24H: string;
+  volume24H: string;
+  trades24H: string;
+  openInterest: string;
 }
 
 export interface MarketsResponseObject {
