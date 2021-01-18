@@ -318,7 +318,7 @@ export default class Private {
       const orderToSign: OrderWithClientId = {
         humanSize: params.size,
         humanPrice: params.price,
-        humanLimitFee: params.limitFee,
+        limitFee: params.limitFee,
         market: params.market,
         side: params.side,
         expirationIsoTimestamp: params.expiration,
