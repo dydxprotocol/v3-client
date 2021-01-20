@@ -2,10 +2,12 @@
 
 import * as uuid from 'uuid';
 
+const UUID_NAMESPACE: string = '0f9da948-a6fb-4c45-9edc-4685c3f3317d';
+
 export function getUserId(
   address: string,
 ): string {
-  return uuid.v5(Buffer.from(address), '0f9da948-a6fb-4c45-9edc-4685c3f3317d');
+  return uuid.v5(Buffer.from(address.toLowerCase()), UUID_NAMESPACE);
 }
 
 export function getAccountId({
@@ -17,6 +19,6 @@ export function getAccountId({
 }) {
   return uuid.v5(
     Buffer.from(`${getUserId(address)}${accountNumber}`),
-    '0f9da948-a6fb-4c45-9edc-4685c3f3317d',
+    UUID_NAMESPACE,
   );
 }
