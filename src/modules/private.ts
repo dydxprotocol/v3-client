@@ -199,7 +199,7 @@ export default class Private {
   /**
    * @description get all accounts associated with an ethereumAddress
    */
-  async getAccounts(): Promise<{ account: AccountResponseObject[] }> {
+  async getAccounts(): Promise<{ accounts: AccountResponseObject[] }> {
     return this.get(
       'accounts',
       {},
