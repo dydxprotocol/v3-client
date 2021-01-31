@@ -13,22 +13,26 @@ import {
 
 export interface ClientOptions {
   apiTimeout?: number;
-  apiPrivateKey?: string | KeyPair;
+  apiKey?: string;
   ethSendOptions?: EthereumSendOptions;
   networkId?: number;
   starkPrivateKey?: string | KeyPair;
   web3?: Web3;
   web3Provider?: string | Provider;
+  secret?: string;
+  passphrase?: string;
 }
 
 export class DydxClient {
   readonly host: string;
   readonly apiTimeout?: number;
-  readonly apiPrivateKey?: string | KeyPair;
+  readonly apiKey?: string;
   readonly ethSendOptions?: EthereumSendOptions;
   readonly networkId: number;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
+  readonly secret?: string;
+  readonly passphrase?: string;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -43,10 +47,12 @@ export class DydxClient {
   ) {
     this.host = host;
     this.apiTimeout = options.apiTimeout;
-    this.apiPrivateKey = options.apiPrivateKey;
+    this.apiKey = options.apiKey;
     this.ethSendOptions = options.ethSendOptions;
     this.networkId = typeof options.networkId === 'number' ? options.networkId : 1;
     this.starkPrivateKey = options.starkPrivateKey;
+    this.secret = options.secret;
+    this.passphrase = options.passphrase;
 
     if (options.web3 || options.web3Provider) {
       // Non-null assertion is safe due to if-condition.
@@ -69,15 +75,17 @@ export class DydxClient {
    */
   get private(): Private {
     if (!this._private) {
-      if (this.apiPrivateKey) {
-        this._private = new Private(
-          this.host,
-          this.apiPrivateKey,
-          this.starkPrivateKey,
-        );
+      if (this.apiKey && this.secret && this.passphrase) {
+        this._private = new Private({
+          host: this.host,
+          apiKey: this.apiKey,
+          secret: this.secret,
+          passphrase: this.passphrase,
+          starkPrivateKey: this.starkPrivateKey,
+        });
       } else {
         return notSupported(
-          'Private endpoints are not supported since apiPrivateKey was not provided',
+          'Private endpoints are not supported since apiKey, secret or passphrase were not provided',
         ) as Private;
       }
     }

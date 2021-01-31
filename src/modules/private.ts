@@ -1,13 +1,15 @@
+import crypto from 'crypto';
+
 import {
   ApiMethod,
   KeyPair,
   OrderWithClientId,
-  SignableApiRequest,
   SignableOrder,
   SignableWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
 } from '@dydxprotocol/starkex-lib';
+import _ from 'lodash';
 
 import { generateQueryPath } from '../helpers/request-helpers';
 import {
@@ -19,6 +21,7 @@ import {
   AccountAction,
   AccountResponseObject,
   ApiFastWithdrawal,
+  ApiKeyResponseObject,
   ApiOrder,
   ApiWithdrawal,
   Data,
@@ -47,16 +50,28 @@ const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
 
 export default class Private {
   readonly host: string;
-  readonly apiKeyPair: KeyPair;
+  readonly apiKey: string;
+  readonly secret: string;
+  readonly passphrase: string;
   readonly starkKeyPair?: KeyPair;
 
-  constructor(
+  constructor({
+    host,
+    apiKey,
+    secret,
+    passphrase,
+    starkPrivateKey,
+  }: {
     host: string,
-    apiPrivateKey: string | KeyPair,
+    apiKey: string,
+    secret: string,
+    passphrase: string,
     starkPrivateKey?: string | KeyPair,
-  ) {
+  }) {
     this.host = host;
-    this.apiKeyPair = asSimpleKeyPair(asEcKeyPair(apiPrivateKey));
+    this.apiKey = apiKey;
+    this.secret = secret;
+    this.passphrase = passphrase;
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
@@ -78,8 +93,9 @@ export default class Private {
         isoTimestamp,
         data,
       }),
-      'DYDX-API-KEY': this.apiKeyPair.publicKey,
+      'DYDX-API-KEY': this.apiKey,
       'DYDX-TIMESTAMP': isoTimestamp,
+      'DYDX-PASSPHRASE': this.passphrase,
     };
     return axiosRequest({
       url: `${this.host}${requestPath}`,
@@ -515,6 +531,17 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get the apiKeys associated with an ethereumAddress
+   *
+   * @param ethereumAddress the apiKeys are for
+   */
+  async getApiKeys(
+    ethereumAddress: string,
+  ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
+    return this.get('api-keys', { ethereumAddress });
+  }
+
   // ============ Signing ============
 
   protected sign({
@@ -528,11 +555,13 @@ export default class Private {
     isoTimestamp: ISO8601,
     data?: {},
   }): string {
-    return new SignableApiRequest({
-      body: data ? JSON.stringify(data) : '',
-      requestPath,
-      method: METHOD_ENUM_MAP[method],
-      isoTimestamp,
-    }).sign(this.apiKeyPair.privateKey);
+    const messageString: string = (
+      isoTimestamp +
+      METHOD_ENUM_MAP[method] +
+      requestPath +
+      _.isEmpty(data) ? '' : JSON.stringify(data)
+    );
+
+    return crypto.createHmac('sha256', this.secret).update(messageString).digest('base64');
   }
 }

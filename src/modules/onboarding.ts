@@ -10,6 +10,7 @@ import {
   AccountResponseObject,
   Data,
   UserResponseObject,
+  ApiKeyResponseObject,
 } from '../types';
 
 export default class Onboarding {
@@ -62,13 +63,12 @@ export default class Onboarding {
   async createUser(
     params: {
       starkKey: string,
-      apiKey: string,
     },
     ethereumAddress: string,
     signature?: string,
     signingMethod?: SigningMethod,
   ): Promise<{
-    apiKey: string,
+    apiKey: ApiKeyResponseObject,
     user: UserResponseObject,
     account: AccountResponseObject,
   }> {
