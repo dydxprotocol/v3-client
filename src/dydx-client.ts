@@ -78,7 +78,7 @@ export class DydxClient {
         });
       } else {
         return notSupported(
-          'Private endpoints are not supported sinc apiKeyCredentials was not provided',
+          'Private endpoints are not supported since apiKeyCredentials was not provided',
         ) as Private;
       }
     }
