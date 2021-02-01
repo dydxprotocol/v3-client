@@ -15,7 +15,6 @@ const apiKeyCredentials: ApiKeyCredentials = {
 };
 
 describe('API Keys Module & Private Module', () => {
-
   it('signs a private request', async () => {
     asMock(axios).mockResolvedValue({} as AxiosResponse);
 

@@ -16,7 +16,6 @@ const apiKeyCredentials: ApiKeyCredentials = {
 };
 
 describe('Verify signature is as expected', () => {
-
   it('signs a private request', async () => {
     asMock(axios).mockResolvedValue({} as AxiosResponse);
 
