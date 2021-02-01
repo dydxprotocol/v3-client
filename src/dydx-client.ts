@@ -29,7 +29,7 @@ export class DydxClient {
   readonly networkId: number;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
-  readonly apiKeyCredentials?: ApiKeyCredentials;
+  apiKeyCredentials?: ApiKeyCredentials;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
