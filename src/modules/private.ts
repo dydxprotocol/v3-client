@@ -21,7 +21,7 @@ import {
   AccountAction,
   AccountResponseObject,
   ApiFastWithdrawal,
-  ApiKeyResponseObject,
+  ApiKeyCredentials,
   ApiOrder,
   ApiWithdrawal,
   Data,
@@ -50,28 +50,20 @@ const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
 
 export default class Private {
   readonly host: string;
-  readonly apiKey: string;
-  readonly secret: string;
-  readonly passphrase: string;
+  readonly apiKeyCredentials: ApiKeyCredentials;
   readonly starkKeyPair?: KeyPair;
 
   constructor({
     host,
-    apiKey,
-    secret,
-    passphrase,
+    apiKeyCredentials,
     starkPrivateKey,
   }: {
     host: string,
-    apiKey: string,
-    secret: string,
-    passphrase: string,
+    apiKeyCredentials: ApiKeyCredentials,
     starkPrivateKey?: string | KeyPair,
   }) {
     this.host = host;
-    this.apiKey = apiKey;
-    this.secret = secret;
-    this.passphrase = passphrase;
+    this.apiKeyCredentials = apiKeyCredentials;
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
@@ -93,9 +85,9 @@ export default class Private {
         isoTimestamp,
         data,
       }),
-      'DYDX-API-KEY': this.apiKey,
+      'DYDX-API-KEY': this.apiKeyCredentials.key,
       'DYDX-TIMESTAMP': isoTimestamp,
-      'DYDX-PASSPHRASE': this.passphrase,
+      'DYDX-PASSPHRASE': this.apiKeyCredentials.passphrase,
     };
     return axiosRequest({
       url: `${this.host}${requestPath}`,
@@ -532,19 +524,19 @@ export default class Private {
   }
 
   /**
-   * @description get the apiKeys associated with an ethereumAddress
+   * @description get the apiKey ids associated with an ethereumAddress
    *
    * @param ethereumAddress the apiKeys are for
    */
   async getApiKeys(
     ethereumAddress: string,
-  ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
+  ): Promise<{ apiKeys: string[] }> {
     return this.get('api-keys', { ethereumAddress });
   }
 
   // ============ Signing ============
 
-  protected sign({
+  sign({
     requestPath,
     method,
     isoTimestamp,
@@ -559,9 +551,12 @@ export default class Private {
       isoTimestamp +
       METHOD_ENUM_MAP[method] +
       requestPath +
-      _.isEmpty(data) ? '' : JSON.stringify(data)
+      (_.isEmpty(data) ? '' : JSON.stringify(data))
     );
 
-    return crypto.createHmac('sha256', this.secret).update(messageString).digest('base64');
+    return crypto.createHmac(
+      'sha256',
+      Buffer.from(this.apiKeyCredentials.secret, 'base64'),
+    ).update(messageString).digest('base64');
   }
 }

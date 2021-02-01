@@ -24,6 +24,14 @@ export type Data = any;
 
 export { SendOptions as EthereumSendOptions } from '@dydxprotocol/starkex-eth';
 
+// ============ Credentials ============
+
+export interface ApiKeyCredentials {
+  key: string,
+  secret: string,
+  passphrase: string,
+}
+
 // ============ Enums ============
 
 export type Market = DydxMarket;
