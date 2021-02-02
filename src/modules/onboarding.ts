@@ -54,7 +54,8 @@ export default class Onboarding {
    *
    * @param {
    * @starkKey is the unique public key for starkwareLib operations used in the future
-   * @apiKey is the unique public key for starkwareLib apiKey operations used in the future
+   * @starkKeyYCoordinate is the Y Coordinate of the unique public key for starkwareLib
+   * operations used in the future
    * }
    * @param ethereumAddress of the account
    * @param signature validating the request
@@ -63,6 +64,7 @@ export default class Onboarding {
   async createUser(
     params: {
       starkKey: string,
+      starkKeyYCoordinate: string,
     },
     ethereumAddress: string,
     signature?: string,
