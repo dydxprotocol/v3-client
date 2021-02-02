@@ -49,13 +49,13 @@ const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
   [RequestMethod.PUT]: ApiMethod.PUT,
 };
 
+const collateralTokenDecimals = 6;
+
 export default class Private {
   readonly host: string;
   readonly apiKeyPair: KeyPair;
   readonly starkKeyPair?: KeyPair;
   readonly starkLib: StarkwareLib;
-
-  private _collateralTokenDecimals: number;
 
   constructor(
     host: string,
@@ -69,7 +69,6 @@ export default class Private {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
     this.starkLib = new StarkwareLib({} as Provider, networkId);
-    this._collateralTokenDecimals = 6;
   }
 
   // ============ Request Helpers ============
@@ -500,17 +499,17 @@ export default class Private {
       const fact = this.starkLib.factRegistry.getTransferErc20Fact({
         recipient: params.toAddress,
         tokenAddress: this.starkLib.collateralToken.getAddress(),
-        tokenDecimals: this._collateralTokenDecimals,
+        tokenDecimals: collateralTokenDecimals,
         humanAmount: params.creditAmount,
         salt: nonceFromClientId(clientId),
       });
       const conditionalTransfer = new SignableConditionalTransfer({
-        senderPositionId: params.lpPositionId,
-        receiverPositionId: positionId,
-        receiverPublicKey: this.starkKeyPair.publicKey,
+        senderPositionId: positionId,
+        receiverPositionId: params.lpPositionId,
+        receiverPublicKey: params.lpStarkKey,
         factRegistryAddress: this.starkLib.factRegistry.getAddress(),
         fact,
-        humanAmount: params.creditAmount,
+        humanAmount: params.debitAmount,
         clientId,
         expirationIsoTimestamp: params.expiration,
       });
