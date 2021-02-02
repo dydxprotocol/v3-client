@@ -134,6 +134,10 @@ export interface ApiFastWithdrawal extends ApiStarkwareSigned {
   clientId: string;
 }
 
+export interface ApiFastWithdrawalParams extends ApiFastWithdrawal {
+  lpStarkKey: string;
+}
+
 // ============ API Response Types ============
 
 export interface ApiKeyResponseObject {

@@ -1,3 +1,4 @@
+import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import {
   ApiMethod,
   KeyPair,
@@ -7,6 +8,8 @@ import {
   SignableWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
+  SignableConditionalTransfer,
+  nonceFromClientId,
 } from '@dydxprotocol/starkex-lib';
 
 import { generateQueryPath } from '../helpers/request-helpers';
@@ -19,6 +22,7 @@ import {
   AccountAction,
   AccountResponseObject,
   ApiFastWithdrawal,
+  ApiFastWithdrawalParams,
   ApiOrder,
   ApiWithdrawal,
   Data,
@@ -33,6 +37,7 @@ import {
   PartialBy,
   PositionResponseObject,
   PositionStatus,
+  Provider,
   TransferResponseObject,
   UserResponseObject,
 } from '../types';
@@ -45,14 +50,18 @@ const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
   [RequestMethod.PUT]: ApiMethod.PUT,
 };
 
+const collateralTokenDecimals = 6;
+
 export default class Private {
   readonly host: string;
   readonly apiKeyPair: KeyPair;
   readonly starkKeyPair?: KeyPair;
+  readonly starkLib: StarkwareLib;
 
   constructor(
     host: string,
     apiPrivateKey: string | KeyPair,
+    networkId: number,
     starkPrivateKey?: string | KeyPair,
   ) {
     this.host = host;
@@ -60,6 +69,7 @@ export default class Private {
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
+    this.starkLib = new StarkwareLib({} as Provider, networkId);
   }
 
   // ============ Request Helpers ============
@@ -326,7 +336,7 @@ export default class Private {
         positionId,
       };
       const starkOrder = SignableOrder.fromOrder(orderToSign);
-      signature = starkOrder.sign(this.starkKeyPair);
+      signature = await starkOrder.sign(this.starkKeyPair);
     }
 
     const order: ApiOrder = {
@@ -447,7 +457,7 @@ export default class Private {
         positionId,
       };
       const starkWithdrawal = SignableWithdrawal.fromWithdrawal(withdrawalToSign);
-      signature = starkWithdrawal.sign(this.starkKeyPair);
+      signature = await starkWithdrawal.sign(this.starkKeyPair);
     }
 
     const withdrawal: ApiWithdrawal = {
@@ -475,12 +485,40 @@ export default class Private {
     * @signature starkware specific signature for fast-withdrawal
     * }
     */
-  createFastWithdrawal(
-    params: PartialBy<ApiFastWithdrawal, 'clientId' | 'signature'>,
+  async createFastWithdrawal(
+    {
+      lpStarkKey,
+      ...params
+    }: PartialBy<ApiFastWithdrawalParams, 'clientId' | 'signature'>,
+    positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
     const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
     // TODO meet starkware specification
-    const signature = params.signature || Math.random().toString().slice(2).replace(/^0+/, '');
+
+    let signature: string | undefined = params.signature;
+    if (!signature) {
+      if (!this.starkKeyPair) {
+        throw new Error('Fast withdrawal is not signed and client was not initialized with starkPrivateKey');
+      }
+      const fact = this.starkLib.factRegistry.getTransferErc20Fact({
+        recipient: params.toAddress,
+        tokenAddress: this.starkLib.collateralToken.getAddress(),
+        tokenDecimals: collateralTokenDecimals,
+        humanAmount: params.creditAmount,
+        salt: nonceFromClientId(clientId),
+      });
+      const conditionalTransfer = new SignableConditionalTransfer({
+        senderPositionId: positionId,
+        receiverPositionId: params.lpPositionId,
+        receiverPublicKey: lpStarkKey,
+        factRegistryAddress: this.starkLib.factRegistry.getAddress(),
+        fact,
+        humanAmount: params.debitAmount,
+        clientId,
+        expirationIsoTimestamp: params.expiration,
+      });
+      signature = await conditionalTransfer.sign(this.starkKeyPair);
+    }
     const fastWithdrawal: ApiFastWithdrawal = {
       ...params,
       clientId,
@@ -527,7 +565,7 @@ export default class Private {
     method: RequestMethod,
     isoTimestamp: ISO8601,
     data?: {},
-  }): string {
+  }): Promise<string> {
     return new SignableApiRequest({
       body: data ? JSON.stringify(data) : '',
       requestPath,
