@@ -1,13 +1,19 @@
+/**
+ * Signatures on static messages for onboarding.
+ *
+ * These are used during onboarding. The signature must be deterministic based on the Ethereum key
+ * because the signatures will be used for key derivation, and the keys should be recoverable:
+ *   - The onboarding signature is used to derive the default API credentials, on the server.
+ *   - The key derivation signature is used by the UI to derive the STARK key pair. Programmatic
+ *     traders may optionally derive their STARK key pair in the same way.
+ */
+
 import Web3 from 'web3';
 
-import { Address, SigningMethod } from '../types';
+import { OnboardingAction } from '../types';
 import { hashString } from './helpers';
 import { SignOffChainAction } from './sign-off-chain-action';
 
-const ONBOARDING_STRING: 'dYdX Onboarding' = 'dYdX Onboarding';
-const ONBOARDING_MESSAGE = {
-  action: ONBOARDING_STRING,
-};
 const EIP712_ONBOARDING_ACTION_STRUCT = [
   { type: 'string', name: 'action' },
 ];
@@ -17,7 +23,7 @@ const EIP712_ONBOARDING_ACTION_STRUCT_STRING = (
   ')'
 );
 
-export class SignOnboardingAction extends SignOffChainAction<typeof ONBOARDING_MESSAGE> {
+export class SignOnboardingAction extends SignOffChainAction<OnboardingAction> {
 
   constructor(
     web3: Web3,
@@ -26,26 +32,14 @@ export class SignOnboardingAction extends SignOffChainAction<typeof ONBOARDING_M
     super(web3, networkId, EIP712_ONBOARDING_ACTION_STRUCT);
   }
 
-  public getHash(): string {
+  public getHash(
+    message: OnboardingAction,
+  ): string {
     const structHash: string | null = Web3.utils.soliditySha3(
       { t: 'bytes32', v: hashString(EIP712_ONBOARDING_ACTION_STRUCT_STRING) },
-      { t: 'bytes32', v: hashString(ONBOARDING_STRING) },
+      { t: 'bytes32', v: hashString(message.action) },
     );
     // Non-null assertion operator is safe, hash is null only on empty input.
     return this.getEIP712Hash(structHash!);
-  }
-
-  public async sign(
-    signer: string,
-    signingMethod: SigningMethod,
-  ): Promise<string> {
-    return super.sign(signer, signingMethod, ONBOARDING_MESSAGE);
-  }
-
-  public verify(
-    typedSignature: string,
-    expectedSigner: Address,
-  ): boolean {
-    return super.verify(typedSignature, expectedSigner, ONBOARDING_MESSAGE);
   }
 }

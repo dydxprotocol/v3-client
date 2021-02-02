@@ -97,7 +97,6 @@ export abstract class Signer {
     });
 
     if (response.error) {
-      // TODO: Is this right?
       throw new Error((response.error as unknown as { message: string }).message);
     }
     return `0x${stripHexPrefix(response.result)}0${SignatureTypes.NO_PREPEND}`;

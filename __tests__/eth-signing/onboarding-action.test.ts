@@ -1,7 +1,10 @@
 import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../../src/eth-signing';
-import { SigningMethod } from '../../src/types';
+import {
+  OnboardingActionString,
+  SigningMethod,
+} from '../../src/types';
 
 let localSigner: SignOnboardingAction;
 let localAccountAddress: string;
@@ -22,11 +25,13 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
+        { action: OnboardingActionString.ONBOARDING },
       );
       expect(
         localSigner.verify(
           signature,
           localAccountAddress,
+          { action: OnboardingActionString.ONBOARDING },
         ),
       ).toBe(true);
     });
@@ -35,6 +40,7 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
+        { action: OnboardingActionString.ONBOARDING },
       );
 
       // Change the last character.
@@ -46,6 +52,22 @@ describe('SignOnboardingAction', () => {
         localSigner.verify(
           invalidSignature,
           localAccountAddress,
+          { action: OnboardingActionString.ONBOARDING },
+        ),
+      ).toBe(false);
+    });
+
+    it('rejects if the message is different', async () => {
+      const signature = await localSigner.sign(
+        localAccountAddress,
+        SigningMethod.Hash,
+        { action: OnboardingActionString.ONBOARDING },
+      );
+      expect(
+        localSigner.verify(
+          signature,
+          localAccountAddress,
+          { action: OnboardingActionString.KEY_DERIVATION },
         ),
       ).toBe(false);
     });
@@ -63,11 +85,13 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
+        { action: OnboardingActionString.ONBOARDING },
       );
       expect(
         localSigner.verify(
           signature,
           localAccountAddress,
+          { action: OnboardingActionString.ONBOARDING },
         ),
       ).toBe(true);
     });
@@ -76,11 +100,13 @@ describe('SignOnboardingAction', () => {
       const signature = await remoteSigner.sign(
         remoteAccountAddress,
         SigningMethod.TypedData,
+        { action: OnboardingActionString.ONBOARDING },
       );
       expect(
         remoteSigner.verify(
           signature,
           remoteAccountAddress,
+          { action: OnboardingActionString.ONBOARDING },
         ),
       ).toBe(true);
     });

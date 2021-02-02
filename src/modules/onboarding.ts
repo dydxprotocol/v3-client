@@ -1,3 +1,7 @@
+import {
+  KeyPairWithYCoordinate,
+  keyPairFromData,
+} from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../eth-signing';
@@ -11,6 +15,7 @@ import {
   Data,
   UserResponseObject,
   ApiKeyCredentials,
+  OnboardingActionString,
 } from '../types';
 
 export default class Onboarding {
@@ -41,7 +46,11 @@ export default class Onboarding {
       method: RequestMethod.POST,
       data,
       headers: {
-        'DYDX-SIGNATURE': signature || await this.signer.sign(ethereumAddress, signingMethod),
+        'DYDX-SIGNATURE': signature || await this.signer.sign(
+          ethereumAddress,
+          signingMethod,
+          { action: OnboardingActionString.ONBOARDING },
+        ),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
     });
@@ -81,5 +90,22 @@ export default class Onboarding {
       signature,
       signingMethod,
     );
+  }
+
+  // ============ Other ============
+
+  /**
+   * @description Derive a STARK key pair deterministically from an Ethereum key.
+   */
+  async deriveStarkKey(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
+  ): Promise<KeyPairWithYCoordinate> {
+    const signature = await this.signer.sign(
+      ethereumAddress,
+      signingMethod,
+      { action: OnboardingActionString.KEY_DERIVATION },
+    );
+    return keyPairFromData(Buffer.from(signature, 'hex'));
   }
 }
