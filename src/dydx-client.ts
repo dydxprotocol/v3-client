@@ -7,28 +7,29 @@ import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
 import {
+  ApiKeyCredentials,
   EthereumSendOptions,
   Provider,
 } from './types';
 
 export interface ClientOptions {
   apiTimeout?: number;
-  apiPrivateKey?: string | KeyPair;
   ethSendOptions?: EthereumSendOptions;
   networkId?: number;
   starkPrivateKey?: string | KeyPair;
   web3?: Web3;
   web3Provider?: string | Provider;
+  apiKeyCredentials?: ApiKeyCredentials;
 }
 
 export class DydxClient {
   readonly host: string;
   readonly apiTimeout?: number;
-  readonly apiPrivateKey?: string | KeyPair;
   readonly ethSendOptions?: EthereumSendOptions;
   readonly networkId: number;
   readonly starkPrivateKey?: string | KeyPair;
   readonly web3?: Web3;
+  apiKeyCredentials?: ApiKeyCredentials;
 
   // Modules. Except for `public`, these are created on-demand.
   private readonly _public: Public;
@@ -43,10 +44,10 @@ export class DydxClient {
   ) {
     this.host = host;
     this.apiTimeout = options.apiTimeout;
-    this.apiPrivateKey = options.apiPrivateKey;
     this.ethSendOptions = options.ethSendOptions;
     this.networkId = typeof options.networkId === 'number' ? options.networkId : 1;
     this.starkPrivateKey = options.starkPrivateKey;
+    this.apiKeyCredentials = options.apiKeyCredentials;
 
     if (options.web3 || options.web3Provider) {
       // Non-null assertion is safe due to if-condition.
@@ -69,16 +70,16 @@ export class DydxClient {
    */
   get private(): Private {
     if (!this._private) {
-      if (this.apiPrivateKey) {
-        this._private = new Private(
-          this.host,
-          this.apiPrivateKey,
-          this.networkId,
-          this.starkPrivateKey,
-        );
+      if (this.apiKeyCredentials) {
+        this._private = new Private({
+          host: this.host,
+          apiKeyCredentials: this.apiKeyCredentials,
+          starkPrivateKey: this.starkPrivateKey,
+          networkId: this.networkId,
+        });
       } else {
         return notSupported(
-          'Private endpoints are not supported since apiPrivateKey was not provided',
+          'Private endpoints are not supported since apiKeyCredentials was not provided',
         ) as Private;
       }
     }

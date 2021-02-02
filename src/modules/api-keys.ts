@@ -8,9 +8,9 @@ import {
   axiosRequest,
 } from '../lib/axios';
 import {
-  ApiKeyResponseObject,
   SigningMethod,
   Data,
+  ApiKeyCredentials,
 } from '../types';
 
 export default class ApiKeys {
@@ -60,21 +60,12 @@ export default class ApiKeys {
     });
   }
 
-  protected async get(
-    endpoint: string,
-    ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<Data> {
-    return this.request(ApiMethod.GET, endpoint, ethereumAddress, signingMethod);
-  }
-
   protected async post(
     endpoint: string,
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
-    data: {},
   ): Promise<Data> {
-    return this.request(ApiMethod.POST, endpoint, ethereumAddress, signingMethod, data);
+    return this.request(ApiMethod.POST, endpoint, ethereumAddress, signingMethod);
   }
 
   protected async delete(
@@ -90,31 +81,16 @@ export default class ApiKeys {
   // ============ Requests ============
 
   /**
-   * @description get the apiKeys associated with an ethereumAddress
-   *
-   * @param ethereumAddress the apiKeys are for
-   * @param signingMethod used for the signature that validates the request
-   */
-  async getApiKeys(
-    ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<{ apiKeys: ApiKeyResponseObject[] }> {
-    return this.get('api-keys', ethereumAddress, signingMethod);
-  }
-
-  /**
-   *@description register an apiKey for an ethereumAddress
-   *
-   * @param apiKey to be registered for an ethereumAddress
-   * @param ethereumAddress the apiKey is for
+   * @description have an auto-generated apikey, secret and passphrase generated
+   * for an ethereumAddress.
+   * @param ethereumAddress the apiKey will be for
    * @param signingMethod used to validate the request
    */
-  async registerApiKey(
-    apiKey: string,
+  async createApiKey(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<{ apiKey: ApiKeyResponseObject }> {
-    return this.post('api-keys', ethereumAddress, signingMethod, { apiKey });
+  ): Promise<{ apiKey: ApiKeyCredentials }> {
+    return this.post('api-keys', ethereumAddress, signingMethod);
   }
 
   /**

@@ -1,9 +1,10 @@
+import crypto from 'crypto';
+
 import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import {
   ApiMethod,
   KeyPair,
   OrderWithClientId,
-  SignableApiRequest,
   SignableOrder,
   SignableWithdrawal,
   asEcKeyPair,
@@ -11,6 +12,7 @@ import {
   SignableConditionalTransfer,
   nonceFromClientId,
 } from '@dydxprotocol/starkex-lib';
+import _ from 'lodash';
 
 import { generateQueryPath } from '../helpers/request-helpers';
 import {
@@ -23,6 +25,7 @@ import {
   AccountResponseObject,
   ApiFastWithdrawal,
   ApiFastWithdrawalParams,
+  ApiKeyCredentials,
   ApiOrder,
   ApiWithdrawal,
   Data,
@@ -54,18 +57,23 @@ const collateralTokenDecimals = 6;
 
 export default class Private {
   readonly host: string;
-  readonly apiKeyPair: KeyPair;
+  readonly apiKeyCredentials: ApiKeyCredentials;
   readonly starkKeyPair?: KeyPair;
   readonly starkLib: StarkwareLib;
 
-  constructor(
+  constructor({
+    host,
+    apiKeyCredentials,
+    starkPrivateKey,
+    networkId,
+  }: {
     host: string,
-    apiPrivateKey: string | KeyPair,
     networkId: number,
+    apiKeyCredentials: ApiKeyCredentials,
     starkPrivateKey?: string | KeyPair,
-  ) {
+  }) {
     this.host = host;
-    this.apiKeyPair = asSimpleKeyPair(asEcKeyPair(apiPrivateKey));
+    this.apiKeyCredentials = apiKeyCredentials;
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
@@ -88,8 +96,9 @@ export default class Private {
         isoTimestamp,
         data,
       }),
-      'DYDX-API-KEY': this.apiKeyPair.publicKey,
+      'DYDX-API-KEY': this.apiKeyCredentials.key,
       'DYDX-TIMESTAMP': isoTimestamp,
+      'DYDX-PASSPHRASE': this.apiKeyCredentials.passphrase,
     };
     return axiosRequest({
       url: `${this.host}${requestPath}`,
@@ -182,14 +191,18 @@ export default class Private {
    *
    * @param starkKey for the account that will be used as the public key in starkwareEx-Lib requests
    * going forward for this account.
+   * @param starkKeyYCoordinate for the account that will be used as the Y coordinate for the public
+   * key in starkwareEx-Lib requests going forward for this account.
    */
   async createAccount(
     starkKey: string,
+    starkKeyYCoordinate: string,
   ): Promise<{ account: AccountResponseObject }> {
     return this.post(
       'accounts',
       {
         starkKey,
+        starkKeyYCoordinate,
       },
     );
   }
@@ -553,9 +566,20 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get the apiKey ids associated with an ethereumAddress
+   *
+   * @param ethereumAddress the apiKeys are for
+   */
+  async getApiKeys(
+    ethereumAddress: string,
+  ): Promise<{ apiKeys: string[] }> {
+    return this.get('api-keys', { ethereumAddress });
+  }
+
   // ============ Signing ============
 
-  protected sign({
+  sign({
     requestPath,
     method,
     isoTimestamp,
@@ -565,12 +589,17 @@ export default class Private {
     method: RequestMethod,
     isoTimestamp: ISO8601,
     data?: {},
-  }): Promise<string> {
-    return new SignableApiRequest({
-      body: data ? JSON.stringify(data) : '',
-      requestPath,
-      method: METHOD_ENUM_MAP[method],
-      isoTimestamp,
-    }).sign(this.apiKeyPair.privateKey);
+  }): string {
+    const messageString: string = (
+      isoTimestamp +
+      METHOD_ENUM_MAP[method] +
+      requestPath +
+      (_.isEmpty(data) ? '' : JSON.stringify(data))
+    );
+
+    return crypto.createHmac(
+      'sha256',
+      Buffer.from(this.apiKeyCredentials.secret, 'base64'),
+    ).update(messageString).digest('base64');
   }
 }
