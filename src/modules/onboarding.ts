@@ -10,7 +10,7 @@ import {
   AccountResponseObject,
   Data,
   UserResponseObject,
-  ApiKeyResponseObject,
+  ApiKeyCredentials,
 } from '../types';
 
 export default class Onboarding {
@@ -68,7 +68,7 @@ export default class Onboarding {
     signature?: string,
     signingMethod?: SigningMethod,
   ): Promise<{
-    apiKey: ApiKeyResponseObject,
+    apiKey: ApiKeyCredentials,
     user: UserResponseObject,
     account: AccountResponseObject,
   }> {

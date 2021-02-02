@@ -8,9 +8,9 @@ import {
   axiosRequest,
 } from '../lib/axios';
 import {
-  ApiKeyResponseObject,
   SigningMethod,
   Data,
+  ApiKeyCredentials,
 } from '../types';
 
 export default class ApiKeys {
@@ -89,7 +89,7 @@ export default class ApiKeys {
   async registerApiKey(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<{ apiKey: ApiKeyResponseObject }> {
+  ): Promise<{ apiKey: ApiKeyCredentials }> {
     return this.post('api-keys', ethereumAddress, signingMethod);
   }
 

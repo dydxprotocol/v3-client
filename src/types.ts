@@ -144,12 +144,6 @@ export interface ApiFastWithdrawal extends ApiStarkwareSigned {
 
 // ============ API Response Types ============
 
-export interface ApiKeyResponseObject {
-  apiKey: string;
-  secret: string;
-  passphrase: string;
-}
-
 export interface MarketResponseObject {
   market: Market;
   status: string;
