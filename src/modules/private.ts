@@ -190,14 +190,18 @@ export default class Private {
    *
    * @param starkKey for the account that will be used as the public key in starkwareEx-Lib requests
    * going forward for this account.
+   * @param starkKeyYCoordinate for the account that will be used as the Y coordinate for the public
+   * key in starkwareEx-Lib requests going forward for this account.
    */
   async createAccount(
     starkKey: string,
+    starkKeyYCoordinate: string,
   ): Promise<{ account: AccountResponseObject }> {
     return this.post(
       'accounts',
       {
         starkKey,
+        starkKeyYCoordinate,
       },
     );
   }
