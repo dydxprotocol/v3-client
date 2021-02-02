@@ -75,7 +75,7 @@ export class DydxClient {
           host: this.host,
           apiKeyCredentials: this.apiKeyCredentials,
           starkPrivateKey: this.starkPrivateKey,
-          this.networkId,
+          networkId: this.networkId,
         });
       } else {
         return notSupported(
