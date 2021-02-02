@@ -22,6 +22,7 @@ import {
   AccountAction,
   AccountResponseObject,
   ApiFastWithdrawal,
+  ApiFastWithdrawalParams,
   ApiOrder,
   ApiWithdrawal,
   Data,
@@ -485,7 +486,10 @@ export default class Private {
     * }
     */
   async createFastWithdrawal(
-    params: PartialBy<ApiFastWithdrawal, 'clientId' | 'signature'>,
+    {
+      lpStarkKey,
+      ...params
+    }: PartialBy<ApiFastWithdrawalParams, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
     const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
@@ -506,7 +510,7 @@ export default class Private {
       const conditionalTransfer = new SignableConditionalTransfer({
         senderPositionId: positionId,
         receiverPositionId: params.lpPositionId,
-        receiverPublicKey: params.lpStarkKey,
+        receiverPublicKey: lpStarkKey,
         factRegistryAddress: this.starkLib.factRegistry.getAddress(),
         fact,
         humanAmount: params.debitAmount,

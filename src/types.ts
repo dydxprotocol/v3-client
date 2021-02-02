@@ -131,8 +131,11 @@ export interface ApiFastWithdrawal extends ApiStarkwareSigned {
   debitAmount: string;
   toAddress: string;
   lpPositionId: string;
-  lpStarkKey: string;
   clientId: string;
+}
+
+export interface ApiFastWithdrawalParams extends ApiFastWithdrawal {
+  lpStarkKey: string;
 }
 
 // ============ API Response Types ============
