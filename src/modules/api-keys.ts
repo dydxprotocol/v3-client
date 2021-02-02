@@ -86,7 +86,7 @@ export default class ApiKeys {
    * @param ethereumAddress the apiKey will be for
    * @param signingMethod used to validate the request
    */
-  async registerApiKey(
+  async createApiKey(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<{ apiKey: ApiKeyCredentials }> {
