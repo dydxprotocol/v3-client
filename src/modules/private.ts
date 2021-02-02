@@ -1,3 +1,4 @@
+import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import {
   ApiMethod,
   KeyPair,
@@ -7,6 +8,8 @@ import {
   SignableWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
+  SignableConditionalTransfer,
+  nonceFromClientId,
 } from '@dydxprotocol/starkex-lib';
 
 import { generateQueryPath } from '../helpers/request-helpers';
@@ -33,6 +36,7 @@ import {
   PartialBy,
   PositionResponseObject,
   PositionStatus,
+  Provider,
   TransferResponseObject,
   UserResponseObject,
 } from '../types';
@@ -49,10 +53,14 @@ export default class Private {
   readonly host: string;
   readonly apiKeyPair: KeyPair;
   readonly starkKeyPair?: KeyPair;
+  readonly starkLib: StarkwareLib;
+
+  private _collateralTokenDecimals: number;
 
   constructor(
     host: string,
     apiPrivateKey: string | KeyPair,
+    networkId: number,
     starkPrivateKey?: string | KeyPair,
   ) {
     this.host = host;
@@ -60,6 +68,8 @@ export default class Private {
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
+    this.starkLib = new StarkwareLib({} as Provider, networkId);
+    this._collateralTokenDecimals = 6;
   }
 
   // ============ Request Helpers ============
@@ -326,7 +336,7 @@ export default class Private {
         positionId,
       };
       const starkOrder = SignableOrder.fromOrder(orderToSign);
-      signature = starkOrder.sign(this.starkKeyPair);
+      signature = await starkOrder.sign(this.starkKeyPair);
     }
 
     const order: ApiOrder = {
@@ -447,7 +457,7 @@ export default class Private {
         positionId,
       };
       const starkWithdrawal = SignableWithdrawal.fromWithdrawal(withdrawalToSign);
-      signature = starkWithdrawal.sign(this.starkKeyPair);
+      signature = await starkWithdrawal.sign(this.starkKeyPair);
     }
 
     const withdrawal: ApiWithdrawal = {
@@ -475,12 +485,37 @@ export default class Private {
     * @signature starkware specific signature for fast-withdrawal
     * }
     */
-  createFastWithdrawal(
+  async createFastWithdrawal(
     params: PartialBy<ApiFastWithdrawal, 'clientId' | 'signature'>,
+    positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
     const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
     // TODO meet starkware specification
-    const signature = params.signature || Math.random().toString().slice(2).replace(/^0+/, '');
+
+    let signature: string | undefined = params.signature;
+    if (!signature) {
+      if (!this.starkKeyPair) {
+        throw new Error('Fast withdrawal is not signed and client was not initialized with starkPrivateKey');
+      }
+      const fact = this.starkLib.factRegistry.getTransferErc20Fact({
+        recipient: params.toAddress,
+        tokenAddress: this.starkLib.collateralToken.getAddress(),
+        tokenDecimals: this._collateralTokenDecimals,
+        humanAmount: params.creditAmount,
+        salt: nonceFromClientId(clientId),
+      });
+      const conditionalTransfer = new SignableConditionalTransfer({
+        senderPositionId: params.lpPositionId,
+        receiverPositionId: positionId,
+        receiverPublicKey: this.starkKeyPair.publicKey,
+        factRegistryAddress: this.starkLib.factRegistry.getAddress(),
+        fact,
+        humanAmount: params.creditAmount,
+        clientId,
+        expirationIsoTimestamp: params.expiration,
+      });
+      signature = await conditionalTransfer.sign(this.starkKeyPair);
+    }
     const fastWithdrawal: ApiFastWithdrawal = {
       ...params,
       clientId,
@@ -527,7 +562,7 @@ export default class Private {
     method: RequestMethod,
     isoTimestamp: ISO8601,
     data?: {},
-  }): string {
+  }): Promise<string> {
     return new SignableApiRequest({
       body: data ? JSON.stringify(data) : '',
       requestPath,

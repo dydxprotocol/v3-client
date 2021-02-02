@@ -73,6 +73,7 @@ export class DydxClient {
         this._private = new Private(
           this.host,
           this.apiPrivateKey,
+          this.networkId,
           this.starkPrivateKey,
         );
       } else {
