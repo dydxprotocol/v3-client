@@ -1,6 +1,6 @@
-import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import crypto from 'crypto';
 
+import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import {
   ApiMethod,
   KeyPair,
@@ -65,6 +65,7 @@ export default class Private {
     host,
     apiKeyCredentials,
     starkPrivateKey,
+    networkId,
   }: {
     host: string,
     networkId: number,
