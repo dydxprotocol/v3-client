@@ -171,4 +171,11 @@ export default class Public {
       },
     );
   }
+
+  /**
+   * @description get api server time as iso and as epoch in seconds with MS
+   */
+  getTime(): Promise<{ time: { iso: string, epoch: number } }> {
+    return this.get('time', {});
+  }
 }
