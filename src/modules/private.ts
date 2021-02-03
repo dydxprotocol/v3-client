@@ -570,7 +570,7 @@ export default class Private {
    * @description get the key ids associated with an ethereumAddress
    *
    */
-  async getApiKeys(): Promise<{ keys: string[] }> {
+  async getApiKeys(): Promise<{ apiKeys: { key: string }[] }> {
     return this.get('api-keys', {});
   }
 
