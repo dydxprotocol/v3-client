@@ -6,6 +6,7 @@ import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../eth-signing';
 import { stripHexPrefix } from '../eth-signing/helpers';
+import { keccak256Buffer } from '../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
@@ -93,10 +94,16 @@ export default class Onboarding {
     );
   }
 
-  // ============ Other ============
+  // ============ Key Derivation ============
 
   /**
    * @description Derive a STARK key pair deterministically from an Ethereum key.
+   *
+   * This is used by the frontend app to derive the STARK key pair in a way that is recoverable.
+   * Programmatic traders may optionally derive their STARK key pair in the same way.
+   *
+   * @param ethereumAddress Ethereum address of the account to use for signing.
+   * @param signingMethod Method to use for signing.
    */
   async deriveStarkKey(
     ethereumAddress: string,
@@ -109,4 +116,59 @@ export default class Onboarding {
     );
     return keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
   }
+
+  /**
+   * @description Derive an API key pair deterministically from an Ethereum key.
+   *
+   * This is used by the frontend app to recover the default API key credentials.
+   *
+   * @param ethereumAddress Ethereum address of the account to use for signing.
+   * @param signingMethod Method to use for signing.
+   */
+  async recoverDefaultApiCredentials(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
+  ): Promise<ApiKeyCredentials> {
+    const signature = await this.signer.sign(
+      ethereumAddress,
+      signingMethod,
+      { action: OnboardingActionString.ONBOARDING },
+    );
+    const buffer = Buffer.from(stripHexPrefix(signature), 'hex');
+
+    // Get secret.
+    const rBuffer = buffer.slice(0, 32);
+    const rHashedData = keccak256Buffer(rBuffer);
+    const secret = rHashedData.slice(0, 30);
+
+    // Get key and passphrase.
+    const sBuffer = buffer.slice(32, 64);
+    const sHashedData = keccak256Buffer(sBuffer);
+    const key = sHashedData.slice(0, 16);
+    const passphrase = sHashedData.slice(16, 31);
+
+    return {
+      secret: toBase64Url(secret),
+      key: uuidFormatKey(key),
+      passphrase: toBase64Url(passphrase),
+    };
+  }
+}
+
+function uuidFormatKey(keyBuffer: Buffer): string {
+  const key: string = keyBuffer.toString('hex');
+  return [
+    key.slice(0, 8),
+    key.slice(8, 12),
+    key.slice(12, 16),
+    key.slice(16, 20),
+    key.slice(20, 32),
+  ].join('-');
+}
+
+function toBase64Url(base64: Buffer): string {
+  return base64.toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
 }
