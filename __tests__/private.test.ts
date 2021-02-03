@@ -5,7 +5,7 @@
 import axios, { AxiosResponse } from 'axios';
 import Web3 from 'web3';
 
-import { ApiKeyCredentials, DydxClient, EthereumAccount } from '../src';
+import { ApiKeyCredentials, DydxClient } from '../src';
 import { RequestMethod } from '../src/lib/axios';
 import { asMock } from './helpers/util';
 
@@ -20,12 +20,9 @@ describe('Verify signature is as expected', () => {
     asMock(axios).mockResolvedValue({} as AxiosResponse);
 
     const web3 = new Web3();
-    const account: EthereumAccount = web3.eth.accounts.wallet.create(1)[0];
 
     const client = new DydxClient('https://example.com', { web3, apiKeyCredentials });
-    await client.private.getApiKeys(
-      account.address,
-    );
+    await client.private.getApiKeys();
     expect(client.private.sign({
       requestPath: '/v3/api-keys?ethereumAddress=0xE5714924C8C5c732F92A439075C8211eB0611aaC',
       method: RequestMethod.GET,
