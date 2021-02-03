@@ -5,6 +5,7 @@ import {
 import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../eth-signing';
+import { stripHexPrefix } from '../eth-signing/helpers';
 import {
   RequestMethod,
   axiosRequest,
@@ -106,6 +107,6 @@ export default class Onboarding {
       signingMethod,
       { action: OnboardingActionString.KEY_DERIVATION },
     );
-    return keyPairFromData(Buffer.from(signature, 'hex'));
+    return keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
   }
 }
