@@ -567,14 +567,11 @@ export default class Private {
   }
 
   /**
-   * @description get the apiKey ids associated with an ethereumAddress
+   * @description get the key ids associated with an ethereumAddress
    *
-   * @param ethereumAddress the apiKeys are for
    */
-  async getApiKeys(
-    ethereumAddress: string,
-  ): Promise<{ apiKeys: string[] }> {
-    return this.get('api-keys', { ethereumAddress });
+  async getApiKeys(): Promise<{ keys: string[] }> {
+    return this.get('api-keys', {});
   }
 
   // ============ Signing ============
