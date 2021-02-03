@@ -316,6 +316,15 @@ export interface Trade {
 
 // ============ Ethereum Signing ============
 
+export enum OnboardingActionString {
+  ONBOARDING = 'dYdX Onboarding',
+  KEY_DERIVATION = 'dYdX STARK Key',
+}
+
+export interface OnboardingAction {
+  action: OnboardingActionString;
+}
+
 export interface ApiKeyAction {
   method: string,
   requestPath: string,
