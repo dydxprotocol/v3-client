@@ -41,10 +41,6 @@ export function ecRecoverTypedSignature(
   hash: string,
   typedSignature: string,
 ): Address {
-  if (stripHexPrefix(typedSignature).length !== 66 * 2) {
-    throw new Error(`Unable to ecrecover signature: ${typedSignature}`);
-  }
-
   const sigType = parseInt(typedSignature.slice(-2), 16);
 
   let prependedHash: string | null;
