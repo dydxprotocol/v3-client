@@ -531,6 +531,12 @@ export default class Private {
         expirationIsoTimestamp: params.expiration,
       });
       signature = await conditionalTransfer.sign(this.starkKeyPair);
+      const verified = conditionalTransfer.verifySignature(
+        signature,
+        this.starkKeyPair.publicKey,
+        this.starkKeyPair.publicKeyYCoordinate,
+      );
+      console.log('is verified: ' + verified);
     }
     const fastWithdrawal: ApiFastWithdrawal = {
       ...params,

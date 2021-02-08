@@ -29,4 +29,19 @@ describe('Verify signature is as expected', () => {
       isoTimestamp: '2021-02-01T19:38:54.508Z',
     })).toEqual('jGElyQttdQDNqlRu5CpCtfVEYcikknzXWsOjKJAcTtI=');
   });
+
+  it.only('create and test fast withdrawal', async () => {
+    asMock(axios).mockResolvedValue({} as AxiosResponse);
+
+    const web3 = new Web3();
+
+    const client = new DydxClient('https://example.com', { web3, apiKeyCredentials });
+    const result = await client.private.createFastWithdrawal(
+      {
+        
+      },
+
+    );
+    console.log(result);
+  });
 });
