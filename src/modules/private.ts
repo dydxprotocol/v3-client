@@ -531,7 +531,7 @@ export default class Private {
         expirationIsoTimestamp: params.expiration,
       });
       signature = await conditionalTransfer.sign(this.starkKeyPair);
-      const verified = conditionalTransfer.verifySignature(
+      const verified = await conditionalTransfer.verifySignature(
         signature,
         this.starkKeyPair.publicKey,
         this.starkKeyPair.publicKeyYCoordinate,
