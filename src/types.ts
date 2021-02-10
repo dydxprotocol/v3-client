@@ -155,8 +155,6 @@ export interface MarketResponseObject {
   quoteAsset: Asset;
   stepSize: string;
   tickSize: string;
-  makerFee: string;
-  takerFee: string;
   indexPrice: string;
   oraclePrice: string;
   nextFundingRate: string;
