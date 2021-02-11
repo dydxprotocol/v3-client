@@ -63,19 +63,18 @@ export default class Onboarding {
   /**
    * @description create a user, account and apiKey in one onboarding request
    *
-   * @param {
-   * @starkKey is the unique public key for starkwareLib operations used in the future
-   * @starkKeyYCoordinate is the Y Coordinate of the unique public key for starkwareLib
-   * operations used in the future
-   * }
-   * @param ethereumAddress of the account
-   * @param signature validating the request
-   * @param signingMethod for the request
+   * @param params.starkKey The STARK public key to be associated with the account.
+   * @param params.starkKeyYCoordinate Y-coordinate of the key, needed only for account creation.
+   * @param params.positionId The position ID to onboard to. Do not use unless an ID was reserved.
+   * @param ethereumAddress The Ethereum address to be associated with the user.
+   * @param signature Onboarding signature to prove ownership of the Ethereum address.
+   * @param signingMethod Signing method to use if the signature was not already provided.
    */
   async createUser(
     params: {
       starkKey: string,
       starkKeyYCoordinate: string,
+      positionId?: string,
     },
     ethereumAddress: string,
     signature?: string,
