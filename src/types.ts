@@ -305,6 +305,17 @@ export interface CandleResponseObject {
   usdVolume: string;
 }
 
+export interface AvailableFundsResponseObject {
+  liquidityProviders: {
+    [lpPositionId: number]: LPFunds;
+  };
+}
+
+export interface LPFunds {
+  availableFunds: string;
+  starkKey: string;
+}
+
 export interface Trade {
   side: OrderSide,
   size: string,
