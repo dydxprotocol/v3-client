@@ -1,6 +1,7 @@
 import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
+  AvailableFundsResponseObject,
   CandleResolution,
   CandleResponseObject,
   Data,
@@ -134,7 +135,7 @@ export default class Public {
   /**
    * @description Get the amount of funds available for fast withdrawals, denominated in USDC.
    */
-  getFastWithdrawalAvailableFunds(): Promise<{ [lpAccountId: string]: string }> {
+  getFastWithdrawalAvailableFunds(): Promise<AvailableFundsResponseObject> {
     return this.get('fast-withdrawals', {});
   }
 
