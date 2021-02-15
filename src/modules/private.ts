@@ -58,8 +58,9 @@ const collateralTokenDecimals = 6;
 export default class Private {
   readonly host: string;
   readonly apiKeyCredentials: ApiKeyCredentials;
-  readonly starkKeyPair?: KeyPair;
+  readonly networkId: number;
   readonly starkLib: StarkwareLib;
+  readonly starkKeyPair?: KeyPair;
 
   constructor({
     host,
@@ -68,16 +69,17 @@ export default class Private {
     networkId,
   }: {
     host: string,
-    networkId: number,
     apiKeyCredentials: ApiKeyCredentials,
+    networkId: number,
     starkPrivateKey?: string | KeyPair,
   }) {
     this.host = host;
     this.apiKeyCredentials = apiKeyCredentials;
+    this.networkId = networkId;
+    this.starkLib = new StarkwareLib({} as Provider, networkId);
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
-    this.starkLib = new StarkwareLib({} as Provider, networkId);
   }
 
   // ============ Request Helpers ============
@@ -348,7 +350,7 @@ export default class Private {
         clientId,
         positionId,
       };
-      const starkOrder = SignableOrder.fromOrder(orderToSign);
+      const starkOrder = SignableOrder.fromOrder(orderToSign, this.networkId);
       signature = await starkOrder.sign(this.starkKeyPair);
     }
 
@@ -469,7 +471,7 @@ export default class Private {
         clientId,
         positionId,
       };
-      const starkWithdrawal = SignableWithdrawal.fromWithdrawal(withdrawalToSign);
+      const starkWithdrawal = SignableWithdrawal.fromWithdrawal(withdrawalToSign, this.networkId);
       signature = await starkWithdrawal.sign(this.starkKeyPair);
     }
 
@@ -520,7 +522,7 @@ export default class Private {
         humanAmount: params.creditAmount,
         salt: nonceFromClientId(clientId),
       });
-      const conditionalTransfer = new SignableConditionalTransfer({
+      const transferToSign = {
         senderPositionId: positionId,
         receiverPositionId: params.lpPositionId,
         receiverPublicKey: lpStarkKey,
@@ -529,8 +531,12 @@ export default class Private {
         humanAmount: params.debitAmount,
         clientId,
         expirationIsoTimestamp: params.expiration,
-      });
-      signature = await conditionalTransfer.sign(this.starkKeyPair);
+      };
+      const starkConditionalTransfer = SignableConditionalTransfer.fromTransfer(
+        transferToSign,
+        this.networkId,
+      );
+      signature = await starkConditionalTransfer.sign(this.starkKeyPair);
     }
     const fastWithdrawal: ApiFastWithdrawal = {
       ...params,
