@@ -1,7 +1,7 @@
 import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
-  AvailableFundsResponseObject,
+  FastWithdrawalsResponseObject,
   CandleResolution,
   CandleResponseObject,
   Data,
@@ -13,6 +13,7 @@ import {
   MarketStatisticResponseObject,
   OrderbookResponseObject,
   Trade,
+  TransferAsset,
 } from '../types';
 
 export default class Public {
@@ -134,9 +135,23 @@ export default class Public {
 
   /**
    * @description Get the amount of funds available for fast withdrawals, denominated in USDC.
+   * To request a quote for a fast withdrawal, provide either a creditAmount or debitAmount (but
+   * not both), and a creditAsset.
+   *
+   * @param creditAsset The asset to receive
+   * @param creditAmount The amount to receive
+   * @param debitAmount The amount of the collateral asset to transfer to the LP on layer-2
    */
-  getFastWithdrawalAvailableFunds(): Promise<AvailableFundsResponseObject> {
-    return this.get('fast-withdrawals', {});
+  getFastWithdrawals({
+    creditAsset,
+    creditAmount,
+    debitAmount,
+  }: {
+    creditAsset?: TransferAsset,
+    creditAmount?: string,
+    debitAmount?: string,
+  }): Promise<FastWithdrawalsResponseObject> {
+    return this.get('fast-withdrawals', { creditAsset, creditAmount, debitAmount });
   }
 
   /**

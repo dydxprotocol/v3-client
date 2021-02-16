@@ -305,7 +305,7 @@ export interface CandleResponseObject {
   usdVolume: string;
 }
 
-export interface AvailableFundsResponseObject {
+export interface FastWithdrawalsResponseObject {
   liquidityProviders: {
     [lpPositionId: number]: LiquidityProviderInfo;
   };
