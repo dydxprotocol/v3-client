@@ -307,13 +307,20 @@ export interface CandleResponseObject {
 
 export interface AvailableFundsResponseObject {
   liquidityProviders: {
-    [lpPositionId: number]: LPFunds;
+    [lpPositionId: number]: LiquidityProviderInfo;
   };
 }
 
-export interface LPFunds {
+export interface LiquidityProviderInfo {
   availableFunds: string;
   starkKey: string;
+  quote: LiquidityProviderQuote | null;
+}
+
+export interface LiquidityProviderQuote {
+  creditAsset: TransferAsset;
+  creditAmount: string;
+  debitAmount: string;
 }
 
 export interface Trade {
