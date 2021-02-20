@@ -45,6 +45,13 @@ export default class Onboarding {
     signature: string | null = null,
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<Data> {
+    const message: OnboardingAction = { action: OnboardingActionString.ONBOARDING };
+
+    // On mainnet, include an extra onlySignOn parameter.
+    if (this.networkId === 1) {
+      message.onlySignOn = 'https://trade.dydx.exchange';
+    }
+
     const url: string = `/v3/${endpoint}`;
     return axiosRequest({
       url: `${this.host}${url}`,
@@ -54,7 +61,7 @@ export default class Onboarding {
         'DYDX-SIGNATURE': signature || await this.signer.sign(
           ethereumAddress,
           signingMethod,
-          { action: OnboardingActionString.ONBOARDING },
+          message,
         ),
         'DYDX-ETHEREUM-ADDRESS': ethereumAddress,
       },
