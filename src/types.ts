@@ -339,6 +339,7 @@ export enum OnboardingActionString {
 
 export interface OnboardingAction {
   action: OnboardingActionString;
+  domain?: 'https://trade.dydx.exchange';
 }
 
 export interface ApiKeyAction {
