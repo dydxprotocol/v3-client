@@ -12,16 +12,18 @@ import {
   axiosRequest,
 } from '../lib/axios';
 import {
-  SigningMethod,
   AccountResponseObject,
-  Data,
-  UserResponseObject,
   ApiKeyCredentials,
+  Data,
+  OnboardingAction,
   OnboardingActionString,
+  SigningMethod,
+  UserResponseObject,
 } from '../types';
 
 export default class Onboarding {
   readonly host: string;
+  readonly networkId: number;
   readonly signer: SignOnboardingAction;
 
   constructor(
@@ -30,6 +32,7 @@ export default class Onboarding {
     networkId: number,
   ) {
     this.host = host;
+    this.networkId = networkId;
     this.signer = new SignOnboardingAction(web3, networkId);
   }
 
@@ -109,10 +112,17 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<KeyPairWithYCoordinate> {
+    const message: OnboardingAction = { action: OnboardingActionString.KEY_DERIVATION };
+
+    // On mainnet, include an extra onlySignOn parameter.
+    if (this.networkId === 1) {
+      message.onlySignOn = 'https://trade.dydx.exchange';
+    }
+
     const signature = await this.signer.sign(
       ethereumAddress,
       signingMethod,
-      { action: OnboardingActionString.KEY_DERIVATION },
+      message,
     );
     return keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
   }
@@ -129,10 +139,17 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<ApiKeyCredentials> {
+    const message: OnboardingAction = { action: OnboardingActionString.ONBOARDING };
+
+    // On mainnet, include an extra onlySignOn parameter.
+    if (this.networkId === 1) {
+      message.onlySignOn = 'https://trade.dydx.exchange';
+    }
+
     const signature = await this.signer.sign(
       ethereumAddress,
       signingMethod,
-      { action: OnboardingActionString.ONBOARDING },
+      message,
     );
     const buffer = Buffer.from(stripHexPrefix(signature), 'hex');
 

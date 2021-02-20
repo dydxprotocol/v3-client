@@ -23,7 +23,7 @@ type EIP712Struct = {
 }[];
 
 export abstract class SignOffChainAction<M extends {}> extends Signer {
-  private readonly networkId: number;
+  protected readonly networkId: number;
   private readonly actionStruct: EIP712Struct;
   private readonly domain: string;
   private readonly version: string;

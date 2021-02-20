@@ -25,13 +25,13 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
-        { action: OnboardingActionString.ONBOARDING },
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
       expect(
         localSigner.verify(
           signature,
           localAccountAddress,
-          { action: OnboardingActionString.ONBOARDING },
+          { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
         ),
       ).toBe(true);
     });
@@ -40,7 +40,7 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
-        { action: OnboardingActionString.ONBOARDING },
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
 
       // Change the last character.
@@ -52,7 +52,7 @@ describe('SignOnboardingAction', () => {
         localSigner.verify(
           invalidSignature,
           localAccountAddress,
-          { action: OnboardingActionString.ONBOARDING },
+          { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
         ),
       ).toBe(false);
     });
@@ -61,13 +61,13 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
-        { action: OnboardingActionString.ONBOARDING },
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
       expect(
         localSigner.verify(
           signature,
           localAccountAddress,
-          { action: OnboardingActionString.KEY_DERIVATION },
+          { action: OnboardingActionString.KEY_DERIVATION, onlySignOn: 'https://trade.dydx.exchange' },
         ),
       ).toBe(false);
     });
@@ -85,13 +85,13 @@ describe('SignOnboardingAction', () => {
       const signature = await localSigner.sign(
         localAccountAddress,
         SigningMethod.Hash,
-        { action: OnboardingActionString.ONBOARDING },
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
       expect(
         localSigner.verify(
           signature,
           localAccountAddress,
-          { action: OnboardingActionString.ONBOARDING },
+          { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
         ),
       ).toBe(true);
     });
@@ -100,13 +100,13 @@ describe('SignOnboardingAction', () => {
       const signature = await remoteSigner.sign(
         remoteAccountAddress,
         SigningMethod.TypedData,
-        { action: OnboardingActionString.ONBOARDING },
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
       expect(
         remoteSigner.verify(
           signature,
           remoteAccountAddress,
-          { action: OnboardingActionString.ONBOARDING },
+          { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
         ),
       ).toBe(true);
     });
