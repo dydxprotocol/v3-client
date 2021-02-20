@@ -14,15 +14,15 @@ import { OnboardingAction } from '../types';
 import { hashString } from './helpers';
 import { SignOffChainAction } from './sign-off-chain-action';
 
-// On mainnet, include an extra domain parameter.
+// On mainnet, include an extra onlySignOn parameter.
 const EIP712_ONBOARDING_ACTION_STRUCT = [
   { type: 'string', name: 'action' },
-  { type: 'string', name: 'domain' },
+  { type: 'string', name: 'onlySignOn' },
 ];
 const EIP712_ONBOARDING_ACTION_STRUCT_STRING = (
   'dYdX(' +
   'string action,' +
-  'string domain' +
+  'string onlySignOn' +
   ')'
 );
 
@@ -41,7 +41,7 @@ export class SignOnboardingAction extends SignOffChainAction<OnboardingAction> {
     web3: Web3,
     networkId: number,
   ) {
-    // On mainnet, include an extra domain parameter.
+    // On mainnet, include an extra onlySignOn parameter.
     const eip712Struct = networkId === 1
       ? EIP712_ONBOARDING_ACTION_STRUCT
       : EIP712_ONBOARDING_ACTION_STRUCT_TESTNET;
@@ -52,7 +52,7 @@ export class SignOnboardingAction extends SignOffChainAction<OnboardingAction> {
   public getHash(
     message: OnboardingAction,
   ): string {
-    // On mainnet, include an extra domain parameter.
+    // On mainnet, include an extra onlySignOn parameter.
     const eip712StructString = this.networkId === 1
       ? EIP712_ONBOARDING_ACTION_STRUCT_STRING
       : EIP712_ONBOARDING_ACTION_STRUCT_STRING_TESTNET;
@@ -62,16 +62,16 @@ export class SignOnboardingAction extends SignOffChainAction<OnboardingAction> {
       { t: 'bytes32', v: hashString(message.action) },
     ];
 
-    // On mainnet, include an extra domain parameter.
+    // On mainnet, include an extra onlySignOn parameter.
     if (this.networkId === 1) {
-      if (!message.domain) {
-        throw new Error('The domain is required when onboarding to mainnet');
+      if (!message.onlySignOn) {
+        throw new Error('The onlySignOn is required when onboarding to mainnet');
       }
       data.push(
-        { t: 'bytes32', v: hashString(message.domain) },
+        { t: 'bytes32', v: hashString(message.onlySignOn) },
       );
-    } else if (message.domain) {
-      throw new Error('Unexpected domain when signing for non-mainnet network');
+    } else if (message.onlySignOn) {
+      throw new Error('Unexpected onlySignOn when signing for non-mainnet network');
     }
 
     const structHash: string | null = Web3.utils.soliditySha3(...data);
