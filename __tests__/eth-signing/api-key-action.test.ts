@@ -4,6 +4,16 @@ import Web3 from 'web3';
 import { SignApiKeyAction } from '../../src/eth-signing';
 import { SigningMethod } from '../../src/types';
 
+// DEFAULT GANACHE ACCOUNT FOR TESTING ONLY -- DO NOT USE IN PRODUCTION.
+const GANACHE_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1';
+const GANACHE_PRIVATE_KEY = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d';
+
+// Note that this is the signature for SigningMethod.TypedData, but not SigningMethod.Hash.
+const EXPECTED_SIGNATURE = (
+  '0x3ec5317783b313b0acac1f13a23eaaa2fca1f45c2f395081e9bfc20b4cc1acb17e' +
+  '3d755764f37bf13fa62565c9cb50475e0a987ab0afa74efde0b3926bb7ab9d1b00'
+);
+
 const mockRequestNoBody = {
   requestPath: 'v3/test',
   method: ApiMethod.POST,
@@ -16,38 +26,40 @@ const mockRequestWithBody = {
 };
 
 let localSigner: SignApiKeyAction;
-let localAccountAddress: string;
 let remoteSigner: SignApiKeyAction;
-let remoteAccountAddress: string;
 
 describe('SignApiKeyAction', () => {
 
-  describe('without a web3 provider', () => {
+  describe('with a local Ethereum private key', () => {
 
     beforeAll(() => {
       const web3 = new Web3();
       localSigner = new SignApiKeyAction(web3, 1);
-      localAccountAddress = web3.eth.accounts.wallet.create(1)[0].address;
+      web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
     });
 
     it('signs and verifies using SigningMethod.Hash', async () => {
       const signature = await localSigner.sign(
-        localAccountAddress,
+        GANACHE_ADDRESS,
         SigningMethod.Hash,
         mockRequestNoBody,
       );
-      expect(
-        localSigner.verify(
-          signature,
-          localAccountAddress,
-          mockRequestNoBody,
-        ),
-      ).toBe(true);
+      expect(localSigner.verify(signature, GANACHE_ADDRESS, mockRequestNoBody)).toBe(true);
+    });
+
+    it('signs and verifies using SigningMethod.TypedData', async () => {
+      const signature = await localSigner.sign(
+        GANACHE_ADDRESS,
+        SigningMethod.TypedData,
+        mockRequestNoBody,
+      );
+      expect(localSigner.verify(signature, GANACHE_ADDRESS, mockRequestNoBody)).toBe(true);
+      expect(signature).toBe(EXPECTED_SIGNATURE);
     });
 
     it('rejects an invalid signature', async () => {
       const signature = await localSigner.sign(
-        localAccountAddress,
+        GANACHE_ADDRESS,
         SigningMethod.Hash,
         mockRequestNoBody,
       );
@@ -57,13 +69,7 @@ describe('SignApiKeyAction', () => {
       const newLastChar = lastChar === '0' ? '1' : '0';
       const invalidSignature = `${signature.slice(0, signature.length - 1)}${newLastChar}`;
 
-      expect(
-        localSigner.verify(
-          invalidSignature,
-          localAccountAddress,
-          mockRequestNoBody,
-        ),
-      ).toBe(false);
+      expect(localSigner.verify(invalidSignature, GANACHE_ADDRESS, mockRequestNoBody)).toBe(false);
     });
   });
 
@@ -72,52 +78,34 @@ describe('SignApiKeyAction', () => {
     beforeAll(async () => {
       const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
       remoteSigner = new SignApiKeyAction(web3, 1);
-      remoteAccountAddress = (await web3.eth.getAccounts())[0];
     });
 
     it('signs and verifies using SigningMethod.Hash', async () => {
       const signature = await localSigner.sign(
-        localAccountAddress,
+        GANACHE_ADDRESS,
         SigningMethod.Hash,
         mockRequestNoBody,
       );
-      expect(
-        localSigner.verify(
-          signature,
-          localAccountAddress,
-          mockRequestNoBody,
-        ),
-      ).toBe(true);
+      expect(localSigner.verify(signature, GANACHE_ADDRESS, mockRequestNoBody)).toBe(true);
     });
 
     it('signs and verifies using SigningMethod.TypedData', async () => {
       const signature = await remoteSigner.sign(
-        remoteAccountAddress,
+        GANACHE_ADDRESS,
         SigningMethod.TypedData,
         mockRequestNoBody,
       );
-      expect(
-        remoteSigner.verify(
-          signature,
-          remoteAccountAddress,
-          mockRequestNoBody,
-        ),
-      ).toBe(true);
+      expect(remoteSigner.verify(signature, GANACHE_ADDRESS, mockRequestNoBody)).toBe(true);
+      expect(signature).toBe(EXPECTED_SIGNATURE);
     });
 
     it('signs and verifies using SigningMethod.TypedData (with body)', async () => {
       const signature = await remoteSigner.sign(
-        remoteAccountAddress,
+        GANACHE_ADDRESS,
         SigningMethod.TypedData,
         mockRequestWithBody,
       );
-      expect(
-        remoteSigner.verify(
-          signature,
-          remoteAccountAddress,
-          mockRequestWithBody,
-        ),
-      ).toBe(true);
+      expect(remoteSigner.verify(signature, GANACHE_ADDRESS, mockRequestWithBody)).toBe(true);
     });
   });
 });

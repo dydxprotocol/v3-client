@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import * as ethers from 'ethers';
 import Web3 from 'web3';
 
 import {
@@ -54,17 +55,17 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
     signingMethod: SigningMethod,
     message: M,
   ): Promise<string> {
+    // If the address is in the wallet, sign with it so we don't have to use the web3 provider.
+    const walletAccount: EthereumAccount | undefined = (
+      // Hack: The TypeScript type incorrectly has index signature on number but not string.
+      this.web3.eth.accounts.wallet[signer as unknown as number]
+    );
+
     switch (signingMethod) {
       case SigningMethod.Hash:
       case SigningMethod.UnsafeHash:
       case SigningMethod.Compatibility: {
         const hash = this.getHash(message);
-
-        // If the address is in the wallet, sign with it so we don't have to use the web3 provider.
-        const walletAccount: EthereumAccount | undefined = (
-          // Hack: The TypeScript type incorrectly has index signature on number but not string.
-          this.web3.eth.accounts.wallet[signer as unknown as number]
-        );
 
         const rawSignature = walletAccount
           ? walletAccount.sign(hash).signature
@@ -86,7 +87,20 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
         return hashSig;
       }
 
+      // @ts-ignore Fallthrough case in switch.
       case SigningMethod.TypedData:
+        // If the private key is available locally, sign locally without using web3.
+        if (walletAccount?.privateKey) {
+          const wallet = new ethers.Wallet(walletAccount.privateKey);
+          const rawSignature = await wallet._signTypedData(
+            this.getDomainData(),
+            { [this.domain]: this.actionStruct },
+            message,
+          );
+          return createTypedSignature(rawSignature, SignatureTypes.NO_PREPEND);
+        }
+
+        /* falls through */
       case SigningMethod.MetaMask:
       case SigningMethod.MetaMaskLatest:
       case SigningMethod.CoinbaseWallet: {

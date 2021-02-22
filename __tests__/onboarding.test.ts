@@ -2,7 +2,9 @@ import Web3 from 'web3';
 
 import Onboarding from '../src/modules/onboarding';
 
+// DEFAULT GANACHE ACCOUNT FOR TESTING ONLY -- DO NOT USE IN PRODUCTION.
 const GANACHE_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1';
+const GANACHE_PRIVATE_KEY = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d';
 
 const EXPECTED_API_KEY_CREDENTIALS_MAINNET = {
   key: '50fdcaa0-62b8-e827-02e8-a9520d46cb9f',
@@ -27,6 +29,8 @@ const EXPECTED_STARK_KEY_PAIR_ROPSTEN = {
 
 let onboardingMainnetRemote: Onboarding;
 let onboardingRopstenRemote: Onboarding;
+let onboardingMainnetLocal: Onboarding;
+let onboardingRopstenLocal: Onboarding;
 
 describe('Onboarding module', () => {
 
@@ -62,6 +66,44 @@ describe('Onboarding module', () => {
 
     it('derives the default API key pair', async () => {
       const apiKey = await onboardingRopstenRemote.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_ROPSTEN);
+    });
+  });
+
+  describe('mainnet, with a local Ethereum private key', () => {
+
+    beforeAll(() => {
+      const web3 = new Web3();
+      onboardingMainnetLocal = new Onboarding('http://example.com', web3, 1);
+      web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
+    });
+
+    it('derives the default STARK key pair', async () => {
+      const keyPair = await onboardingMainnetLocal.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_MAINNET);
+    });
+
+    it('derives the default API key pair', async () => {
+      const apiKey = await onboardingMainnetLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_MAINNET);
+    });
+  });
+
+  describe('Ropsten, with a local Ethereum private key', () => {
+
+    beforeAll(() => {
+      const web3 = new Web3();
+      onboardingRopstenLocal = new Onboarding('http://example.com', web3, 3);
+      web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
+    });
+
+    it('derives the default STARK key pair', async () => {
+      const keyPair = await onboardingRopstenLocal.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_ROPSTEN);
+    });
+
+    it('derives the default API key pair', async () => {
+      const apiKey = await onboardingRopstenLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
       expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_ROPSTEN);
     });
   });
