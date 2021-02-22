@@ -6,6 +6,7 @@
     "src"
   ],
   "compilerOptions": {
-    "outDir": "build"
+    "outDir": "build",
+    "noFallthroughCasesInSwitch": false
   }
 }

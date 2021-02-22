@@ -21,6 +21,13 @@ import {
   UserResponseObject,
 } from '../types';
 
+const KEY_DERIVATION_SUPPORTED_SIGNING_METHODS: SigningMethod[] = [
+  SigningMethod.TypedData,
+  SigningMethod.MetaMask,
+  SigningMethod.MetaMaskLatest,
+  SigningMethod.CoinbaseWallet,
+];
+
 export default class Onboarding {
   readonly host: string;
   readonly networkId: number;
@@ -119,6 +126,10 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate> {
+    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
+      throw new Error('Unsupported signing method for API key derivation');
+    }
+
     const message: OnboardingAction = { action: OnboardingActionString.KEY_DERIVATION };
 
     // On mainnet, include an extra onlySignOn parameter.
@@ -146,6 +157,10 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<ApiKeyCredentials> {
+    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
+      throw new Error('Unsupported signing method for API key derivation');
+    }
+
     const message: OnboardingAction = { action: OnboardingActionString.ONBOARDING };
 
     // On mainnet, include an extra onlySignOn parameter.
