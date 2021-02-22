@@ -117,7 +117,7 @@ export default class Onboarding {
    */
   async deriveStarkKey(
     ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.Hash,
+    signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate> {
     const message: OnboardingAction = { action: OnboardingActionString.KEY_DERIVATION };
 
@@ -144,7 +144,7 @@ export default class Onboarding {
    */
   async recoverDefaultApiCredentials(
     ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.Hash,
+    signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<ApiKeyCredentials> {
     const message: OnboardingAction = { action: OnboardingActionString.ONBOARDING };
 
