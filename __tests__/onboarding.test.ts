@@ -2,7 +2,6 @@ import Web3 from 'web3';
 
 import Onboarding from '../src/modules/onboarding';
 
-// DEFAULT GANACHE ACCOUNT FOR TESTING ONLY -- DO NOT USE IN PRODUCTION.
 const GANACHE_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1';
 
 const EXPECTED_API_KEY_CREDENTIALS_MAINNET = {
