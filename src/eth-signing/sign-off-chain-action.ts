@@ -127,13 +127,8 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
       }
 
       case SigningMethod.Personal: {
-        if (this.web3.currentProvider === null) {
-          throw new Error('Cannot sign since Web3 currentProvider is null');
-        }
-
         const messageString = this.getPersonalSignMessage(message);
-        const rawSignature = await this.web3.eth.personal.sign(messageString, signer, '');
-        return createTypedSignature(rawSignature, SignatureTypes.PERSONAL);
+        return this.ethSignPersonalInternal(signer, messageString);
       }
 
       default:

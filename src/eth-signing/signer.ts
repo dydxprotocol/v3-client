@@ -10,7 +10,7 @@ import {
   SignatureTypes,
   SigningMethod,
 } from '../types';
-import { stripHexPrefix } from './helpers';
+import { createTypedSignature, stripHexPrefix } from './helpers';
 
 export abstract class Signer {
   protected readonly web3: Web3;
@@ -93,12 +93,47 @@ export abstract class Signer {
       method: rpcMethod,
       params: [signer, rpcData],
       jsonrpc: '2.0',
-      id: new Date().getTime(),
+      id: Date.now(),
     });
 
     if (response.error) {
       throw new Error((response.error as unknown as { message: string }).message);
     }
     return `0x${stripHexPrefix(response.result)}0${SignatureTypes.NO_PREPEND}`;
+  }
+
+  /**
+   * Sign a message with `personal_sign`.
+   */
+  protected async ethSignPersonalInternal(
+    signer: string,
+    message: string,
+  ): Promise<string> {
+    let provider = this.web3.currentProvider;
+    if (provider === null) {
+      throw new Error('Cannot sign since Web3 currentProvider is null');
+    }
+    if (typeof provider === 'string') {
+      throw new Error('Cannot sign since Web3 currentProvider is a string');
+    }
+    provider = provider as AbstractProvider;
+
+    const sendAsync: (param: JsonRpcPayload) => Promise<JsonRpcResponse> = (
+      promisify(provider.sendAsync || provider.send).bind(provider)
+    );
+    const rpcMethod = 'personal_sign';
+
+    const response = await sendAsync({
+      method: rpcMethod,
+      params: [signer, message],
+      jsonrpc: '2.0',
+      id: Date.now(),
+    });
+
+    if (response.error) {
+      throw new Error((response.error as unknown as { message: string }).message);
+    }
+    // Note: Using createTypedSignature() fixes the signature `v` value.
+    return createTypedSignature(response.result, SignatureTypes.PERSONAL);
   }
 }
