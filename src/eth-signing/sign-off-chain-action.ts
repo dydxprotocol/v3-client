@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as ethers from 'ethers';
+import _ from 'lodash';
 import Web3 from 'web3';
 
 import {
@@ -15,8 +16,13 @@ import {
   createTypedSignature,
   ecRecoverTypedSignature,
   hashString,
+  stripHexPrefix,
 } from './helpers';
 import { Signer } from './signer';
+
+// IMPORTANT: The order of these params affects the message signed with SigningMethod.PERSONAL.
+//            The message should not be changed at all since it's used to generated default keys.
+const PERSONAL_SIGN_DOMAIN_PARAMS = ['name', 'version', 'chainId'];
 
 type EIP712Struct = {
   type: string;
@@ -120,6 +126,16 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
         );
       }
 
+      case SigningMethod.Personal: {
+        if (this.web3.currentProvider === null) {
+          throw new Error('Cannot sign since Web3 currentProvider is null');
+        }
+
+        const messageString = this.getPersonalSignMessage(message);
+        const rawSignature = await this.web3.eth.personal.sign(messageString, signer, '');
+        return createTypedSignature(rawSignature, SignatureTypes.PERSONAL);
+      }
+
       default:
         throw new Error(`Invalid signing method ${signingMethod}`);
     }
@@ -130,9 +146,42 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
     expectedSigner: Address,
     message: M,
   ): boolean {
-    const hash = this.getHash(message);
-    const signer = ecRecoverTypedSignature(hash, typedSignature);
+    if (stripHexPrefix(typedSignature).length !== 66 * 2) {
+      throw new Error(`Unable to verify signature with invalid length: ${typedSignature}`);
+    }
+
+    const sigType = parseInt(typedSignature.slice(-2), 16);
+    let hashOrMessage: string;
+    switch (sigType) {
+      case SignatureTypes.NO_PREPEND:
+      case SignatureTypes.DECIMAL:
+      case SignatureTypes.HEXADECIMAL:
+        hashOrMessage = this.getHash(message);
+        break;
+      case SignatureTypes.PERSONAL:
+        hashOrMessage = this.getPersonalSignMessage(message);
+        break;
+      default:
+        throw new Error(`Invalid signature type: ${sigType}`);
+    }
+
+    const signer = ecRecoverTypedSignature(hashOrMessage, typedSignature);
     return addressesAreEqual(signer, expectedSigner);
+  }
+
+  /**
+   * Get the message string to be signed when using SignatureTypes.PERSONAL.
+   *
+   * This signing method may be used in cases where EIP-712 signing is not possible.
+   */
+  public getPersonalSignMessage(
+    message: M,
+  ): string {
+    // Make sure the output is deterministic for a given input.
+    return JSON.stringify({
+      ..._.pick(this.getDomainData(), PERSONAL_SIGN_DOMAIN_PARAMS),
+      ..._.pick(message, _.keys(message).sort()),
+    }, null, 2);
   }
 
   public getDomainHash(): string {

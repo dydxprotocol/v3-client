@@ -3,8 +3,19 @@ import Web3 from 'web3';
 
 import { Address, SignatureTypes } from '../types';
 
+/**
+ * Ethereum signed message prefix without message length.
+ */
+export const PREPEND_PERSONAL: string = '\x19Ethereum Signed Message:\n';
+
+/**
+ * Ethereum signed message prefix, 32-byte message, with message length represented as a string.
+ */
 export const PREPEND_DEC: string = '\x19Ethereum Signed Message:\n32';
 
+/**
+ * Ethereum signed message prefix, 32-byte message, with message length as a one-byte integer.
+ */
 export const PREPEND_HEX: string = '\x19Ethereum Signed Message:\n\x20';
 
 export const EIP712_DOMAIN_STRING: string = 'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)';
@@ -31,37 +42,47 @@ export function isValidSigType(
     case SignatureTypes.NO_PREPEND:
     case SignatureTypes.DECIMAL:
     case SignatureTypes.HEXADECIMAL:
+    case SignatureTypes.PERSONAL:
       return true;
     default:
       return false;
   }
 }
 
+/**
+ * Recover the address used to sign a given hash or message.
+ *
+ * The string `hashOrMessage` is a hash, unless the signature has type SignatureTypes.PERSONAL, in
+ * which case it is the signed message.
+ */
 export function ecRecoverTypedSignature(
-  hash: string,
+  hashOrMessage: string,
   typedSignature: string,
 ): Address {
-  if (stripHexPrefix(typedSignature).length !== 66 * 2) {
-    throw new Error(`Unable to ecrecover signature: ${typedSignature}`);
-  }
-
   const sigType = parseInt(typedSignature.slice(-2), 16);
 
   let prependedHash: string | null;
   switch (sigType) {
     case SignatureTypes.NO_PREPEND:
-      prependedHash = hash;
+      prependedHash = hashOrMessage;
       break;
+    case SignatureTypes.PERSONAL: {
+      const fullMessage = `${PREPEND_PERSONAL}${hashOrMessage.length}${hashOrMessage}`;
+      prependedHash = Web3.utils.soliditySha3(
+        { t: 'string', v: fullMessage },
+      );
+      break;
+    }
     case SignatureTypes.DECIMAL:
       prependedHash = Web3.utils.soliditySha3(
         { t: 'string', v: PREPEND_DEC },
-        { t: 'bytes32', v: hash },
+        { t: 'bytes32', v: hashOrMessage },
       );
       break;
     case SignatureTypes.HEXADECIMAL:
       prependedHash = Web3.utils.soliditySha3(
         { t: 'string', v: PREPEND_HEX },
-        { t: 'bytes32', v: hash },
+        { t: 'bytes32', v: hashOrMessage },
       );
       break;
     default:

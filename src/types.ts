@@ -96,12 +96,14 @@ export enum SigningMethod {
   MetaMask = 'MetaMask',             // order hashed according to EIP-712 (MetaMask-only)
   MetaMaskLatest = 'MetaMaskLatest', // ... according to latest version of EIP-712 (MetaMask-only)
   CoinbaseWallet = 'CoinbaseWallet', // ... according to latest version of EIP-712 (CoinbaseWallet)
+  Personal = 'Personal',             // message signed with personal_sign
 }
 
 export enum SignatureTypes {
   NO_PREPEND = 0,
   DECIMAL = 1,
   HEXADECIMAL = 2,
+  PERSONAL = 3,
 }
 
 // ============ API Request Types ============
