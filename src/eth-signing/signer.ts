@@ -119,7 +119,7 @@ export abstract class Signer {
     provider = provider as AbstractProvider;
 
     const sendAsync: (param: JsonRpcPayload) => Promise<JsonRpcResponse> = (
-      promisify(provider.sendAsync).bind(provider)
+      promisify(provider.sendAsync || provider.send).bind(provider)
     );
     const rpcMethod = 'personal_sign';
 

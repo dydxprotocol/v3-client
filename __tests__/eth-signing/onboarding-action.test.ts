@@ -25,7 +25,7 @@ const EXPECTED_PERSONAL_MESSAGE = `{
   "onlySignOn": "https://trade.dydx.exchange"
 }`;
 
-// Signature generated using web3.eth.personal().
+// Typed signature generated using web3.eth.personal().
 const PERSONAL_SIGNATURE = (
   '0x12311bcc0280fe24e529bd16fa770a3eddb90ebca9f7d06e9ba11928f1d14dc8' +
   '7c2f6e5409137150feeaf37319ae2160996788528248090b56896d74d3ce5c3b1b03'
@@ -144,8 +144,11 @@ describe('SignOnboardingAction', () => {
 
     it('signs a message using SigningMethod.Personal', async () => {
       // Mock the signing function since personal_sign is not supported by Ganache.
-      const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
-      web3.eth.personal.sign = jest.fn().mockResolvedValue(PERSONAL_SIGNATURE.slice(2, 132));
+      const provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
+      const web3 = new Web3(provider);
+      provider.send = jest.fn().mockImplementation((_, callback) => {
+        callback(null, { result: PERSONAL_SIGNATURE.slice(0, -2) });
+      });
       const spiedSigner = new SignOnboardingAction(web3, 1);
 
       await spiedSigner.sign(
@@ -153,10 +156,17 @@ describe('SignOnboardingAction', () => {
         SigningMethod.Personal,
         { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
       );
-      expect(web3.eth.personal.sign).toHaveBeenCalledWith(
-        EXPECTED_PERSONAL_MESSAGE,
-        GANACHE_ADDRESS,
-        '',
+      expect(provider.send).toHaveBeenCalledWith(
+        {
+          id: expect.any(Number),
+          jsonrpc: '2.0',
+          method: 'personal_sign',
+          params: [
+            GANACHE_ADDRESS,
+            EXPECTED_PERSONAL_MESSAGE,
+          ],
+        },
+        expect.any(Function), // Callback.
       );
     });
 
