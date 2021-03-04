@@ -26,6 +26,7 @@ const KEY_DERIVATION_SUPPORTED_SIGNING_METHODS: SigningMethod[] = [
   SigningMethod.MetaMask,
   SigningMethod.MetaMaskLatest,
   SigningMethod.CoinbaseWallet,
+  SigningMethod.Personal,
 ];
 
 export default class Onboarding {
@@ -95,7 +96,7 @@ export default class Onboarding {
       starkKeyYCoordinate: string,
     },
     ethereumAddress: string,
-    signature?: string,
+    signature: string | null = null,
     signingMethod?: SigningMethod,
   ): Promise<{
     apiKey: ApiKeyCredentials,
