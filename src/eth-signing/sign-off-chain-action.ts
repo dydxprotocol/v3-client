@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as ethers from 'ethers';
+import _ from 'lodash';
 import Web3 from 'web3';
 
 import {
@@ -18,6 +19,10 @@ import {
   stripHexPrefix,
 } from './helpers';
 import { Signer } from './signer';
+
+// IMPORTANT: The order of these params affects the message signed with SigningMethod.PERSONAL.
+//            The message should not be changed at all since it's used to generated default keys.
+const PERSONAL_SIGN_DOMAIN_PARAMS = ['name', 'version', 'chainId'];
 
 type EIP712Struct = {
   type: string;
@@ -168,14 +173,14 @@ export abstract class SignOffChainAction<M extends {}> extends Signer {
    * Get the message string to be signed when using SignatureTypes.PERSONAL.
    *
    * This signing method may be used in cases where EIP-712 signing is not possible.
-   * Note: We rely on this function producing a deterministic output for a given input.
    */
   public getPersonalSignMessage(
     message: M,
   ): string {
+    // Make sure the output is deterministic for a given input.
     return JSON.stringify({
-      ...this.getDomainData(),
-      ...message,
+      ..._.pick(this.getDomainData(), PERSONAL_SIGN_DOMAIN_PARAMS),
+      ..._.pick(message, _.keys(message).sort()),
     }, null, 2);
   }
 

@@ -12,7 +12,19 @@ let remoteSigner: SignOnboardingAction;
 let remoteAccountAddress: string;
 
 // DEFAULT GANACHE ACCOUNT FOR TESTING ONLY -- DO NOT USE IN PRODUCTION.
+const GANACHE_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1';
 const GANACHE_PRIVATE_KEY = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d';
+
+
+// IMPORTANT: This is the message used with the SigningMethod.PERSONAL singing method.
+//            The message should not be changed at all since it's used to generated default keys.
+const EXPECTED_PERSONAL_MESSAGE = `{
+  "name": "dYdX",
+  "version": "1.0",
+  "chainId": 1,
+  "action": "dYdX Onboarding",
+  "onlySignOn": "https://trade.dydx.exchange"
+}`;
 
 // Signature generated using web3.eth.personal().
 const PERSONAL_SIGNATURE = (
@@ -131,12 +143,39 @@ describe('SignOnboardingAction', () => {
       ).toBe(true);
     });
 
+    it('signs a message using SigningMethod.Personal', async () => {
+      // Mock the signing function since personal_sign is not supported by Ganache.
+      const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
+      web3.eth.personal.sign = jest.fn().mockResolvedValue(PERSONAL_SIGNATURE.slice(2, 132));
+      const spiedSigner = new SignOnboardingAction(web3, 1);
+
+      await spiedSigner.sign(
+        remoteAccountAddress,
+        SigningMethod.Personal,
+        { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
+      );
+      expect(web3.eth.personal.sign).toHaveBeenCalledWith(
+        EXPECTED_PERSONAL_MESSAGE,
+        GANACHE_ADDRESS,
+        '',
+      );
+    });
+
     it('verifies a message signed using SigningMethod.Personal', async () => {
       expect(
         localSigner.verify(
           PERSONAL_SIGNATURE,
           remoteAccountAddress,
           { action: OnboardingActionString.ONBOARDING, onlySignOn: 'https://trade.dydx.exchange' },
+        ),
+      ).toBe(true);
+
+      // Try again, with the message parameters in a different order.
+      expect(
+        localSigner.verify(
+          PERSONAL_SIGNATURE,
+          remoteAccountAddress,
+          { onlySignOn: 'https://trade.dydx.exchange', action: OnboardingActionString.ONBOARDING },
         ),
       ).toBe(true);
     });
