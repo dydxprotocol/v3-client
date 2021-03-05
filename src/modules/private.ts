@@ -371,7 +371,7 @@ export default class Private {
    *
    * @param orderId of the order being canceled
    */
-  async cancelOrder(orderId: string): Promise<void> {
+  async cancelOrder(orderId: string): Promise<{ cancelOrder: OrderResponseObject }> {
     return this.delete(
       `orders/${orderId}`,
       {},
@@ -383,7 +383,7 @@ export default class Private {
    *
    * @param market of the orders being canceled
    */
-  async cancelAllOrders(market?: Market): Promise<void> {
+  async cancelAllOrders(market?: Market): Promise<{ cancelOrders: OrderResponseObject[] }> {
     const params = market ? { market } : {};
     return this.delete(
       'orders',
