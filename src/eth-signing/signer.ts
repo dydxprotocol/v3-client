@@ -82,7 +82,7 @@ export abstract class Signer {
         break;
       case SigningMethod.CoinbaseWallet:
         sendAsync = promisify(provider.sendAsync).bind(provider);
-        rpcMethod = 'eth_signTypedData';
+        rpcMethod = 'eth_signTypedData_v4';
         rpcData = data;
         break;
       default:
