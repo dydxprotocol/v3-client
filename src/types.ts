@@ -284,6 +284,14 @@ export interface HistoricalFundingResponseObject {
   effectiveAt: ISO8601;
 }
 
+export interface HistoricalPnlResponseObject {
+  equity: string;
+  totalPnl: string;
+  createdAt: ISO8601;
+  netTransfers: string;
+  accountId: string;
+}
+
 export interface OrderbookResponseOrder {
   price: string;
   size: string;
