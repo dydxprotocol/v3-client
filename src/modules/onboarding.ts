@@ -51,7 +51,7 @@ export default class Onboarding {
     data: {},
     ethereumAddress: string,
     signature: string | null = null,
-    signingMethod: SigningMethod = SigningMethod.Hash,
+    signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<Data> {
     const message: OnboardingAction = { action: OnboardingActionString.ONBOARDING };
 
