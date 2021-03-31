@@ -14,7 +14,6 @@ import {
   OrderbookResponseObject,
   Trade,
   TransferAsset,
-  HistoricalPnlResponseObject,
 } from '../types';
 
 export default class Public {
@@ -132,26 +131,6 @@ export default class Public {
   }): Promise<{ historicalFunding: HistoricalFundingResponseObject[] }> {
     const uri: string = `historical-funding/${market}`;
     return this.get(uri, { effectiveBeforeOrAt });
-  }
-
-  /**
-   * @description get historical pnl ticks for an account between certain times
-   *
-   * @param account being checked
-   * @param createdBeforeOrAt latest historical pnl tick being returned
-   * @param createdOnOrAfter earliest historical pnl tick being returned
-   */
-  getHistoricalPnl({
-    accountId,
-    createdBeforeOrAt,
-    createdOnOrAfter,
-  }: {
-    accountId: string,
-    createdBeforeOrAt?: ISO8601,
-    createdOnOrAfter?: ISO8601,
-  }): Promise<{ historicalPnl: HistoricalPnlResponseObject[] }> {
-    const uri: string = 'historical-pnl';
-    return this.get(uri, { accountId, createdBeforeOrAt, createdOnOrAfter });
   }
 
   /**

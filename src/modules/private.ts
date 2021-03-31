@@ -31,6 +31,7 @@ import {
   Data,
   FillResponseObject,
   FundingResponseObject,
+  HistoricalPnlResponseObject,
   ISO8601,
   Market,
   OrderResponseObject,
@@ -568,6 +569,28 @@ export default class Private {
   ): Promise<{ fundingPayments: FundingResponseObject }> {
     return this.get(
       'funding',
+      params,
+    );
+  }
+
+  /**
+   * @description get historical pnl ticks for an account between certain times
+   *
+   * @param {
+   * @account being checked
+   * @createdBeforeOrAt latest historical pnl tick being returned
+   * @createdOnOrAfter earliest historical pnl tick being returned
+   * }
+   */
+  getHistoricalPnl(
+    params: {
+      accountId: string,
+      createdBeforeOrAt?: ISO8601,
+      createdOnOrAfter?: ISO8601,
+    },
+  ): Promise<{ historicalPnl: HistoricalPnlResponseObject[] }> {
+    return this.get(
+      'historical-pnl',
       params,
     );
   }
