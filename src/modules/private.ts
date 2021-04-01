@@ -476,7 +476,6 @@ export default class Private {
    * @param {
    * @amount specifies the size of the withdrawal
    * @asset specifies the asset being withdrawn
-   * @toAddress is the address being withdrawn to
    * @clientId specifies the clientId for the address
    * }
    * @param positionId specifies the associated position for the transfer

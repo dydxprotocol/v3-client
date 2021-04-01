@@ -134,7 +134,6 @@ export interface ApiOrder extends ApiStarkwareSigned {
 export interface ApiWithdrawal extends ApiStarkwareSigned {
   amount: string;
   asset: Asset;
-  toAddress: string;
   clientId: string;
 }
 
