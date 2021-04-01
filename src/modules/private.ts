@@ -31,6 +31,7 @@ import {
   Data,
   FillResponseObject,
   FundingResponseObject,
+  GenericParams,
   HistoricalPnlResponseObject,
   ISO8601,
   Market,
@@ -144,20 +145,24 @@ export default class Private {
   /**
    * @description get a signature for the ethereumAddress if registered
    */
-  async getRegistration(): Promise<{ signature: string }> {
+  async getRegistration(genericParams: GenericParams = {}): Promise<{ signature: string }> {
     return this.get(
       'registration',
-      {},
+      {
+        ...genericParams,
+      },
     );
   }
 
   /**
    * @description get the user associated with the ethereumAddress
    */
-  async getUser(): Promise<{ user: UserResponseObject }> {
+  async getUser(genericParams: GenericParams = {}): Promise<{ user: UserResponseObject }> {
     return this.get(
       'users',
-      {},
+      {
+        ...genericParams,
+      },
     );
   }
 
@@ -215,20 +220,25 @@ export default class Private {
    *
    * @param ethereumAddress the account is associated with
    */
-  async getAccount(ethereumAddress: string): Promise<{ account: AccountResponseObject }> {
+  async getAccount(
+    ethereumAddress: string,
+    genericParams: GenericParams = {},
+  ): Promise<{ account: AccountResponseObject }> {
     return this.get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
-      {},
+      { ...genericParams },
     );
   }
 
   /**
    * @description get all accounts associated with an ethereumAddress
    */
-  async getAccounts(): Promise<{ accounts: AccountResponseObject[] }> {
+  async getAccounts(
+    genericParams: GenericParams = {},
+  ): Promise<{ accounts: AccountResponseObject[] }> {
     return this.get(
       'accounts',
-      {},
+      { ...genericParams },
     );
   }
 
@@ -249,10 +259,14 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     },
+    genericParams: GenericParams = {},
   ): Promise<{ positions: PositionResponseObject[] }> {
     return this.get(
       'positions',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -276,10 +290,14 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     } = {},
+    genericParams: GenericParams = {},
   ): Promise<{ orders: OrderResponseObject[] }> {
     return this.get(
       'orders',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -288,10 +306,13 @@ export default class Private {
    *
    * @param orderId of the order
    */
-  async getOrderById(orderId: string): Promise<{ order: OrderResponseObject }> {
+  async getOrderById(
+    orderId: string,
+    genericParams: GenericParams = {},
+  ): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/${orderId}`,
-      {},
+      { ...genericParams },
     );
   }
 
@@ -300,10 +321,13 @@ export default class Private {
    *
    * @param clientId of the order
    */
-  async getOrderByClientId(clientId: string): Promise<{ order: OrderResponseObject }> {
+  async getOrderByClientId(
+    clientId: string,
+    genericParams: GenericParams = {},
+  ): Promise<{ order: OrderResponseObject }> {
     return this.get(
       `orders/client/${clientId}`,
-      {},
+      { ...genericParams },
     );
   }
 
@@ -409,10 +433,14 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     },
+    genericParams: GenericParams = {},
   ): Promise<{ fills: FillResponseObject[] }> {
     return this.get(
       'fills',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -431,10 +459,14 @@ export default class Private {
       limit?: number,
       createdBeforeOrAt?: ISO8601,
     } = {},
+    genericParams: GenericParams = {},
   ): Promise<{ transfers: TransferResponseObject[] }> {
     return this.get(
       'transfers',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -566,10 +598,14 @@ export default class Private {
       limit?: number,
       effectiveBeforeOrAt?: ISO8601,
     },
+    genericParams: GenericParams = {},
   ): Promise<{ fundingPayments: FundingResponseObject }> {
     return this.get(
       'funding',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -588,10 +624,14 @@ export default class Private {
       createdBeforeOrAt?: ISO8601,
       createdOnOrAfter?: ISO8601,
     },
+    genericParams: GenericParams = {},
   ): Promise<{ historicalPnl: HistoricalPnlResponseObject[] }> {
     return this.get(
       'historical-pnl',
-      params,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
@@ -599,8 +639,10 @@ export default class Private {
    * @description get the key ids associated with an ethereumAddress
    *
    */
-  async getApiKeys(): Promise<{ apiKeys: { key: string }[] }> {
-    return this.get('api-keys', {});
+  async getApiKeys(
+    genericParams: GenericParams = {},
+  ): Promise<{ apiKeys: { key: string }[] }> {
+    return this.get('api-keys', { ...genericParams });
   }
 
   // ============ Signing ============
