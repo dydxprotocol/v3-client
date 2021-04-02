@@ -94,6 +94,7 @@ export default class Onboarding {
     params: {
       starkKey: string,
       starkKeyYCoordinate: string,
+      referredByAffiliateLink?: string,
     },
     ethereumAddress: string,
     signature: string | null = null,
