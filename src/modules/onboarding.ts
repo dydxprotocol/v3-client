@@ -89,6 +89,7 @@ export default class Onboarding {
    * @param ethereumAddress of the account
    * @param signature validating the request
    * @param signingMethod for the request
+   * @param referredByAffiliateLink of affiliate who referred the user
    */
   async createUser(
     params: {
