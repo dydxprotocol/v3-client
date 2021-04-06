@@ -205,6 +205,6 @@ export default class Public {
     const time2: number = Date.now();
 
     const averageTime: number = (time1 + time2) / 2;
-    return epoch - averageTime;
+    return epoch - averageTime / 1000;
   }
 }
