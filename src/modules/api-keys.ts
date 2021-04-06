@@ -8,22 +8,32 @@ import {
   axiosRequest,
 } from '../lib/axios';
 import {
-  SigningMethod,
-  Data,
   ApiKeyCredentials,
+  Data,
+  ISO8601,
+  SigningMethod,
 } from '../types';
+import Clock from './clock';
 
 export default class ApiKeys {
   readonly host: string;
   readonly signer: SignApiKeyAction;
+  readonly clock: Clock;
 
-  constructor(
+  constructor({
+    host,
+    web3,
+    networkId,
+    clock,
+  }: {
     host: string,
     web3: Web3,
     networkId: number,
-  ) {
+    clock: Clock,
+  }) {
     this.host = host;
     this.signer = new SignApiKeyAction(web3, networkId);
+    this.clock = clock;
   }
 
   // ============ Request Helpers ============
@@ -36,7 +46,7 @@ export default class ApiKeys {
     data: {} = {},
   ): Promise<Data> {
     const requestPath: string = `/v3/${endpoint}`;
-    const timestamp: string = new Date().toISOString();
+    const timestamp: ISO8601 = this.clock.getAdjustedIsoString();
     const body: string = JSON.stringify(data);
     const signature: string = await this.signer.sign(
       ethereumAddress,
