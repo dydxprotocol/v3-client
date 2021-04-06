@@ -72,7 +72,7 @@ export class DydxClient {
   }
 
   /**
-   * Get the public module, used for interacting with public endpoints.
+   * Get the clock module, used for adjusting system time to server time.
    */
   get clock(): Clock {
     return this._clock;
