@@ -200,7 +200,11 @@ export default class Public {
    * and the system time.
    */
   async getTimeAdjustment(): Promise<number> {
+    const time1: number = Date.now();
     const { time: { epoch } } = await this.getTime();
-    return epoch - Date.now();
+    const time2: number = Date.now();
+
+    const averageTime: number = (time1 + time2) / 2;
+    return epoch - averageTime;
   }
 }
