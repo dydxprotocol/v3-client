@@ -191,7 +191,7 @@ export default class Public {
   /**
    * @description get api server time as iso and as epoch in seconds with MS
    */
-  getTime(): Promise<{ time: { iso: string, epoch: number } }> {
+  getTime(): Promise<{ iso: string, epoch: number }> {
     return this.get('time', {});
   }
 
@@ -201,10 +201,10 @@ export default class Public {
    */
   async getTimestampAdjustment(): Promise<number> {
     const time1: number = Date.now();
-    const { time: { epoch } } = await this.getTime();
+    const { epoch } = await this.getTime();
     const time2: number = Date.now();
 
-    const averageTime: number = (time1 + time2) / 2;
-    return epoch - averageTime;
+    const averageEpoch: number = (time1 + time2) / 2 / 1000;
+    return epoch - averageEpoch;
   }
 }
