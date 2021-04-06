@@ -46,6 +46,7 @@ import {
   TransferResponseObject,
   UserResponseObject,
 } from '../types';
+import Clock from './clock';
 
 // TODO: Figure out if we can get rid of this.
 const METHOD_ENUM_MAP: Record<RequestMethod, ApiMethod> = {
@@ -63,17 +64,20 @@ export default class Private {
   readonly networkId: number;
   readonly starkLib: StarkwareLib;
   readonly starkKeyPair?: KeyPair;
+  readonly clock: Clock;
 
   constructor({
     host,
     apiKeyCredentials,
     starkPrivateKey,
     networkId,
+    clock,
   }: {
     host: string,
     apiKeyCredentials: ApiKeyCredentials,
     networkId: number,
     starkPrivateKey?: string | KeyPair,
+    clock: Clock,
   }) {
     this.host = host;
     this.apiKeyCredentials = apiKeyCredentials;
@@ -82,6 +86,7 @@ export default class Private {
     if (starkPrivateKey) {
       this.starkKeyPair = asSimpleKeyPair(asEcKeyPair(starkPrivateKey));
     }
+    this.clock = clock;
   }
 
   // ============ Request Helpers ============
@@ -92,7 +97,7 @@ export default class Private {
     data?: {},
   ): Promise<Data> {
     const requestPath = `/v3/${endpoint}`;
-    const isoTimestamp: ISO8601 = new Date().toISOString();
+    const isoTimestamp: ISO8601 = this.clock.getAdjustedIsoString();
     const headers = {
       'DYDX-SIGNATURE': this.sign({
         requestPath,

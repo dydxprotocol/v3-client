@@ -3,6 +3,7 @@ import { KeyPair } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
 import ApiKeys from './modules/api-keys';
+import Clock from './modules/clock';
 import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
@@ -20,6 +21,7 @@ export interface ClientOptions {
   web3?: Web3;
   web3Provider?: string | Provider;
   apiKeyCredentials?: ApiKeyCredentials;
+  timestampAdjustment?: number;
 }
 
 export class DydxClient {
@@ -31,8 +33,11 @@ export class DydxClient {
   readonly web3?: Web3;
   apiKeyCredentials?: ApiKeyCredentials;
 
-  // Modules. Except for `public`, these are created on-demand.
+  // Modules.
   private readonly _public: Public;
+  private readonly _clock: Clock;
+
+  // Modules. These are created on-demand.
   private _private?: Private;
   private _apiKeys?: ApiKeys;
   private _onboarding?: Onboarding;
@@ -56,6 +61,7 @@ export class DydxClient {
 
     // Modules.
     this._public = new Public(host);
+    this._clock = new Clock(options.timestampAdjustment);
   }
 
   /**
@@ -63,6 +69,13 @@ export class DydxClient {
    */
   get public(): Public {
     return this._public;
+  }
+
+  /**
+   * Get the clock module, used for adjusting system time to server time.
+   */
+  get clock(): Clock {
+    return this._clock;
   }
 
   /**
@@ -76,6 +89,7 @@ export class DydxClient {
           apiKeyCredentials: this.apiKeyCredentials,
           starkPrivateKey: this.starkPrivateKey,
           networkId: this.networkId,
+          clock: this._clock,
         });
       } else {
         return notSupported(
@@ -92,7 +106,12 @@ export class DydxClient {
   get apiKeys(): ApiKeys {
     if (!this._apiKeys) {
       if (this.web3) {
-        this._apiKeys = new ApiKeys(this.host, this.web3, this.networkId);
+        this._apiKeys = new ApiKeys({
+          host: this.host,
+          web3: this.web3,
+          networkId: this.networkId,
+          clock: this._clock,
+        });
       } else {
         return notSupported(
           'API key endpoints are not supported since neither web3 nor web3Provider was provided',

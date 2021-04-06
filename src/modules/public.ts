@@ -194,4 +194,17 @@ export default class Public {
   getTime(): Promise<{ time: { iso: string, epoch: number } }> {
     return this.get('time', {});
   }
+
+  /**
+   * @description get a rough estimate of the difference (in epoch seconds) between the server time
+   * and the system time.
+   */
+  async getTimestampAdjustment(): Promise<number> {
+    const time1: number = Date.now();
+    const { time: { epoch } } = await this.getTime();
+    const time2: number = Date.now();
+
+    const averageTime: number = (time1 + time2) / 2;
+    return epoch - averageTime;
+  }
 }
