@@ -204,7 +204,7 @@ export default class Public {
     const { epoch } = await this.getTime();
     const time2: number = Date.now();
 
-    const averageTime: number = (time1 + time2) / 2;
-    return epoch - averageTime / 1000;
+    const averageEpoch: number = (time1 + time2) / 2 / 1000;
+    return epoch - averageEpoch;
   }
 }
