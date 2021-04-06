@@ -7,14 +7,14 @@ describe('Clock', () => {
   });
 
   it('setTimestampAdjustment', async () => {
-    const newAdjustment: number = 12.123;
+    const newAdjustment: number = 124234.123;
     const client = new DydxClient('https://example.com', {});
     client.clock.setTimestampAdjustment(newAdjustment);
     expect(client.clock.timestampAdjustment).toEqual(newAdjustment);
   });
 
   it('getAdjustedIsoString', async () => {
-    const newAdjustment: number = -10.5;
+    const newAdjustment: number = -312340.5;
     const client = new DydxClient('https://example.com', {});
     const iso1 = client.clock.getAdjustedIsoString();
     client.clock.setTimestampAdjustment(newAdjustment);
