@@ -199,7 +199,7 @@ export default class Public {
    * @description get a rough estimate of the difference (in epoch seconds) between the server time
    * and the system time.
    */
-  async getTimeAdjustment(): Promise<number> {
+  async getTimestampAdjustment(): Promise<number> {
     const time1: number = Date.now();
     const { time: { epoch } } = await this.getTime();
     const time2: number = Date.now();
