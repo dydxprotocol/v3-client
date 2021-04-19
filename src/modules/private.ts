@@ -10,11 +10,13 @@ import {
   asEcKeyPair,
   asSimpleKeyPair,
   SignableConditionalTransfer,
+  SignableTransfer,
   nonceFromClientId,
+  TransferParams as StarklibTransferParams,
 } from '@dydxprotocol/starkex-lib';
 import _ from 'lodash';
 
-import { generateQueryPath } from '../helpers/request-helpers';
+import { generateQueryPath, generateRandomClientId } from '../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
@@ -27,6 +29,7 @@ import {
   ApiFastWithdrawalParams,
   ApiKeyCredentials,
   ApiOrder,
+  ApiTransfer,
   ApiWithdrawal,
   Data,
   FillResponseObject,
@@ -43,6 +46,7 @@ import {
   PositionResponseObject,
   PositionStatus,
   Provider,
+  TransferParams,
   TransferResponseObject,
   UserResponseObject,
 } from '../types';
@@ -363,7 +367,7 @@ export default class Private {
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
     // Have to strip leading zeroes since clientId is being mis-processed as a number.
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
     if (!signature) {
@@ -493,7 +497,7 @@ export default class Private {
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
     // Have to strip leading zeroes since clientId is being mis-processed as a number.
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
     if (!signature) {
@@ -544,7 +548,7 @@ export default class Private {
     }: PartialBy<ApiFastWithdrawalParams, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
     // TODO meet starkware specification
 
     let signature: string | undefined = params.signature;
@@ -584,6 +588,58 @@ export default class Private {
     return this.post(
       'fast-withdrawals',
       fastWithdrawal,
+    );
+  }
+
+  /**
+     * @description post a new transfer
+     *
+     * @param {
+      * @amount specifies the size of the transfer
+      * @receiverAccountId specifies the receiver account id
+      * @receiverPublicKey specifies the receiver public key
+      * @receiverPositionId specifies the receiver position id
+      * @clientId specifies the clientId for the address
+      * @signature starkware specific signature for the transfer
+      * }
+      * @param positionId specifies the associated position for the transfer
+      */
+  async createTransfer(
+    params: PartialBy<TransferParams, 'clientId' | 'signature'>,
+    positionId: string,
+  ): Promise<{ transfer: TransferResponseObject }> {
+    const clientId = params.clientId || generateRandomClientId();
+
+    let signature: string | undefined = params.signature;
+    if (!signature) {
+      if (!this.starkKeyPair) {
+        throw new Error(
+          'Transfer is not signed and client was not initialized with starkPrivateKey',
+        );
+      }
+      const transferToSign: StarklibTransferParams = {
+        humanAmount: params.amount,
+        expirationIsoTimestamp: params.expiration,
+        receiverPositionId: params.receiverPositionId,
+        senderPositionId: positionId,
+        receiverPublicKey: params.receiverPublicKey,
+        clientId,
+      };
+      const starkTransfer = SignableTransfer.fromTransfer(transferToSign, this.networkId);
+      signature = await starkTransfer.sign(this.starkKeyPair);
+    }
+
+    const transfer: ApiTransfer = {
+      amount: params.amount,
+      receiverAccountId: params.receiverAccountId,
+      clientId,
+      signature,
+      expiration: params.expiration,
+    };
+
+    return this.post(
+      'transfers',
+      transfer,
     );
   }
 

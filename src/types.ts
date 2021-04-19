@@ -137,6 +137,20 @@ export interface ApiWithdrawal extends ApiStarkwareSigned {
   clientId: string;
 }
 
+export interface ApiTransfer extends ApiStarkwareSigned {
+  amount: string;
+  clientId: string;
+  receiverAccountId: string;
+}
+
+export interface TransferParams extends ApiStarkwareSigned {
+  amount: string;
+  clientId: string;
+  receiverAccountId: string;
+  receiverPublicKey: string;
+  receiverPositionId: string;
+}
+
 export interface ApiFastWithdrawal extends ApiStarkwareSigned {
   creditAsset: TransferAsset;
   creditAmount: string;

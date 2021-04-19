@@ -22,3 +22,7 @@ export function keccak256Buffer(input: Buffer): Buffer {
   }
   return Buffer.from(stripHexPrefix(Web3.utils.soliditySha3(input as unknown as string)!), 'hex');
 }
+
+export function generateRandomClientId() {
+  return Math.random().toString().slice(2).replace(/^0+/, '');
+}
