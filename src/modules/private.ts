@@ -12,10 +12,11 @@ import {
   SignableConditionalTransfer,
   SignableTransfer,
   nonceFromClientId,
+  TransferParams as StarklibTransferParams,
 } from '@dydxprotocol/starkex-lib';
 import _ from 'lodash';
 
-import { generateQueryPath } from '../helpers/request-helpers';
+import { generateQueryPath, generateRandomClientId } from '../helpers/request-helpers';
 import {
   RequestMethod,
   axiosRequest,
@@ -366,7 +367,7 @@ export default class Private {
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
     // Have to strip leading zeroes since clientId is being mis-processed as a number.
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
     if (!signature) {
@@ -496,7 +497,7 @@ export default class Private {
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
     // Have to strip leading zeroes since clientId is being mis-processed as a number.
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
     if (!signature) {
@@ -547,7 +548,7 @@ export default class Private {
     }: PartialBy<ApiFastWithdrawalParams, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
     // TODO meet starkware specification
 
     let signature: string | undefined = params.signature;
@@ -601,12 +602,13 @@ export default class Private {
       * @clientId specifies the clientId for the address
       * @signature starkware specific signature for the transfer
       * }
+      * @param positionId specifies the associated position for the transfer
       */
   async createTransfer(
     params: PartialBy<TransferParams, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ transfer: TransferResponseObject }> {
-    const clientId = params.clientId || Math.random().toString().slice(2).replace(/^0+/, '');
+    const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
     if (!signature) {
@@ -615,7 +617,7 @@ export default class Private {
           'Transfer is not signed and client was not initialized with starkPrivateKey',
         );
       }
-      const transferToSign = {
+      const transferToSign: StarklibTransferParams = {
         humanAmount: params.amount,
         expirationIsoTimestamp: params.expiration,
         receiverPositionId: params.receiverPositionId,
