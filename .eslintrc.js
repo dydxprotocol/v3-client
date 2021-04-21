@@ -6,6 +6,10 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
 
+  ignorePatterns: [
+    '**/examples/**/*.js',
+  ],
+
   // Extend the base rule set.
   rules: {
   },
