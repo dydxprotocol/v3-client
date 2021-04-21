@@ -4,6 +4,7 @@ import {
   FastWithdrawalsResponseObject,
   CandleResolution,
   CandleResponseObject,
+  ConfigResponseObject,
   Data,
   HistoricalFundingResponseObject,
   ISO8601,
@@ -206,5 +207,13 @@ export default class Public {
 
     const averageEpoch: number = (time1 + time2) / 2 / 1000;
     return epoch - averageEpoch;
+  }
+
+  /**
+   * @description get any globally-defined variables from the server not associated with any
+   * particular market or account.
+   */
+  async getConfig(): Promise<ConfigResponseObject> {
+    return this.get('config', {});
   }
 }
