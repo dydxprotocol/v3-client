@@ -331,6 +331,12 @@ export interface CandleResponseObject {
   usdVolume: string;
 }
 
+export interface ConfigResponseObject {
+  maxFastWithdrawalAmount: string;
+  defaultMakerFee: string;
+  defaultTakerFee: string;
+}
+
 export interface FastWithdrawalsResponseObject {
   liquidityProviders: {
     [lpPositionId: number]: LiquidityProviderInfo;
