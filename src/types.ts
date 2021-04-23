@@ -184,6 +184,10 @@ export interface MarketResponseObject {
   volume24H: string;
   trades24H: string;
   openInterest: string;
+  maxPositionSize: string;
+  incrementalInitialMarginFraction: string;
+  incrementalPositionSize: string;
+  basePositionSize: string;
 }
 
 export interface MarketsResponseObject {
