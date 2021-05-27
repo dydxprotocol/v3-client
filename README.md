@@ -17,3 +17,5 @@
 <br>
 
 TypeScript client for dYdX (v3 API).
+<br />
+[Typescript client documentation link](https://docs.dydx.exchange/#typescript-client)
