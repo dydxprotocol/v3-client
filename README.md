@@ -14,7 +14,7 @@
     <img src='https://img.shields.io/github/license/dydxprotocol/v3-client.svg' alt='License' />
   </a>
 </div>
-<br>
+<br />
 
 TypeScript client for dYdX (v3 API).
 <br />
