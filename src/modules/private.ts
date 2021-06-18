@@ -151,6 +151,13 @@ export default class Private {
 
   // ============ Requests ============
 
+  async getGeneric(endpoint: string, params: {}): Promise<Data> {
+    return this.get(
+      endpoint,
+      params,
+    );
+  }
+
   /**
    * @description get a signature for the ethereumAddress if registered
    */
