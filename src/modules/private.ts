@@ -121,7 +121,7 @@ export default class Private {
     });
   }
 
-  protected async get(
+  protected async _get(
     endpoint: string,
     params: {},
   ): Promise<Data> {
@@ -151,8 +151,8 @@ export default class Private {
 
   // ============ Requests ============
 
-  async getGeneric(endpoint: string, params: {}): Promise<Data> {
-    return this.get(
+  async get(endpoint: string, params: {}): Promise<Data> {
+    return this._get(
       endpoint,
       params,
     );
@@ -162,7 +162,7 @@ export default class Private {
    * @description get a signature for the ethereumAddress if registered
    */
   async getRegistration(genericParams: GenericParams = {}): Promise<{ signature: string }> {
-    return this.get(
+    return this._get(
       'registration',
       {
         ...genericParams,
@@ -174,7 +174,7 @@ export default class Private {
    * @description get the user associated with the ethereumAddress
    */
   async getUser(genericParams: GenericParams = {}): Promise<{ user: UserResponseObject }> {
-    return this.get(
+    return this._get(
       'users',
       {
         ...genericParams,
@@ -240,7 +240,7 @@ export default class Private {
     ethereumAddress: string,
     genericParams: GenericParams = {},
   ): Promise<{ account: AccountResponseObject }> {
-    return this.get(
+    return this._get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
       { ...genericParams },
     );
@@ -252,7 +252,7 @@ export default class Private {
   async getAccounts(
     genericParams: GenericParams = {},
   ): Promise<{ accounts: AccountResponseObject[] }> {
-    return this.get(
+    return this._get(
       'accounts',
       { ...genericParams },
     );
@@ -277,7 +277,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ positions: PositionResponseObject[] }> {
-    return this.get(
+    return this._get(
       'positions',
       {
         ...params,
@@ -308,7 +308,7 @@ export default class Private {
     } = {},
     genericParams: GenericParams = {},
   ): Promise<{ orders: OrderResponseObject[] }> {
-    return this.get(
+    return this._get(
       'orders',
       {
         ...params,
@@ -326,7 +326,7 @@ export default class Private {
     orderId: string,
     genericParams: GenericParams = {},
   ): Promise<{ order: OrderResponseObject }> {
-    return this.get(
+    return this._get(
       `orders/${orderId}`,
       { ...genericParams },
     );
@@ -341,7 +341,7 @@ export default class Private {
     clientId: string,
     genericParams: GenericParams = {},
   ): Promise<{ order: OrderResponseObject }> {
-    return this.get(
+    return this._get(
       `orders/client/${clientId}`,
       { ...genericParams },
     );
@@ -451,7 +451,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ fills: FillResponseObject[] }> {
-    return this.get(
+    return this._get(
       'fills',
       {
         ...params,
@@ -477,7 +477,7 @@ export default class Private {
     } = {},
     genericParams: GenericParams = {},
   ): Promise<{ transfers: TransferResponseObject[] }> {
-    return this.get(
+    return this._get(
       'transfers',
       {
         ...params,
@@ -667,7 +667,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ fundingPayments: FundingResponseObject }> {
-    return this.get(
+    return this._get(
       'funding',
       {
         ...params,
@@ -693,7 +693,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ historicalPnl: HistoricalPnlResponseObject[] }> {
-    return this.get(
+    return this._get(
       'historical-pnl',
       {
         ...params,
@@ -709,7 +709,7 @@ export default class Private {
   async getApiKeys(
     genericParams: GenericParams = {},
   ): Promise<{ apiKeys: { key: string }[] }> {
-    return this.get('api-keys', { ...genericParams });
+    return this._get('api-keys', { ...genericParams });
   }
 
   // ============ Signing ============
