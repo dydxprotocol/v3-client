@@ -363,10 +363,8 @@ export default class Private {
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ order: OrderResponseObject }> {
-    // TODO: Allow clientId to be a string.
     // const clientId = params.clientId || Math.random().toString(36).slice(2);
     //
-    // Have to strip leading zeroes since clientId is being mis-processed as a number.
     const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
