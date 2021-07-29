@@ -702,6 +702,16 @@ export default class Private {
     return this._get('api-keys', { ...genericParams });
   }
 
+  /**
+   * @description send verification email to email specified by User
+   */
+  async sendVerificationEmail(): Promise<{}> {
+    return this.put(
+      'emails/send-verification-email',
+      {},
+    );
+  }
+
   // ============ Signing ============
 
   sign({

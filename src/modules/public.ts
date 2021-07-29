@@ -36,6 +36,17 @@ export default class Public {
     });
   }
 
+  protected async put(
+    requestPath: string,
+    data: {},
+  ): Promise<Data> {
+    return axiosRequest({
+      url: `${this.host}/v3/${requestPath}`,
+      method: 'PUT',
+      data,
+    });
+  }
+
   // ============ Requests ============
 
   /**
@@ -185,6 +196,21 @@ export default class Public {
         fromISO,
         toISO,
         limit,
+      },
+    );
+  }
+
+  /**
+   * @description verify email for user with token
+   *
+   * @token that verifies user received a verification email to
+   * the email they specified
+   */
+  async verifyEmail(token: string): Promise<{}> {
+    return this.put(
+      'emails/verify-email',
+      {
+        token,
       },
     );
   }
