@@ -109,6 +109,18 @@ export enum SignatureTypes {
   PERSONAL = 3,
 }
 
+export enum LeaderboardPnlPeriod {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  ALL_TIME = 'ALL_TIME',
+}
+
+export enum LeaderboardPnlSortBy {
+  ABSOLUTE = 'ABSOLUTE',
+  PERCENT = 'PERCENT',
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -345,6 +357,29 @@ export interface FastWithdrawalsResponseObject {
   liquidityProviders: {
     [lpPositionId: number]: LiquidityProviderInfo;
   };
+}
+
+export interface LeaderboardPnlResponseObject {
+  topPnls: LeaderboardPnl[];
+  updatedAt: ISO8601;
+}
+
+export interface LeaderboardPnl {
+  username: string;
+  ethereumAddress: string;
+  absolutePnl: string;
+  percentPnl: string;
+  absoluteRank: number;
+  percentRank: number;
+}
+
+export interface AccountLeaderboardPnlResponseObject {
+  absolutePnl: string;
+  percentPnl: string;
+  absoluteRank: number;
+  percentRank: number;
+  updatedAt: ISO8601,
+  accountId: string;
 }
 
 export interface LiquidityProviderInfo {
