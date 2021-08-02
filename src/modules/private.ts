@@ -24,6 +24,7 @@ import {
 import { getAccountId } from '../lib/db';
 import {
   AccountAction,
+  AccountLeaderboardPnlResponseObject,
   AccountResponseObject,
   ApiFastWithdrawal,
   ApiFastWithdrawalParams,
@@ -37,6 +38,7 @@ import {
   GenericParams,
   HistoricalPnlResponseObject,
   ISO8601,
+  LeaderboardPnlPeriod,
   Market,
   OrderResponseObject,
   OrderSide,
@@ -255,6 +257,21 @@ export default class Private {
     return this._get(
       'accounts',
       { ...genericParams },
+    );
+  }
+
+  /**
+   * @description get leaderboard pnl for period and accountNumber 0
+   *
+   * @param period the period of pnls to retrieve
+   */
+  async getAccountLeaderboardPnl(
+    period: LeaderboardPnlPeriod,
+    genericParams: GenericParams = {},
+  ): Promise<{ leaderboardPnl: AccountLeaderboardPnlResponseObject }> {
+    return this._get(
+      `accounts/leaderboard-pnl/${period}`,
+      genericParams,
     );
   }
 

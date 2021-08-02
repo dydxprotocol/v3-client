@@ -15,6 +15,9 @@ import {
   OrderbookResponseObject,
   Trade,
   TransferAsset,
+  LeaderboardPnlSortBy,
+  LeaderboardPnlPeriod,
+  LeaderboardPnlResponseObject,
 } from '../types';
 
 export default class Public {
@@ -195,6 +198,33 @@ export default class Public {
         resolution,
         fromISO,
         toISO,
+        limit,
+      },
+    );
+  }
+
+  /**
+   * @description get leaderboard pnls
+   *
+   * @param period Time period being checked
+   * @param sortBy Pnl to sort by
+   * @param limit Number of leaderboard pnls returned
+   */
+  getLeaderboardPnls({
+    period,
+    sortBy,
+    limit,
+  }: {
+    period: LeaderboardPnlPeriod,
+    sortBy: LeaderboardPnlSortBy,
+    limit?: number,
+  }): Promise<LeaderboardPnlResponseObject> {
+    const uri: string = 'leaderboard-pnl';
+    return this.get(
+      uri,
+      {
+        period,
+        sortBy,
         limit,
       },
     );
