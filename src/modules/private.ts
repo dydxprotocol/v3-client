@@ -687,14 +687,12 @@ export default class Private {
    * @description get historical pnl ticks for an account between certain times
    *
    * @param {
-   * @account being checked
    * @createdBeforeOrAt latest historical pnl tick being returned
    * @createdOnOrAfter earliest historical pnl tick being returned
    * }
    */
   getHistoricalPnl(
     params: {
-      accountId: string,
       createdBeforeOrAt?: ISO8601,
       createdOnOrAfter?: ISO8601,
     },
