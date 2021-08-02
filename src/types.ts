@@ -366,18 +366,18 @@ export interface LeaderboardPnlResponseObject {
 
 export interface LeaderboardPnl {
   username: string;
-  ethereumAddress: string;
+  ethereumAddress: string | null;
   absolutePnl: string;
   percentPnl: string;
-  absoluteRank: number;
-  percentRank: number;
+  absoluteRank: number | null;
+  percentRank: number | null;
 }
 
 export interface AccountLeaderboardPnlResponseObject {
   absolutePnl: string;
   percentPnl: string;
-  absoluteRank: number;
-  percentRank: number;
+  absoluteRank: number | null;
+  percentRank: number | null;
   updatedAt: ISO8601,
   accountId: string;
 }
