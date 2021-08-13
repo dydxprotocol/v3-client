@@ -56,7 +56,10 @@ export enum MarketStatisticDay {
 
 export enum CandleResolution {
   ONE_DAY = '1DAY',
+  FOUR_HOURS = '4HOURS',
   ONE_HOUR = '1HOUR',
+  FIVE_MINS = '5MINS',
+  ONE_MIN = '1MIN',
 }
 
 export enum OrderType {
