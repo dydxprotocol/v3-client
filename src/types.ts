@@ -404,6 +404,69 @@ export interface Trade {
   createdAt: ISO8601,
 }
 
+export interface TradingRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  fees: Fees,
+  openInterest: OpenInterest,
+  weight: Weight,
+  totalRewards: string,
+  estimatedRewards: string,
+}
+
+export interface Fees {
+  feesPaid: string,
+  totalFeesPaid: string,
+}
+
+export interface OpenInterest {
+  averageOpenInterest: string,
+  totalAverageOpenInterest: string,
+}
+
+export interface Weight {
+  weight: string,
+  totalWeight: string,
+}
+
+export interface LiquidityProviderRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  markets: {
+    [market: string]: LiquidityRewards,
+  },
+}
+
+export interface LiquidityRewards {
+  market: Market,
+  uptime: string,
+  score: string,
+  totalScore: string,
+  totalRewards: string,
+  estimatedRewards: string,
+}
+
+export interface RetroactiveMiningRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  retroactiveMining: RetroactiveMiningRewards,
+  estimatedRewards: string,
+}
+
+export interface RetroactiveMiningRewards {
+  allocation: string,
+  targetVolume: string,
+  volume: string,
+}
+
+export interface PublicRetroactiveMiningRewardsResponseObject {
+  allocation: string,
+  targetVolume: string,
+}
+
 // ============ Ethereum Signing ============
 
 export enum OnboardingActionString {

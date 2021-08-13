@@ -231,6 +231,23 @@ export default class Public {
   }
 
   /**
+   * @description get leaderboard pnls
+   *
+   * @param ethereumAddress An Ethereum address
+   */
+  getPublicRetroactiveMiningRewards(
+    ethereumAddress: string,
+  ): Promise<LeaderboardPnlResponseObject> {
+    const uri: string = 'rewards/public-retroactive-mining';
+    return this.get(
+      uri,
+      {
+        ethereumAddress,
+      },
+    );
+  }
+
+  /**
    * @description verify email for user with token
    *
    * @token that verifies user received a verification email to
