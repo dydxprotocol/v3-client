@@ -755,7 +755,7 @@ export default class Private {
   }
 
   /**
-   * @description get liquidity provider rewards for a user for a given epoch
+   * @description get retoractive mining rewards for a user for a given epoch
    *
    * @param {
    * @epoch number to request rewards data for
