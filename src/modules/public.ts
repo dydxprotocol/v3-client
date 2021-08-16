@@ -234,7 +234,7 @@ export default class Public {
   /**
    * @description get retroactive mining rewards for an ethereum address
    *
-   * @param ethereumAddress An Ethereum address
+   * @param ethereumAddress An Ethereum address of a user
    */
   getPublicRetroactiveMiningRewards(
     ethereumAddress: string,

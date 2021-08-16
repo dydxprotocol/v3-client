@@ -714,7 +714,7 @@ export default class Private {
    * @description get trading rewards for a user for a given epoch
    *
    * @param {
-   * @epoch number to request rewards data for
+   * @epoch to request rewards data for (optional)
    * }
    */
   getTradingRewards(
@@ -736,7 +736,7 @@ export default class Private {
    * @description get liquidity provider rewards for a user for a given epoch
    *
    * @param {
-   * @epoch number to request rewards data for
+   * @epoch to request rewards data for (optional)
    * }
    */
   getLiquidityProviderRewards(
@@ -755,11 +755,8 @@ export default class Private {
   }
 
   /**
-   * @description get retoractive mining rewards for a user for a given epoch
+   * @description get retroactive mining rewards for a user for a given epoch
    *
-   * @param {
-   * @epoch number to request rewards data for
-   * }
    */
   getRetroactiveMiningRewards(
     genericParams: GenericParams = {},
