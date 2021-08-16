@@ -39,6 +39,7 @@ import {
   HistoricalPnlResponseObject,
   ISO8601,
   LeaderboardPnlPeriod,
+  LiquidityProviderRewardsResponseObject,
   Market,
   OrderResponseObject,
   OrderSide,
@@ -48,6 +49,8 @@ import {
   PositionResponseObject,
   PositionStatus,
   Provider,
+  RetroactiveMiningRewardsResponseObject,
+  TradingRewardsResponseObject,
   TransferParams,
   TransferResponseObject,
   UserResponseObject,
@@ -702,6 +705,65 @@ export default class Private {
       'historical-pnl',
       {
         ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get trading rewards for a user for a given epoch
+   *
+   * @param {
+   * @epoch to request rewards data for (optional)
+   * }
+   */
+  getTradingRewards(
+    params: {
+      epoch?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{ tradingRewards: TradingRewardsResponseObject }> {
+    return this._get(
+      'rewards/weight',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get liquidity provider rewards for a user for a given epoch
+   *
+   * @param {
+   * @epoch to request rewards data for (optional)
+   * }
+   */
+  getLiquidityProviderRewards(
+    params: {
+      epoch?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{ liquidityRewards: LiquidityProviderRewardsResponseObject }> {
+    return this._get(
+      'rewards/liquidity',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get retroactive mining rewards for a user for a given epoch
+   *
+   */
+  getRetroactiveMiningRewards(
+    genericParams: GenericParams = {},
+  ): Promise<{ retroactiveMiningRewards: RetroactiveMiningRewardsResponseObject }> {
+    return this._get(
+      'rewards/retroactive-mining',
+      {
         ...genericParams,
       },
     );

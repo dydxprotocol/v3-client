@@ -18,6 +18,7 @@ import {
   LeaderboardPnlSortBy,
   LeaderboardPnlPeriod,
   LeaderboardPnlResponseObject,
+  PublicRetroactiveMiningRewardsResponseObject,
 } from '../types';
 
 export default class Public {
@@ -226,6 +227,23 @@ export default class Public {
         period,
         sortBy,
         limit,
+      },
+    );
+  }
+
+  /**
+   * @description get retroactive mining rewards for an ethereum address
+   *
+   * @param ethereumAddress An Ethereum address of a user
+   */
+  getPublicRetroactiveMiningRewards(
+    ethereumAddress: string,
+  ): Promise<PublicRetroactiveMiningRewardsResponseObject> {
+    const uri: string = 'rewards/public-retroactive-mining';
+    return this.get(
+      uri,
+      {
+        ethereumAddress,
       },
     );
   }
