@@ -58,6 +58,8 @@ export enum CandleResolution {
   ONE_DAY = '1DAY',
   FOUR_HOURS = '4HOURS',
   ONE_HOUR = '1HOUR',
+  THIRTY_MINS = '30MINS',
+  FIFTEEN_MINS = '15MINS',
   FIVE_MINS = '5MINS',
   ONE_MIN = '1MIN',
 }
