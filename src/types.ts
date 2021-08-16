@@ -254,6 +254,9 @@ export interface PositionResponseObject {
   realizedPnl?: string;
   createdAt: ISO8601;
   closedAt?: ISO8601;
+  sumOpen: string;
+  sumClose: string;
+  netFunding: string;
 }
 
 export interface FillResponseObject {
@@ -283,6 +286,8 @@ export interface AccountResponseObject {
   pendingWithdrawals: string,
   openPositions: PositionsMap,
   id: string;
+  accountNumber: string;
+  quoteBalance: string;
 }
 
 export interface TransferResponseObject {
