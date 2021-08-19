@@ -63,10 +63,13 @@ export enum CandleResolution {
 }
 
 export enum OrderType {
+  MARKET = 'MARKET',
   LIMIT = 'LIMIT',
   STOP = 'STOP',
   TRAILING_STOP = 'TRAILING_STOP',
   TAKE_PROFIT = 'TAKE_PROFIT',
+  LIQUIDATION = 'LIQUIDATION',
+  LIQUIDATED = 'LIQUIDATED',
 }
 
 export enum TimeInForce {
@@ -274,7 +277,18 @@ export interface FillResponseObject {
 
 export interface UserResponseObject {
   ethereumAddress: string;
+  isRegistered: string;
+  email: string;
+  username: string;
+  referredByAffiliateLink?: string;
+  makerFeeRate: string;
+  takerFeeRate: string;
+  makerVolume30D: string;
+  takerVolume30D: string;
+  fees30D: string;
   userData: string;
+  dydxTokenBalance: string;
+  stakedDydxTokenBalance: string;
 }
 
 export interface AccountResponseObject {
