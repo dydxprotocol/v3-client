@@ -66,7 +66,8 @@ export enum CandleResolution {
 
 export enum OrderType {
   LIMIT = 'LIMIT',
-  STOP = 'STOP',
+  MARKET = 'MARKET',
+  STOP_LIMIT = 'STOP_LIMIT',
   TRAILING_STOP = 'TRAILING_STOP',
   TAKE_PROFIT = 'TAKE_PROFIT',
 }
