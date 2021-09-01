@@ -194,8 +194,8 @@ export default class Private {
    * @userData specifiying information about the user
    * @email associated with the user
    * @username for the user
-   * @isSharingUsername if the user wants their username publically shared
-   * @isSharingAddress if the user wants their ethereumAddress publically shared
+   * @isSharingUsername if the user wants their username publicly shared
+   * @isSharingAddress if the user wants their ethereumAddress publicly shared
    * }
    */
   async updateUser({
