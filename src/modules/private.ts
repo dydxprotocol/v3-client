@@ -191,25 +191,33 @@ export default class Private {
    * @description update information for the user
    *
    * @param {
+   * @userData specifiying information about the user
    * @email associated with the user
    * @username for the user
-   * @userData specifiying information about the user
+   * @isSharingUsername if the user wants their username publically shared
+   * @isSharingAddress if the user wants their ethereumAddress publically shared
    * }
    */
   async updateUser({
+    userData,
     email,
     username,
-    userData,
+    isSharingUsername,
+    isSharingAddress,
   }: {
-    email: string,
-    username: string,
     userData: {},
+    email?: string,
+    username?: string,
+    isSharingUsername?: boolean,
+    isSharingAddress?: boolean,
   }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
       {
         email,
         username,
+        isSharingUsername,
+        isSharingAddress,
         userData: JSON.stringify(userData),
       },
     );
