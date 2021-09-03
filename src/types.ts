@@ -223,6 +223,7 @@ export interface MarketStatisticResponseObject {
   baseVolume: string;
   quoteVolume: string;
   type: string;
+  fees: string;
 }
 
 export interface OrderResponseObject {
