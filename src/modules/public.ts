@@ -108,7 +108,7 @@ export default class Public {
     market,
     days,
   }: {
-    market: Market,
+    market?: Market,
     days?: MarketStatisticDay,
   }): Promise<{ markets: MarketStatisticResponseObject }> {
     const uri: string = `stats/${market}`;
