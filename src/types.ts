@@ -186,26 +186,28 @@ export interface ApiFastWithdrawalParams extends ApiFastWithdrawal {
 
 export interface MarketResponseObject {
   market: Market;
-  status: string;
+  status: MarketStatus;
   baseAsset: Asset;
   quoteAsset: Asset;
-  stepSize: string;
   tickSize: string;
   indexPrice: string;
   oraclePrice: string;
   nextFundingRate: string;
+  nextFundingAt: ISO8601;
   minOrderSize: string;
   type: string;
   initialMarginFraction: string;
   maintenanceMarginFraction: string;
+  stepSize: string;
   priceChange24H: string;
   volume24H: string;
   trades24H: string;
   openInterest: string;
-  maxPositionSize: string;
   incrementalInitialMarginFraction: string;
+  baselinePositionSize: string;
   incrementalPositionSize: string;
-  basePositionSize: string;
+  maxPositionSize: string;
+  assetResolution: string;
 }
 
 export interface MarketsResponseObject {
@@ -221,12 +223,11 @@ export interface MarketStatisticResponseObject {
   baseVolume: string;
   quoteVolume: string;
   type: string;
-  nextFundingRate: ISO8601;
 }
 
 export interface OrderResponseObject {
   id: string;
-  clientId: string;
+  clientId?: string;
   accountId: string;
   market: Market;
   side: OrderSide;
@@ -238,7 +239,7 @@ export interface OrderResponseObject {
   type: OrderType;
   createdAt: ISO8601;
   unfillableAt?: ISO8601 | null;
-  expiresAt: ISO8601;
+  expiresAt?: ISO8601;
   status: OrderStatus;
   timeInForce: TimeInForce;
   postOnly: boolean;
@@ -257,24 +258,41 @@ export interface PositionResponseObject {
   realizedPnl?: string;
   createdAt: ISO8601;
   closedAt?: ISO8601;
+  sumOpen?: string;
+  sumClose?: string;
+  netFunding?: string;
 }
 
 export interface FillResponseObject {
   id: string;
-  accountId: string;
   side: OrderSide;
   liquidity: string;
+  type: OrderType;
   market: Market;
-  orderId: string;
   price: string;
   size: string;
   fee: string;
   createdAt: ISO8601;
+  orderId: string | null | undefined;
 }
 
 export interface UserResponseObject {
   ethereumAddress: string;
-  userData: string;
+  isRegistered: boolean;
+  email: string | null;
+  username: string | null;
+  userData: {};
+  makerFeeRate: string | null;
+  takerFeeRate: string | null;
+  makerVolume30D: string | null;
+  takerVolume30D: string | null;
+  fees30D: string | null;
+  referredByAffiliateLink: string | null;
+  isSharingUsername: boolean | null;
+  isSharingAddress: boolean | null;
+  dydxTokenBalance: string;
+  stakedDydxTokenBalance: string;
+  isEmailVerified: boolean;
 }
 
 export interface AccountResponseObject {
@@ -285,12 +303,13 @@ export interface AccountResponseObject {
   pendingDeposits: string,
   pendingWithdrawals: string,
   openPositions: PositionsMap,
+  accountNumber: string,
   id: string;
+  quoteBalance: string;
 }
 
 export interface TransferResponseObject {
   id: string;
-  accountId: string;
   type: string;
   debitAsset: Asset
   creditAsset: Asset;
@@ -306,7 +325,6 @@ export interface TransferResponseObject {
 }
 
 export interface FundingResponseObject {
-  accountId: string;
   market: Market;
   payment: string;
   rate: string;
@@ -351,6 +369,7 @@ export interface CandleResponseObject {
   baseTokenVolume: string;
   trades: string;
   usdVolume: string;
+  startingOpenInterest: string;
 }
 
 export interface ConfigResponseObject {
@@ -468,6 +487,16 @@ export interface RetroactiveMiningRewards {
 export interface PublicRetroactiveMiningRewardsResponseObject {
   allocation: string,
   targetVolume: string,
+}
+
+// ============ API Response Field Types ============
+
+enum MarketStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+  POST_ONLY = 'POST_ONLY',
+  CANCEL_ONLY = 'CANCEL_ONLY',
+  INITIALIZING = 'INITIALIZING',
 }
 
 // ============ Ethereum Signing ============
