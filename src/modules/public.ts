@@ -111,7 +111,9 @@ export default class Public {
     market?: Market,
     days?: MarketStatisticDay,
   }): Promise<{ markets: MarketStatisticResponseObject }> {
-    const uri: string = `stats/${market}`;
+    const uri: string = market !== undefined
+      ? `stats/${market}`
+      : 'stats';
     return this.get(uri, { days });
   }
 
