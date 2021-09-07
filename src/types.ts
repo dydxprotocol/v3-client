@@ -374,9 +374,13 @@ export interface CandleResponseObject {
 }
 
 export interface ConfigResponseObject {
-  maxFastWithdrawalAmount: string;
+  collateralAssetId: string;
+  collateralTokenAddress: string;
   defaultMakerFee: string;
   defaultTakerFee: string;
+  exchangeAddress: string;
+  maxExpectedBatchLengthMinutes: string;
+  maxFastWithdrawalAmount: string;
 }
 
 export interface FastWithdrawalsResponseObject {
