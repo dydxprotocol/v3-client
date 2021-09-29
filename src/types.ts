@@ -120,6 +120,7 @@ export enum LeaderboardPnlPeriod {
   WEEKLY = 'WEEKLY',
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
+  COMPETITION = 'COMPETITION',
 }
 
 export enum LeaderboardPnlSortBy {
