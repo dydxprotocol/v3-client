@@ -409,7 +409,7 @@ export interface AccountLeaderboardPnlResponseObject {
   percentPnl: string;
   absoluteRank: number | null;
   percentRank: number | null;
-  updatedAt: ISO8601,
+  updatedAt: ISO8601 | null,
   accountId: string;
 }
 
