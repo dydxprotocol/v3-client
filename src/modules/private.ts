@@ -24,6 +24,7 @@ import {
 import { getAccountId } from '../lib/db';
 import {
   AccountAction,
+  AccountLeaderboardPnlResponseObject,
   AccountResponseObject,
   ApiFastWithdrawal,
   ApiFastWithdrawalParams,
@@ -37,6 +38,8 @@ import {
   GenericParams,
   HistoricalPnlResponseObject,
   ISO8601,
+  LeaderboardPnlPeriod,
+  LiquidityProviderRewardsResponseObject,
   Market,
   OrderResponseObject,
   OrderSide,
@@ -46,6 +49,8 @@ import {
   PositionResponseObject,
   PositionStatus,
   Provider,
+  RetroactiveMiningRewardsResponseObject,
+  TradingRewardsResponseObject,
   TransferParams,
   TransferResponseObject,
   UserResponseObject,
@@ -121,7 +126,7 @@ export default class Private {
     });
   }
 
-  protected async get(
+  protected async _get(
     endpoint: string,
     params: {},
   ): Promise<Data> {
@@ -151,11 +156,18 @@ export default class Private {
 
   // ============ Requests ============
 
+  async get(endpoint: string, params: {}): Promise<Data> {
+    return this._get(
+      endpoint,
+      params,
+    );
+  }
+
   /**
    * @description get a signature for the ethereumAddress if registered
    */
   async getRegistration(genericParams: GenericParams = {}): Promise<{ signature: string }> {
-    return this.get(
+    return this._get(
       'registration',
       {
         ...genericParams,
@@ -167,7 +179,7 @@ export default class Private {
    * @description get the user associated with the ethereumAddress
    */
   async getUser(genericParams: GenericParams = {}): Promise<{ user: UserResponseObject }> {
-    return this.get(
+    return this._get(
       'users',
       {
         ...genericParams,
@@ -179,25 +191,33 @@ export default class Private {
    * @description update information for the user
    *
    * @param {
+   * @userData specifiying information about the user
    * @email associated with the user
    * @username for the user
-   * @userData specifiying information about the user
+   * @isSharingUsername if the user wants their username publicly shared
+   * @isSharingAddress if the user wants their ethereumAddress publicly shared
    * }
    */
   async updateUser({
+    userData,
     email,
     username,
-    userData,
+    isSharingUsername,
+    isSharingAddress,
   }: {
-    email: string,
-    username: string,
     userData: {},
+    email?: string,
+    username?: string,
+    isSharingUsername?: boolean,
+    isSharingAddress?: boolean,
   }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
       {
         email,
         username,
+        isSharingUsername,
+        isSharingAddress,
         userData: JSON.stringify(userData),
       },
     );
@@ -233,7 +253,7 @@ export default class Private {
     ethereumAddress: string,
     genericParams: GenericParams = {},
   ): Promise<{ account: AccountResponseObject }> {
-    return this.get(
+    return this._get(
       `accounts/${getAccountId({ address: ethereumAddress })}`,
       { ...genericParams },
     );
@@ -245,9 +265,24 @@ export default class Private {
   async getAccounts(
     genericParams: GenericParams = {},
   ): Promise<{ accounts: AccountResponseObject[] }> {
-    return this.get(
+    return this._get(
       'accounts',
       { ...genericParams },
+    );
+  }
+
+  /**
+   * @description get leaderboard pnl for period and accountNumber 0
+   *
+   * @param period the period of pnls to retrieve
+   */
+  async getAccountLeaderboardPnl(
+    period: LeaderboardPnlPeriod,
+    genericParams: GenericParams = {},
+  ): Promise<{ leaderboardPnl: AccountLeaderboardPnlResponseObject }> {
+    return this._get(
+      `accounts/leaderboard-pnl/${period}`,
+      genericParams,
     );
   }
 
@@ -270,7 +305,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ positions: PositionResponseObject[] }> {
-    return this.get(
+    return this._get(
       'positions',
       {
         ...params,
@@ -301,7 +336,7 @@ export default class Private {
     } = {},
     genericParams: GenericParams = {},
   ): Promise<{ orders: OrderResponseObject[] }> {
-    return this.get(
+    return this._get(
       'orders',
       {
         ...params,
@@ -319,7 +354,7 @@ export default class Private {
     orderId: string,
     genericParams: GenericParams = {},
   ): Promise<{ order: OrderResponseObject }> {
-    return this.get(
+    return this._get(
       `orders/${orderId}`,
       { ...genericParams },
     );
@@ -334,7 +369,7 @@ export default class Private {
     clientId: string,
     genericParams: GenericParams = {},
   ): Promise<{ order: OrderResponseObject }> {
-    return this.get(
+    return this._get(
       `orders/client/${clientId}`,
       { ...genericParams },
     );
@@ -363,8 +398,6 @@ export default class Private {
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ order: OrderResponseObject }> {
-    // const clientId = params.clientId || Math.random().toString(36).slice(2);
-    //
     const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
@@ -442,7 +475,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ fills: FillResponseObject[] }> {
-    return this.get(
+    return this._get(
       'fills',
       {
         ...params,
@@ -468,7 +501,7 @@ export default class Private {
     } = {},
     genericParams: GenericParams = {},
   ): Promise<{ transfers: TransferResponseObject[] }> {
-    return this.get(
+    return this._get(
       'transfers',
       {
         ...params,
@@ -491,10 +524,6 @@ export default class Private {
     params: PartialBy<ApiWithdrawal, 'clientId' | 'signature'>,
     positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
-    // TODO: Allow clientId to be a string.
-    // const clientId = params.clientId || Math.random().toString(36).slice(2);
-    //
-    // Have to strip leading zeroes since clientId is being mis-processed as a number.
     const clientId = params.clientId || generateRandomClientId();
 
     let signature: string | undefined = params.signature;
@@ -547,8 +576,6 @@ export default class Private {
     positionId: string,
   ): Promise<{ withdrawal: TransferResponseObject }> {
     const clientId = params.clientId || generateRandomClientId();
-    // TODO meet starkware specification
-
     let signature: string | undefined = params.signature;
     if (!signature) {
       if (!this.starkKeyPair) {
@@ -658,7 +685,7 @@ export default class Private {
     },
     genericParams: GenericParams = {},
   ): Promise<{ fundingPayments: FundingResponseObject }> {
-    return this.get(
+    return this._get(
       'funding',
       {
         ...params,
@@ -671,23 +698,80 @@ export default class Private {
    * @description get historical pnl ticks for an account between certain times
    *
    * @param {
-   * @account being checked
    * @createdBeforeOrAt latest historical pnl tick being returned
    * @createdOnOrAfter earliest historical pnl tick being returned
    * }
    */
   getHistoricalPnl(
     params: {
-      accountId: string,
       createdBeforeOrAt?: ISO8601,
       createdOnOrAfter?: ISO8601,
     },
     genericParams: GenericParams = {},
   ): Promise<{ historicalPnl: HistoricalPnlResponseObject[] }> {
-    return this.get(
+    return this._get(
       'historical-pnl',
       {
         ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get trading rewards for a user for a given epoch
+   *
+   * @param {
+   * @epoch to request rewards data for (optional)
+   * }
+   */
+  getTradingRewards(
+    params: {
+      epoch?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{ tradingRewards: TradingRewardsResponseObject }> {
+    return this._get(
+      'rewards/weight',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get liquidity provider rewards for a user for a given epoch
+   *
+   * @param {
+   * @epoch to request rewards data for (optional)
+   * }
+   */
+  getLiquidityProviderRewards(
+    params: {
+      epoch?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{ liquidityRewards: LiquidityProviderRewardsResponseObject }> {
+    return this._get(
+      'rewards/liquidity',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get retroactive mining rewards for a user for a given epoch
+   *
+   */
+  getRetroactiveMiningRewards(
+    genericParams: GenericParams = {},
+  ): Promise<{ retroactiveMiningRewards: RetroactiveMiningRewardsResponseObject }> {
+    return this._get(
+      'rewards/retroactive-mining',
+      {
         ...genericParams,
       },
     );
@@ -700,7 +784,17 @@ export default class Private {
   async getApiKeys(
     genericParams: GenericParams = {},
   ): Promise<{ apiKeys: { key: string }[] }> {
-    return this.get('api-keys', { ...genericParams });
+    return this._get('api-keys', { ...genericParams });
+  }
+
+  /**
+   * @description send verification email to email specified by User
+   */
+  async sendVerificationEmail(): Promise<{}> {
+    return this.put(
+      'emails/send-verification-email',
+      {},
+    );
   }
 
   // ============ Signing ============

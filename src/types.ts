@@ -56,12 +56,18 @@ export enum MarketStatisticDay {
 
 export enum CandleResolution {
   ONE_DAY = '1DAY',
+  FOUR_HOURS = '4HOURS',
   ONE_HOUR = '1HOUR',
+  THIRTY_MINS = '30MINS',
+  FIFTEEN_MINS = '15MINS',
+  FIVE_MINS = '5MINS',
+  ONE_MIN = '1MIN',
 }
 
 export enum OrderType {
   LIMIT = 'LIMIT',
-  STOP = 'STOP',
+  MARKET = 'MARKET',
+  STOP_LIMIT = 'STOP_LIMIT',
   TRAILING_STOP = 'TRAILING_STOP',
   TAKE_PROFIT = 'TAKE_PROFIT',
 }
@@ -107,6 +113,19 @@ export enum SignatureTypes {
   DECIMAL = 1,
   HEXADECIMAL = 2,
   PERSONAL = 3,
+}
+
+export enum LeaderboardPnlPeriod {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  ALL_TIME = 'ALL_TIME',
+  COMPETITION = 'COMPETITION',
+}
+
+export enum LeaderboardPnlSortBy {
+  ABSOLUTE = 'ABSOLUTE',
+  PERCENT = 'PERCENT',
 }
 
 // ============ API Request Types ============
@@ -168,26 +187,28 @@ export interface ApiFastWithdrawalParams extends ApiFastWithdrawal {
 
 export interface MarketResponseObject {
   market: Market;
-  status: string;
+  status: MarketStatus;
   baseAsset: Asset;
   quoteAsset: Asset;
-  stepSize: string;
   tickSize: string;
   indexPrice: string;
   oraclePrice: string;
   nextFundingRate: string;
+  nextFundingAt: ISO8601;
   minOrderSize: string;
   type: string;
   initialMarginFraction: string;
   maintenanceMarginFraction: string;
+  stepSize: string;
   priceChange24H: string;
   volume24H: string;
   trades24H: string;
   openInterest: string;
-  maxPositionSize: string;
   incrementalInitialMarginFraction: string;
+  baselinePositionSize: string;
   incrementalPositionSize: string;
-  basePositionSize: string;
+  maxPositionSize: string;
+  assetResolution: string;
 }
 
 export interface MarketsResponseObject {
@@ -203,12 +224,12 @@ export interface MarketStatisticResponseObject {
   baseVolume: string;
   quoteVolume: string;
   type: string;
-  nextFundingRate: ISO8601;
+  fees: string;
 }
 
 export interface OrderResponseObject {
   id: string;
-  clientId: string;
+  clientId?: string;
   accountId: string;
   market: Market;
   side: OrderSide;
@@ -220,7 +241,7 @@ export interface OrderResponseObject {
   type: OrderType;
   createdAt: ISO8601;
   unfillableAt?: ISO8601 | null;
-  expiresAt: ISO8601;
+  expiresAt?: ISO8601;
   status: OrderStatus;
   timeInForce: TimeInForce;
   postOnly: boolean;
@@ -239,24 +260,41 @@ export interface PositionResponseObject {
   realizedPnl?: string;
   createdAt: ISO8601;
   closedAt?: ISO8601;
+  sumOpen?: string;
+  sumClose?: string;
+  netFunding?: string;
 }
 
 export interface FillResponseObject {
   id: string;
-  accountId: string;
   side: OrderSide;
   liquidity: string;
+  type: OrderType;
   market: Market;
-  orderId: string;
   price: string;
   size: string;
   fee: string;
   createdAt: ISO8601;
+  orderId: string | null | undefined;
 }
 
 export interface UserResponseObject {
   ethereumAddress: string;
-  userData: string;
+  isRegistered: boolean;
+  email: string | null;
+  username: string | null;
+  userData: {};
+  makerFeeRate: string | null;
+  takerFeeRate: string | null;
+  makerVolume30D: string | null;
+  takerVolume30D: string | null;
+  fees30D: string | null;
+  referredByAffiliateLink: string | null;
+  isSharingUsername: boolean | null;
+  isSharingAddress: boolean | null;
+  dydxTokenBalance: string;
+  stakedDydxTokenBalance: string;
+  isEmailVerified: boolean;
 }
 
 export interface AccountResponseObject {
@@ -267,12 +305,13 @@ export interface AccountResponseObject {
   pendingDeposits: string,
   pendingWithdrawals: string,
   openPositions: PositionsMap,
+  accountNumber: string,
   id: string;
+  quoteBalance: string;
 }
 
 export interface TransferResponseObject {
   id: string;
-  accountId: string;
   type: string;
   debitAsset: Asset
   creditAsset: Asset;
@@ -288,7 +327,6 @@ export interface TransferResponseObject {
 }
 
 export interface FundingResponseObject {
-  accountId: string;
   market: Market;
   payment: string;
   rate: string;
@@ -333,18 +371,46 @@ export interface CandleResponseObject {
   baseTokenVolume: string;
   trades: string;
   usdVolume: string;
+  startingOpenInterest: string;
 }
 
 export interface ConfigResponseObject {
-  maxFastWithdrawalAmount: string;
+  collateralAssetId: string;
+  collateralTokenAddress: string;
   defaultMakerFee: string;
   defaultTakerFee: string;
+  exchangeAddress: string;
+  maxExpectedBatchLengthMinutes: string;
+  maxFastWithdrawalAmount: string;
 }
 
 export interface FastWithdrawalsResponseObject {
   liquidityProviders: {
     [lpPositionId: number]: LiquidityProviderInfo;
   };
+}
+
+export interface LeaderboardPnlResponseObject {
+  topPnls: LeaderboardPnl[];
+  updatedAt: ISO8601;
+}
+
+export interface LeaderboardPnl {
+  username: string;
+  ethereumAddress: string | null;
+  absolutePnl: string;
+  percentPnl: string;
+  absoluteRank: number | null;
+  percentRank: number | null;
+}
+
+export interface AccountLeaderboardPnlResponseObject {
+  absolutePnl: string;
+  percentPnl: string;
+  absoluteRank: number | null;
+  percentRank: number | null;
+  updatedAt: ISO8601 | null,
+  accountId: string;
 }
 
 export interface LiquidityProviderInfo {
@@ -364,6 +430,79 @@ export interface Trade {
   size: string,
   price: string,
   createdAt: ISO8601,
+}
+
+export interface TradingRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  fees: Fees,
+  openInterest: OpenInterest,
+  weight: Weight,
+  totalRewards: string,
+  estimatedRewards: string,
+}
+
+export interface Fees {
+  feesPaid: string,
+  totalFeesPaid: string,
+}
+
+export interface OpenInterest {
+  averageOpenInterest: string,
+  totalAverageOpenInterest: string,
+}
+
+export interface Weight {
+  weight: string,
+  totalWeight: string,
+}
+
+export interface LiquidityProviderRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  markets: {
+    [market: string]: LiquidityRewards,
+  },
+}
+
+export interface LiquidityRewards {
+  market: Market,
+  uptime: string,
+  score: string,
+  totalScore: string,
+  totalRewards: string,
+  estimatedRewards: string,
+}
+
+export interface RetroactiveMiningRewardsResponseObject {
+  epoch: number,
+  epochStart: ISO8601,
+  epochEnd: ISO8601,
+  retroactiveMining: RetroactiveMiningRewards,
+  estimatedRewards: string,
+}
+
+export interface RetroactiveMiningRewards {
+  allocation: string,
+  targetVolume: string,
+  volume: string,
+}
+
+export interface PublicRetroactiveMiningRewardsResponseObject {
+  allocation: string,
+  targetVolume: string,
+}
+
+// ============ API Response Field Types ============
+
+enum MarketStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+  POST_ONLY = 'POST_ONLY',
+  CANCEL_ONLY = 'CANCEL_ONLY',
+  INITIALIZING = 'INITIALIZING',
 }
 
 // ============ Ethereum Signing ============

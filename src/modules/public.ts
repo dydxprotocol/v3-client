@@ -15,6 +15,10 @@ import {
   OrderbookResponseObject,
   Trade,
   TransferAsset,
+  LeaderboardPnlSortBy,
+  LeaderboardPnlPeriod,
+  LeaderboardPnlResponseObject,
+  PublicRetroactiveMiningRewardsResponseObject,
 } from '../types';
 
 export default class Public {
@@ -33,6 +37,17 @@ export default class Public {
     return axiosRequest({
       method: 'GET',
       url: `${this.host}/v3/${generateQueryPath(requestPath, params)}`,
+    });
+  }
+
+  protected async put(
+    requestPath: string,
+    data: {},
+  ): Promise<Data> {
+    return axiosRequest({
+      url: `${this.host}/v3/${requestPath}`,
+      method: 'PUT',
+      data,
     });
   }
 
@@ -93,10 +108,12 @@ export default class Public {
     market,
     days,
   }: {
-    market: Market,
+    market?: Market,
     days?: MarketStatisticDay,
   }): Promise<{ markets: MarketStatisticResponseObject }> {
-    const uri: string = `stats/${market}`;
+    const uri: string = market !== undefined
+      ? `stats/${market}`
+      : 'stats';
     return this.get(uri, { days });
   }
 
@@ -185,6 +202,65 @@ export default class Public {
         fromISO,
         toISO,
         limit,
+      },
+    );
+  }
+
+  /**
+   * @description get leaderboard pnls
+   *
+   * @param period Time period being checked
+   * @param sortBy Pnl to sort by
+   * @param limit Number of leaderboard pnls returned
+   */
+  getLeaderboardPnls({
+    period,
+    sortBy,
+    limit,
+  }: {
+    period: LeaderboardPnlPeriod,
+    sortBy: LeaderboardPnlSortBy,
+    limit?: number,
+  }): Promise<LeaderboardPnlResponseObject> {
+    const uri: string = 'leaderboard-pnl';
+    return this.get(
+      uri,
+      {
+        period,
+        sortBy,
+        limit,
+      },
+    );
+  }
+
+  /**
+   * @description get retroactive mining rewards for an ethereum address
+   *
+   * @param ethereumAddress An Ethereum address of a user
+   */
+  getPublicRetroactiveMiningRewards(
+    ethereumAddress: string,
+  ): Promise<PublicRetroactiveMiningRewardsResponseObject> {
+    const uri: string = 'rewards/public-retroactive-mining';
+    return this.get(
+      uri,
+      {
+        ethereumAddress,
+      },
+    );
+  }
+
+  /**
+   * @description verify email for user with token
+   *
+   * @token that verifies user received a verification email to
+   * the email they specified
+   */
+  async verifyEmail(token: string): Promise<{}> {
+    return this.put(
+      'emails/verify-email',
+      {
+        token,
       },
     );
   }
