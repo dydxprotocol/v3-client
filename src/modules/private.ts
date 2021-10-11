@@ -206,7 +206,7 @@ export default class Private {
     isSharingAddress,
   }: {
     userData: {},
-    email?: string,
+    email?: string | null,
     username?: string,
     isSharingUsername?: boolean,
     isSharingAddress?: boolean,
