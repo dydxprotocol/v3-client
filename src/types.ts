@@ -362,6 +362,7 @@ export interface OrderbookResponseObject {
 
 export interface CandleResponseObject {
   startedAt: ISO8601;
+  updatedAt: ISO8601;
   market: Market;
   resolution: CandleResolution;
   low: string;
