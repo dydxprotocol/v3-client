@@ -323,7 +323,10 @@ export default class Private {
    * @side of the book the orders are on
    * @type of order
    * @limit to the number of orders returned
-   * @createdBeforeOrAt sets the time of the last fill that will be received   * }
+   * @createdBeforeOrAt sets the time of the last fill that will be received
+   * @returnLatestOrders returns the latest orders instead of the oldest and the order is
+   * from most recent to least recent (up to limit)
+   * }
    */
   async getOrders(
     params: {
@@ -333,6 +336,7 @@ export default class Private {
       type?: OrderType,
       limit?: number,
       createdBeforeOrAt?: ISO8601,
+      returnLatestOrders?: boolean,
     } = {},
     genericParams: GenericParams = {},
   ): Promise<{ orders: OrderResponseObject[] }> {
