@@ -128,8 +128,8 @@ export default class EthPrivate {
 
   /**
    * @description This is for if you can't recover your starkKey or apiKey and need an
-   * additional way to get your starkKey and balance on our exchange, both of which are needed to
-   * call the L1 solidity function needed to recover your funds.
+   * additional way to get your starkKey, positionid and balance on our exchange,
+   *  all of which are needed to call the L1 solidity function needed to recover your funds.
    *
    * @param ethereumAddress the recovery is for
    * @param signingMethod used to validate the request
@@ -137,7 +137,12 @@ export default class EthPrivate {
   async recovery(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.Hash,
-  ): Promise<{ starkKey: string, quoteBalance: string, positions: PositionResponseObject[] }> {
+  ): Promise<{
+    starkKey: string,
+    positionId: string,
+    quoteBalance: string,
+    positions: PositionResponseObject[],
+  }> {
     return this.get('recovery', ethereumAddress, signingMethod);
   }
 }
