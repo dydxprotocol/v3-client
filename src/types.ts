@@ -518,7 +518,7 @@ export interface OnboardingAction {
   onlySignOn?: 'https://trade.dydx.exchange';
 }
 
-export interface ApiKeyAction {
+export interface EthPrivateAction {
   method: string,
   requestPath: string,
   body: string,

@@ -2,7 +2,7 @@ import { ApiMethod } from '@dydxprotocol/starkex-lib';
 import _ from 'lodash';
 import Web3 from 'web3';
 
-import { SignApiKeyAction } from '../eth-signing';
+import { SignEthPrivateAction } from '../eth-signing';
 import { generateQueryPath } from '../helpers/request-helpers';
 import {
   axiosRequest,
@@ -11,13 +11,14 @@ import {
   ApiKeyCredentials,
   Data,
   ISO8601,
+  PositionResponseObject,
   SigningMethod,
 } from '../types';
 import Clock from './clock';
 
-export default class ApiKeys {
+export default class EthPrivate {
   readonly host: string;
-  readonly signer: SignApiKeyAction;
+  readonly signer: SignEthPrivateAction;
   readonly clock: Clock;
 
   constructor({
@@ -32,7 +33,7 @@ export default class ApiKeys {
     clock: Clock,
   }) {
     this.host = host;
-    this.signer = new SignApiKeyAction(web3, networkId);
+    this.signer = new SignEthPrivateAction(web3, networkId);
     this.clock = clock;
   }
 
@@ -88,6 +89,14 @@ export default class ApiKeys {
     return this.request(ApiMethod.DELETE, requestPath, ethereumAddress, signingMethod);
   }
 
+  protected async get(
+    endpoint: string,
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
+  ): Promise<Data> {
+    return this.request(ApiMethod.GET, endpoint, ethereumAddress, signingMethod);
+  }
+
   // ============ Requests ============
 
   /**
@@ -115,5 +124,20 @@ export default class ApiKeys {
     signingMethod: SigningMethod = SigningMethod.Hash,
   ): Promise<void> {
     return this.delete('api-keys', ethereumAddress, signingMethod, { apiKey });
+  }
+
+  /**
+   * @description This is for if you can't recover your starkKey or apiKey and need an
+   * additional way to get your starkKey and balance on our exchange, both of which are needed to
+   * call the L1 solidity function needed to recover your funds.
+   *
+   * @param ethereumAddress the recovery is for
+   * @param signingMethod used to validate the request
+   */
+  async recovery(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.Hash,
+  ): Promise<{ starkKey: string, quoteBalance: string, positions: PositionResponseObject[] }> {
+    return this.get('recovery', ethereumAddress, signingMethod);
   }
 }

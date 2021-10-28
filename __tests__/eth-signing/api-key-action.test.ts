@@ -1,7 +1,7 @@
 import { ApiMethod } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
-import { SignApiKeyAction } from '../../src/eth-signing';
+import { SignEthPrivateAction } from '../../src/eth-signing';
 import { SigningMethod } from '../../src/types';
 
 // DEFAULT GANACHE ACCOUNT FOR TESTING ONLY -- DO NOT USE IN PRODUCTION.
@@ -25,16 +25,16 @@ const mockRequestWithBody = {
   body: JSON.stringify({ key: 'value', key2: 'value2' }),
 };
 
-let localSigner: SignApiKeyAction;
-let remoteSigner: SignApiKeyAction;
+let localSigner: SignEthPrivateAction;
+let remoteSigner: SignEthPrivateAction;
 
-describe('SignApiKeyAction', () => {
+describe('SignEthPrivateAction', () => {
 
   describe('with a local Ethereum private key', () => {
 
     beforeAll(() => {
       const web3 = new Web3();
-      localSigner = new SignApiKeyAction(web3, 1);
+      localSigner = new SignEthPrivateAction(web3, 1);
       web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
     });
 
@@ -77,7 +77,7 @@ describe('SignApiKeyAction', () => {
 
     beforeAll(async () => {
       const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
-      remoteSigner = new SignApiKeyAction(web3, 1);
+      remoteSigner = new SignEthPrivateAction(web3, 1);
     });
 
     it('signs and verifies using SigningMethod.Hash', async () => {

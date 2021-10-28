@@ -2,8 +2,8 @@ import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import { KeyPair } from '@dydxprotocol/starkex-lib';
 import Web3 from 'web3';
 
-import ApiKeys from './modules/api-keys';
 import Clock from './modules/clock';
+import EthPrivate from './modules/eth-private';
 import Onboarding from './modules/onboarding';
 import Private from './modules/private';
 import Public from './modules/public';
@@ -39,7 +39,7 @@ export class DydxClient {
 
   // Modules. These are created on-demand.
   private _private?: Private;
-  private _apiKeys?: ApiKeys;
+  private _ethPrivate?: EthPrivate;
   private _onboarding?: Onboarding;
   private _eth?: StarkwareLib;
 
@@ -103,10 +103,10 @@ export class DydxClient {
   /**
    * Get the keys module, used for managing API keys. Requires Ethereum key auth.
    */
-  get apiKeys(): ApiKeys {
-    if (!this._apiKeys) {
+  get ethPrivate(): EthPrivate {
+    if (!this._ethPrivate) {
       if (this.web3) {
-        this._apiKeys = new ApiKeys({
+        this._ethPrivate = new EthPrivate({
           host: this.host,
           web3: this.web3,
           networkId: this.networkId,
@@ -114,11 +114,11 @@ export class DydxClient {
         });
       } else {
         return notSupported(
-          'API key endpoints are not supported since neither web3 nor web3Provider was provided',
-        ) as ApiKeys;
+          'Eth private endpoints are not supported since neither web3 nor web3Provider was provided',
+        ) as EthPrivate;
       }
     }
-    return this._apiKeys;
+    return this._ethPrivate;
   }
 
   /**

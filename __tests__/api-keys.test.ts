@@ -42,7 +42,7 @@ describe('API Keys Module & Private Module', () => {
     const web3 = new Web3();
     const account: EthereumAccount = web3.eth.accounts.wallet.create(1)[0];
     const client = new DydxClient('https://example.com', { web3 });
-    await client.apiKeys.deleteApiKey(apiKeyCredentials.key, account.address);
+    await client.ethPrivate.deleteApiKey(apiKeyCredentials.key, account.address);
 
     expect(axios).toHaveBeenCalledTimes(1);
     expect(axios).toHaveBeenCalledWith({

@@ -1,2 +1,2 @@
-export { SignApiKeyAction } from './api-key-action';
+export { SignEthPrivateAction } from './eth-private-action';
 export { SignOnboardingAction } from './onboarding-action';
