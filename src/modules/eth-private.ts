@@ -127,9 +127,9 @@ export default class EthPrivate {
   }
 
   /**
-   * @description This is for users who can't recover their starkKey or apiKey and need an
-   * additional way to get their starkKey and balance on our exchange, both of which are needed to
-   * call the L1 solidity function needed to recover their funds.
+   * @description This is for if you can't recover your starkKey or apiKey and need an
+   * additional way to get your starkKey and balance on our exchange, both of which are needed to
+   * call the L1 solidity function needed to recover your funds.
    *
    * @param ethereumAddress the recovery is for
    * @param signingMethod used to validate the request
