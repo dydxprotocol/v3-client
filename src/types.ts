@@ -383,6 +383,25 @@ export interface ConfigResponseObject {
   exchangeAddress: string;
   maxExpectedBatchLengthMinutes: string;
   maxFastWithdrawalAmount: string;
+  cancelOrderRateLimiting: CancelOrderRateLimiting;
+  placeOrderRateLimiting: PlaceOrderRateLimiting;
+}
+
+export interface CancelOrderRateLimiting {
+  maxPointsMulti: number;
+  maxPointsSingle: number;
+  windowSecMulti: number;
+  windowSecSingle: number;
+}
+
+export interface PlaceOrderRateLimiting {
+  maxPoints: number;
+  windowSec: number;
+  targetNotional: number;
+  minLimitConsumption: number;
+  minMarketConsumption: number;
+  minTriggerableConsumption: number;
+  maxOrderConsumption: number;
 }
 
 export interface FastWithdrawalsResponseObject {
