@@ -286,8 +286,9 @@ export default class Public {
   }
 
   /**
-   * @description get any globally-defined variables from the server not associated with any
-   * particular market or account.
+   * @description  get global config variables for the exchange as a whole.
+   * This includes (but is not limited to) details on the exchange, including addresses,
+   * fees, transfers, and rate limits.
    */
   async getConfig(): Promise<ConfigResponseObject> {
     return this.get('config', {});
