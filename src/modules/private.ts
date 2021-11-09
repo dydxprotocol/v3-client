@@ -801,6 +801,22 @@ export default class Private {
     );
   }
 
+  /**
+   * @description requests tokens on dYdX's staging server.
+   * NOTE: this will not work on Mainnet/Production.
+   */
+  async requestTestnetTokens(): Promise<{ transfer: TransferResponseObject }> {
+    // Ropsten
+    if (this.networkId !== 3) {
+      throw new Error('Network is not Ropsten');
+    }
+
+    return this.post(
+      'testnet/tokens',
+      {},
+    );
+  }
+
   // ============ Signing ============
 
   sign({
