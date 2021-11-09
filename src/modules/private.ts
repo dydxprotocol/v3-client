@@ -801,6 +801,17 @@ export default class Private {
     );
   }
 
+  /**
+   * @description requests tokens on dYdX's staging server.
+   * NOTE: this will not work on Mainnet/Production.
+   */
+  async requestTestnetTokens(): Promise<{ transfer: TransferResponseObject }> {
+    return this.post(
+      'testnet/tokens',
+      {},
+    );
+  }
+
   // ============ Signing ============
 
   sign({
