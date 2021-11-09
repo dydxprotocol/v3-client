@@ -806,6 +806,11 @@ export default class Private {
    * NOTE: this will not work on Mainnet/Production.
    */
   async requestTestnetTokens(): Promise<{ transfer: TransferResponseObject }> {
+    // Ropsten
+    if (this.networkId !== 3) {
+      throw new Error('Network is not Ropsten');
+    }
+
     return this.post(
       'testnet/tokens',
       {},
