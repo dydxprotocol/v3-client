@@ -38,6 +38,7 @@ import {
   GenericParams,
   HistoricalPnlResponseObject,
   ISO8601,
+  ISO31661ALPHA2,
   LeaderboardPnlPeriod,
   LiquidityProviderRewardsResponseObject,
   Market,
@@ -196,6 +197,7 @@ export default class Private {
    * @username for the user
    * @isSharingUsername if the user wants their username publicly shared
    * @isSharingAddress if the user wants their ethereumAddress publicly shared
+   * @country for the user (ISO 3166-1 Alpha-2 Compliant)
    * }
    */
   async updateUser({
@@ -204,12 +206,14 @@ export default class Private {
     username,
     isSharingUsername,
     isSharingAddress,
+    country,
   }: {
     userData: {},
     email?: string | null,
     username?: string,
     isSharingUsername?: boolean,
     isSharingAddress?: boolean,
+    country?: ISO31661ALPHA2,
   }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
@@ -219,6 +223,7 @@ export default class Private {
         isSharingUsername,
         isSharingAddress,
         userData: JSON.stringify(userData),
+        country,
       },
     );
   }
