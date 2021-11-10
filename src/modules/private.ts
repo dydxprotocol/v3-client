@@ -38,6 +38,7 @@ import {
   GenericParams,
   HistoricalPnlResponseObject,
   ISO8601,
+  ISO31661ALPHA2,
   LeaderboardPnlPeriod,
   LiquidityProviderRewardsResponseObject,
   Market,
@@ -204,12 +205,14 @@ export default class Private {
     username,
     isSharingUsername,
     isSharingAddress,
+    country,
   }: {
     userData: {},
     email?: string | null,
     username?: string,
     isSharingUsername?: boolean,
     isSharingAddress?: boolean,
+    country?: ISO31661ALPHA2,
   }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
@@ -219,6 +222,7 @@ export default class Private {
         isSharingUsername,
         isSharingAddress,
         userData: JSON.stringify(userData),
+        country,
       },
     );
   }

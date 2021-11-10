@@ -10,6 +10,8 @@ export { Account as EthereumAccount } from 'web3-core';
 
 export type ISO8601 = string;
 
+export type ISO31661ALPHA2 = string;
+
 export type Address = string;
 
 export type Integer = BigNumber;
@@ -295,6 +297,7 @@ export interface UserResponseObject {
   dydxTokenBalance: string;
   stakedDydxTokenBalance: string;
   isEmailVerified: boolean;
+  country: ISO31661ALPHA2 | null;
 }
 
 export interface AccountResponseObject {
