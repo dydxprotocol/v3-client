@@ -197,6 +197,7 @@ export default class Private {
    * @username for the user
    * @isSharingUsername if the user wants their username publicly shared
    * @isSharingAddress if the user wants their ethereumAddress publicly shared
+   * @country for the user (ISO 3166-1 Alpha-2 Compliant)
    * }
    */
   async updateUser({

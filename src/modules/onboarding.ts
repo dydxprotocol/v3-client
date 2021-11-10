@@ -91,6 +91,7 @@ export default class Onboarding {
    * @param signature validating the request
    * @param signingMethod for the request
    * @param referredByAffiliateLink of affiliate who referred the user
+   * @param country for the user (ISO 3166-1 Alpha-2 Compliant)
    */
   async createUser(
     params: {
