@@ -140,6 +140,8 @@ export default class EthPrivate {
   ): Promise<{
     starkKey: string,
     positionId: string,
+    equity: string,
+    freeCollateral: string,
     quoteBalance: string,
     positions: PositionResponseObject[],
   }> {
