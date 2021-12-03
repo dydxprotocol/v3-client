@@ -283,11 +283,17 @@ export default class Private {
    */
   async getAccountLeaderboardPnl(
     period: LeaderboardPnlPeriod,
+    params: {
+      startingBeforeOrAt?: ISO8601,
+    },
     genericParams: GenericParams = {},
   ): Promise<{ leaderboardPnl: AccountLeaderboardPnlResponseObject }> {
     return this._get(
       `accounts/leaderboard-pnl/${period}`,
-      genericParams,
+      {
+        ...params,
+        ...genericParams,
+      },
     );
   }
 
