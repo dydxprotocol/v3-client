@@ -415,6 +415,8 @@ export interface FastWithdrawalsResponseObject {
 
 export interface LeaderboardPnlResponseObject {
   topPnls: LeaderboardPnl[];
+  startedAt: ISO8601 | null;
+  endsAt: ISO8601 | null;
   updatedAt: ISO8601;
 }
 
@@ -433,6 +435,8 @@ export interface AccountLeaderboardPnlResponseObject {
   absoluteRank: number | null;
   percentRank: number | null;
   updatedAt: ISO8601 | null,
+  startedAt: ISO8601 | null,
+  endsAt: ISO8601 | null,
   accountId: string;
 }
 

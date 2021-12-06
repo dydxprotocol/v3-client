@@ -215,10 +215,12 @@ export default class Public {
    */
   getLeaderboardPnls({
     period,
+    startingBeforeOrAt,
     sortBy,
     limit,
   }: {
     period: LeaderboardPnlPeriod,
+    startingBeforeOrAt?: ISO8601,
     sortBy: LeaderboardPnlSortBy,
     limit?: number,
   }): Promise<LeaderboardPnlResponseObject> {
@@ -227,6 +229,7 @@ export default class Public {
       uri,
       {
         period,
+        startingBeforeOrAt,
         sortBy,
         limit,
       },
