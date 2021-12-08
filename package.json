@@ -1,6 +1,6 @@
 {
   "name": "@dydxprotocol/v3-client",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "description": "Trading client library for the new dYdX system (v3 API)",
   "main": "build/src/index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "coverage": "npm run test -- --coverage",
     "fix": "npm run lint -- --fix",
     "lint": "eslint --ext .ts,.js .",
+    "start": "node build/src/index.js",
     "prepublishOnly": "npm run compile",
     "test": "NODE_ENV=test jest",
     "test:watch": "npm test -- --watch"
