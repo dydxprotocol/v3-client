@@ -211,6 +211,7 @@ export interface MarketResponseObject {
   incrementalPositionSize: string;
   maxPositionSize: string;
   assetResolution: string;
+  syntheticAssetId: string;
 }
 
 export interface MarketsResponseObject {
