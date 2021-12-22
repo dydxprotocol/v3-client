@@ -467,7 +467,7 @@ export interface TradingRewardsResponseObject {
   fees: Fees,
   openInterest: OpenInterest,
   weight: Weight,
-  stakedDYDX: StakedDYDX,
+  stakedDYDX: StakedDYDXIncludingFloor,
   totalRewards: string,
   estimatedRewards: string,
 }
@@ -489,8 +489,11 @@ export interface Weight {
 
 export interface StakedDYDX {
   averageStakedDYDX: string,
-  averageStakedDYDXWithFloor: string,
   totalAverageStakedDYDX: string,
+}
+
+export interface StakedDYDXIncludingFloor extends StakedDYDX {
+  averageStakedDYDXWithFloor: string,
 }
 
 export interface LiquidityProviderRewardsResponseObject {
@@ -500,7 +503,7 @@ export interface LiquidityProviderRewardsResponseObject {
   markets: {
     [market: string]: LiquidityRewards,
   },
-  stakedDYDX: StakedDYDXLiquidity,
+  stakedDYDX: StakedDYDX,
 }
 
 export interface LiquidityRewards {
@@ -510,11 +513,6 @@ export interface LiquidityRewards {
   totalScore: string,
   totalRewards: string,
   estimatedRewards: string,
-}
-
-export interface StakedDYDXLiquidity {
-  averageStakedDYDX: string,
-  totalAverageStakedDYDX: string,
 }
 
 export interface RetroactiveMiningRewardsResponseObject {
