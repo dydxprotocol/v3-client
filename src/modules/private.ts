@@ -55,6 +55,7 @@ import {
   TransferParams,
   TransferResponseObject,
   UserResponseObject,
+  ActiveOrderResponseObject,
 } from '../types';
 import Clock from './clock';
 
@@ -361,6 +362,33 @@ export default class Private {
   }
 
   /**
+   * @description get active orders (PENDING, OPEN, UNTRIGGERED) for a user by a set of query
+   * parameters - if id is included then side is required
+   *
+   * @param {
+   * @market the orders are for
+   * @side of the book the orders are on
+   * @id of the order
+   * }
+   */
+  async getActiveOrders(
+    market: Market,
+    side?: OrderSide,
+    id?: string,
+    genericParams: GenericParams = {},
+  ): Promise<{ orders: ActiveOrderResponseObject[] }> {
+    return this._get(
+      'active-orders',
+      {
+        market,
+        side,
+        id,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
    * @description get an order by a unique id
    *
    * @param orderId of the order
@@ -468,6 +496,33 @@ export default class Private {
     return this.delete(
       'orders',
       params,
+    );
+  }
+
+  /**
+   * @description cancel active orders (PENDING, OPEN, UNTRIGGERED) for a user by a set of query
+   * parameters - if id is included then side is required
+   *
+   * @param {
+   * @market the orders are for
+   * @side of the book the orders are on
+   * @id of the order
+   * }
+   */
+  async cancelActiveOrders(
+    market: Market,
+    side?: OrderSide,
+    id?: string,
+    genericParams: GenericParams = {},
+  ): Promise<{ cancelOrders: ActiveOrderResponseObject[] }> {
+    return this.delete(
+      'active-orders',
+      {
+        market,
+        side,
+        id,
+        ...genericParams,
+      },
     );
   }
 

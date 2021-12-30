@@ -251,6 +251,15 @@ export interface OrderResponseObject {
   cancelReason?: string | null;
 }
 
+export interface ActiveOrderResponseObject {
+  id: string;
+  accountId: string;
+  remainingSize: string;
+  price: string;
+  market: Market;
+  side: OrderSide;
+}
+
 export interface PositionResponseObject {
   market: Market;
   status: PositionStatus;
