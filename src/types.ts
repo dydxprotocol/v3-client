@@ -117,17 +117,37 @@ export enum SignatureTypes {
   PERSONAL = 3,
 }
 
+export enum AccountLeaderboardPnlPeriod {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  ALL_TIME = 'ALL_TIME',
+  COMPETITION = 'COMPETITION',
+  LEAGUES = 'LEAGUES',
+}
+
 export enum LeaderboardPnlPeriod {
   DAILY = 'DAILY',
   WEEKLY = 'WEEKLY',
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
   COMPETITION = 'COMPETITION',
+  BRONZE = 'BRONZE',
+  SILVER = 'SILVER',
+  GOLD = 'GOLD',
+  PLATINUM = 'PLATINUM',
+  DIAMOND = 'DIAMOND',
 }
 
 export enum LeaderboardPnlSortBy {
   ABSOLUTE = 'ABSOLUTE',
   PERCENT = 'PERCENT',
+}
+
+export enum LeaguesExpectedOutcome {
+  PROMOTION = 'PROMOTION',
+  RELEGATION = 'RELEGATION',
+  SAME_LEAGUE = 'SAME_LEAGUE',
 }
 
 // ============ API Request Types ============
@@ -425,6 +445,7 @@ export interface FastWithdrawalsResponseObject {
 
 export interface LeaderboardPnlResponseObject {
   topPnls: LeaderboardPnl[];
+  numParticipants: number;
   startedAt: ISO8601 | null;
   endsAt: ISO8601 | null;
   updatedAt: ISO8601;
@@ -437,6 +458,7 @@ export interface LeaderboardPnl {
   percentPnl: string;
   absoluteRank: number | null;
   percentRank: number | null;
+  seasonExpectedOutcome: LeaguesExpectedOutcome | null;
 }
 
 export interface AccountLeaderboardPnlResponseObject {
@@ -444,10 +466,12 @@ export interface AccountLeaderboardPnlResponseObject {
   percentPnl: string;
   absoluteRank: number | null;
   percentRank: number | null;
-  updatedAt: ISO8601 | null,
-  startedAt: ISO8601 | null,
-  endsAt: ISO8601 | null,
+  updatedAt: ISO8601 | null;
+  startedAt: ISO8601 | null;
+  endsAt: ISO8601 | null;
   accountId: string;
+  period: LeaderboardPnlPeriod;
+  seasonExpectedOutcome: LeaguesExpectedOutcome | null;
 }
 
 export interface LiquidityProviderInfo {
