@@ -24,6 +24,7 @@ import {
 import { getAccountId } from '../lib/db';
 import {
   AccountAction,
+  AccountLeaderboardPnlPeriod,
   AccountLeaderboardPnlResponseObject,
   AccountResponseObject,
   ApiFastWithdrawal,
@@ -39,7 +40,6 @@ import {
   HistoricalPnlResponseObject,
   ISO8601,
   ISO31661ALPHA2,
-  LeaderboardPnlPeriod,
   LiquidityProviderRewardsResponseObject,
   Market,
   OrderResponseObject,
@@ -283,7 +283,7 @@ export default class Private {
    * @param period the period of pnls to retrieve
    */
   async getAccountLeaderboardPnl(
-    period: LeaderboardPnlPeriod,
+    period: AccountLeaderboardPnlPeriod,
     params: {
       startedBeforeOrAt?: ISO8601,
     },
