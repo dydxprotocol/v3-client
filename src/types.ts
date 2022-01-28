@@ -146,8 +146,11 @@ export enum LeaderboardPnlSortBy {
 
 export enum LeaguesExpectedOutcome {
   PROMOTION = 'PROMOTION',
-  RELEGATION = 'RELEGATION',
+  DEMOTION = 'DEMOTION',
   SAME_LEAGUE = 'SAME_LEAGUE',
+
+  // deprecated.
+  RELEGATION = 'RELEGATION',
 }
 
 // ============ API Request Types ============
@@ -449,6 +452,16 @@ export interface LeaderboardPnlResponseObject {
   startedAt: ISO8601 | null;
   endsAt: ISO8601 | null;
   updatedAt: ISO8601;
+
+  // leagues specific
+  seasonNumber: number | null;
+  prizePool: number | null;
+  numHedgiesWinners: number | null;
+  numPrizeWinners: number | null;
+  ratioPromoted: number | null;
+  ratioDemoted: number | null;
+  minimumEquity: number | null;
+  minimumDYDXTokens: number | null;
 }
 
 export interface LeaderboardPnl {
@@ -472,6 +485,7 @@ export interface AccountLeaderboardPnlResponseObject {
   accountId: string;
   period: LeaderboardPnlPeriod;
   seasonExpectedOutcome: LeaguesExpectedOutcome | null;
+  seasonNumber: number | null;
 }
 
 export interface LiquidityProviderInfo {
