@@ -120,8 +120,6 @@ export default class Private {
       'DYDX-TIMESTAMP': isoTimestamp,
       'DYDX-PASSPHRASE': this.apiKeyCredentials.passphrase,
     };
-    console.log(requestPath);
-    console.log(headers);
     return axiosRequest({
       url: `${this.host}${requestPath}`,
       method,
@@ -904,7 +902,6 @@ export default class Private {
       requestPath +
       (_.isEmpty(data) ? '' : JSON.stringify(data))
     );
-    console.log(messageString);
 
     return crypto.createHmac(
       'sha256',

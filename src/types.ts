@@ -146,11 +146,8 @@ export enum LeaderboardPnlSortBy {
 
 export enum LeaguesExpectedOutcome {
   PROMOTION = 'PROMOTION',
-  DEMOTION = 'DEMOTION',
-  SAME_LEAGUE = 'SAME_LEAGUE',
-
-  // deprecated.
   RELEGATION = 'RELEGATION',
+  SAME_LEAGUE = 'SAME_LEAGUE',
 }
 
 // ============ API Request Types ============
@@ -446,21 +443,12 @@ export interface FastWithdrawalsResponseObject {
   };
 }
 
-// some fields are leagues specific
 export interface LeaderboardPnlResponseObject {
   topPnls: LeaderboardPnl[];
   numParticipants: number;
   startedAt: ISO8601 | null;
   endsAt: ISO8601 | null;
   updatedAt: ISO8601;
-  seasonNumber: number | null;
-  prizePool: number | null;
-  numHedgiesWinners: number | null;
-  numPrizeWinners: number | null;
-  ratioPromoted: number | null;
-  ratioDemoted: number | null;
-  minimumEquity: number | null;
-  minimumDYDXTokens: number | null;
 }
 
 export interface LeaderboardPnl {
@@ -484,7 +472,6 @@ export interface AccountLeaderboardPnlResponseObject {
   accountId: string;
   period: LeaderboardPnlPeriod;
   seasonExpectedOutcome: LeaguesExpectedOutcome | null;
-  seasonNumber: number | null;
 }
 
 export interface LiquidityProviderInfo {
