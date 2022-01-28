@@ -446,14 +446,13 @@ export interface FastWithdrawalsResponseObject {
   };
 }
 
+// some fields are leagues specific
 export interface LeaderboardPnlResponseObject {
   topPnls: LeaderboardPnl[];
   numParticipants: number;
   startedAt: ISO8601 | null;
   endsAt: ISO8601 | null;
   updatedAt: ISO8601;
-
-  // leagues specific
   seasonNumber: number | null;
   prizePool: number | null;
   numHedgiesWinners: number | null;
