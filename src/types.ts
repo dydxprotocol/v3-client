@@ -123,6 +123,7 @@ export enum AccountLeaderboardPnlPeriod {
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
   COMPETITION = 'COMPETITION',
+  DAILY_COMPETITION = 'DAILY_COMPETITION',
   LEAGUES = 'LEAGUES',
 }
 
@@ -132,6 +133,7 @@ export enum LeaderboardPnlPeriod {
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
   COMPETITION = 'COMPETITION',
+  DAILY_COMPETITION = 'DAILY_COMPETITION',
   BRONZE = 'BRONZE',
   SILVER = 'SILVER',
   GOLD = 'GOLD',
@@ -471,6 +473,8 @@ export interface LeaderboardPnl {
   absoluteRank: number | null;
   percentRank: number | null;
   seasonExpectedOutcome: LeaguesExpectedOutcome | null;
+  hedgieWon: number | null;
+  prizeWon: string | null;
 }
 
 export interface AccountLeaderboardPnlResponseObject {
@@ -485,6 +489,8 @@ export interface AccountLeaderboardPnlResponseObject {
   period: LeaderboardPnlPeriod;
   seasonExpectedOutcome: LeaguesExpectedOutcome | null;
   seasonNumber: number | null;
+  hedgieWon: number | null;
+  prizeWon: string | null;
 }
 
 export interface LiquidityProviderInfo {
