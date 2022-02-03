@@ -1,4 +1,3 @@
-import { HedgiePeriodResponseObject, NftRevealType } from '..';
 import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
@@ -20,6 +19,8 @@ import {
   LeaderboardPnlPeriod,
   LeaderboardPnlResponseObject,
   PublicRetroactiveMiningRewardsResponseObject,
+  NftRevealType,
+  HedgiePeriodResponseObject,
 } from '../types';
 
 export default class Public {
