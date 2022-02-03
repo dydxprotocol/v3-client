@@ -155,6 +155,11 @@ export enum LeaguesExpectedOutcome {
   RELEGATION = 'RELEGATION',
 }
 
+export enum NftRevealType {
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -584,6 +589,12 @@ export interface RetroactiveMiningRewards {
 export interface PublicRetroactiveMiningRewardsResponseObject {
   allocation: string,
   targetVolume: string,
+}
+
+export interface HedgiePeriodResponseObject {
+  blockNumber: number,
+  competitionPeriod: number,
+  tokenIds: string[],
 }
 
 // ============ API Response Field Types ============

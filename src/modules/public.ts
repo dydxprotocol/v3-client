@@ -1,3 +1,4 @@
+import { HedgiePeriodResponseObject, NftRevealType } from '..';
 import { generateQueryPath } from '../helpers/request-helpers';
 import { axiosRequest } from '../lib/axios';
 import {
@@ -264,6 +265,40 @@ export default class Public {
       'emails/verify-email',
       {
         token,
+      },
+    );
+  }
+
+  /**
+   * @description get currently revealed Hedgies
+   */
+  getCurrentlyRevealedHedgies(): Promise<{
+    daily?: HedgiePeriodResponseObject,
+    weekly?: HedgiePeriodResponseObject,
+  }> {
+    return this.get('hedgies/current', {});
+  }
+
+  /**
+   * @description get historically revealed Hedgies
+   */
+  getHistoricallyRevealedHedgies({
+    nftRevealType,
+    start,
+    end,
+  }: {
+    nftRevealType: NftRevealType,
+    start?: number,
+    end?: number,
+  }): Promise<{
+    historicalTokenIds: HedgiePeriodResponseObject[],
+  }> {
+    return this.get(
+      'hedgies/history',
+      {
+        nftRevealType,
+        start,
+        end,
       },
     );
   }
