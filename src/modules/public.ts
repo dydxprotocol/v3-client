@@ -325,7 +325,14 @@ export default class Public {
   }
 
   /**
-   * @description  get global config variables for the exchange as a whole.
+   * @description get balance of the dYdX insurance fund
+   */
+  async getInsuranceFundBalance(): Promise<{ balance: number }> {
+    return this.get('insurance-fund/balance', {});
+  }
+
+  /**
+   * @description get global config variables for the exchange as a whole.
    * This includes (but is not limited to) details on the exchange, including addresses,
    * fees, transfers, and rate limits.
    */
