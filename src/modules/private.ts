@@ -902,7 +902,7 @@ export default class Private {
   /**
    * @description comply to dYdX terms of service after a first offense.
    */
-  async userCompliance(
+  async postRestrictionsCompliance(
     {
       residenceCountry,
       tradingCountry,
