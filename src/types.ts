@@ -160,6 +160,15 @@ export enum NftRevealType {
   WEEK = 'WEEK',
 }
 
+export enum AddressRestrictionType {
+  RESTRICTED = 'RESTRICTED',
+  RESTRICTED_TRANSFER = 'RESTRICTED_TRANSFER',
+  RESTRICTED_WITHDRAWAL = 'RESTRICTED_WITHDRAWAL',
+  RESTRICTED_COUNTRY = 'RESTRICTED_COUNTRY',
+  FIRST_OFFENSE = 'FIRST_OFFENSE',
+  COMPLIED = 'COMPLIED',
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -595,6 +604,21 @@ export interface HedgiePeriodResponseObject {
   blockNumber: number,
   competitionPeriod: number,
   tokenIds: string[],
+}
+
+export interface RestrictionResponseObject {
+  isRestricted: boolean,
+  restrictionType: AddressRestrictionType | null,
+  canTrade: boolean,
+  canTransfer: boolean,
+  canFastWithdraw: boolean,
+  canSlowWithdraw: boolean,
+  reason: string | null,
+}
+
+export interface UserComplianceResponseObject {
+  isBanned: boolean,
+  reason: string | null,
 }
 
 // ============ API Response Field Types ============
