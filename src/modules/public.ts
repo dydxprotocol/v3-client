@@ -325,7 +325,7 @@ export default class Public {
   }
 
   /**
-   * @description get balance of the insurance fund
+   * @description get balance of the dYdX insurance fund
    */
   async getInsuranceFundBalance(): Promise<{ balance: number }> {
     return this.get('insurance-fund/balance', {});
