@@ -56,6 +56,8 @@ import {
   TransferResponseObject,
   UserResponseObject,
   ActiveOrderResponseObject,
+  RestrictionResponseObject,
+  UserComplianceResponseObject,
 } from '../types';
 import Clock from './clock';
 
@@ -880,6 +882,43 @@ export default class Private {
     return this.post(
       'testnet/tokens',
       {},
+    );
+  }
+
+  /**
+   * @description get ethereum address restrictions on the dYdX protocol.
+   */
+  async getRestrictions(
+    genericParams: GenericParams = {},
+  ): Promise<{ restrictions: RestrictionResponseObject }> {
+    return this._get(
+      'restrictions',
+      {
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description comply to dYdX terms of service after a first offense.
+   */
+  async userCompliance(
+    {
+      residenceCountry,
+      tradingCountry,
+    }: {
+      residenceCountry: ISO31661ALPHA2,
+      tradingCountry: ISO31661ALPHA2,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{ restrictions: UserComplianceResponseObject }> {
+    return this.post(
+      'restrictions/compliance',
+      {
+        residenceCountry,
+        tradingCountry,
+        ...genericParams,
+      },
     );
   }
 
