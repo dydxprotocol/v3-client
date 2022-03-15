@@ -1,3 +1,4 @@
+import { Decimal } from '@dydxprotocol/starkex-eth';
 import {
   DydxAsset,
   DydxMarket,
@@ -507,6 +508,25 @@ export interface AccountLeaderboardPnlResponseObject {
   prizeWon: string | null;
 }
 
+export interface HistoricalLeaderboardPnlObject {
+  period: LeaderboardPnlPeriod,
+  absolutePnl: string,
+  percentPnl: string,
+  absoluteRank: number | null,
+  percentRank: number | null,
+  updatedAt: ISO8601,
+  startedAt: ISO8601 | null,
+  endsAt: ISO8601 | null,
+  seasonOutcome: LeaguesExpectedOutcome | null,
+  seasonNumber: number | null,
+  hedgieWon: number | null,
+  prizeWon: string | null,
+}
+
+export interface HistoricalLeaderboardPnlsResponseObject {
+  leaderboardPnls: HistoricalLeaderboardPnlObject[];
+}
+
 export interface LiquidityProviderInfo {
   availableFunds: string;
   starkKey: string;
@@ -619,6 +639,44 @@ export interface RestrictionResponseObject {
 export interface UserComplianceResponseObject {
   isBanned: boolean,
   reason: string | null,
+}
+
+export interface ProfilePrivateResponseObject {
+  username: string | null,
+  publicId: string,
+  ethereumAddress: string,
+  DYDXHoldings: string,
+  hedgiesHeld: number[],
+  twitterHandle: string | null,
+  tradingLeagues: {
+    currentLeague: string | null,
+    currentLeagueRanking: number | null,
+  },
+  tradingPnls: {
+    absolutePnl30D: string | null,
+    percentPnl30D: string | null,
+  },
+  tradingRewards: {
+    curEpoch: number,
+    curEpochEstimatedRewards: Decimal,
+    prevEpochEstimatedRewards: Decimal,
+  },
+}
+
+export interface ProfilePublicResponseObject {
+  username: string | null,
+  ethereumAddress: string | null,
+  DYDXHoldings: string | null,
+  hedgiesHeld: number[],
+  twitterHandle: string | null,
+  tradingLeagues: {
+    currentLeague: string | null,
+    currentLeagueRanking: number | null,
+  },
+  tradingPnls: {
+    absolutePnl30D: string | null,
+    percentPnl30D: string | null,
+  },
 }
 
 // ============ API Response Field Types ============

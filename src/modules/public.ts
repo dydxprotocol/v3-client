@@ -21,6 +21,7 @@ import {
   PublicRetroactiveMiningRewardsResponseObject,
   NftRevealType,
   HedgiePeriodResponseObject,
+  ProfilePublicResponseObject,
 } from '../types';
 
 export default class Public {
@@ -329,6 +330,17 @@ export default class Public {
    */
   async getInsuranceFundBalance(): Promise<{ balance: number }> {
     return this.get('insurance-fund/balance', {});
+  }
+
+  /**
+   * @description get public profile information
+   */
+  async getProfilePublic({
+    publicId,
+  }: {
+    publicId: string,
+  }): Promise<ProfilePublicResponseObject> {
+    return this.get(`profile/${publicId}`, {});
   }
 
   /**

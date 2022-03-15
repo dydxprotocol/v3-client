@@ -58,6 +58,8 @@ import {
   ActiveOrderResponseObject,
   RestrictionResponseObject,
   UserComplianceResponseObject,
+  ProfilePrivateResponseObject,
+  HistoricalLeaderboardPnlsResponseObject,
 } from '../types';
 import Clock from './clock';
 
@@ -293,6 +295,27 @@ export default class Private {
   ): Promise<{ leaderboardPnl: AccountLeaderboardPnlResponseObject }> {
     return this._get(
       `accounts/leaderboard-pnl/${period}`,
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get historical leaderboard pnls for period and accountNumber 0
+   *
+   * @param period the period of pnls to retrieve
+   */
+  async getAccountHistoricalLeaderboardPnl(
+    period: AccountLeaderboardPnlPeriod,
+    params: {
+      limit?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<HistoricalLeaderboardPnlsResponseObject> {
+    return this._get(
+      `accounts/historical-leaderboard-pnls/${period}`,
       {
         ...params,
         ...genericParams,
@@ -917,6 +940,20 @@ export default class Private {
       {
         residenceCountry,
         tradingCountry,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get private profile information
+   */
+  async getProfilePrivate(
+    genericParams: GenericParams = {},
+  ): Promise<ProfilePrivateResponseObject> {
+    return this._get(
+      'profile/private',
+      {
         ...genericParams,
       },
     );
