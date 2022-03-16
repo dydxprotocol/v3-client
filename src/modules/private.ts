@@ -282,7 +282,7 @@ export default class Private {
   }
 
   /**
-   * @description get leaderboard pnl for period and accountNumber 0
+   * @description get leaderboard pnl for period
    *
    * @param period the period of pnls to retrieve
    */
@@ -303,7 +303,7 @@ export default class Private {
   }
 
   /**
-   * @description get historical leaderboard pnls for period and accountNumber 0
+   * @description get historical leaderboard pnls for period
    *
    * @param period the period of pnls to retrieve
    */

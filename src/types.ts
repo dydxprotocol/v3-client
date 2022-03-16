@@ -641,28 +641,6 @@ export interface UserComplianceResponseObject {
   reason: string | null,
 }
 
-export interface ProfilePrivateResponseObject {
-  username: string | null,
-  publicId: string,
-  ethereumAddress: string,
-  DYDXHoldings: string,
-  hedgiesHeld: number[],
-  twitterHandle: string | null,
-  tradingLeagues: {
-    currentLeague: string | null,
-    currentLeagueRanking: number | null,
-  },
-  tradingPnls: {
-    absolutePnl30D: string | null,
-    percentPnl30D: string | null,
-  },
-  tradingRewards: {
-    curEpoch: number,
-    curEpochEstimatedRewards: Decimal,
-    prevEpochEstimatedRewards: Decimal,
-  },
-}
-
 export interface ProfilePublicResponseObject {
   username: string | null,
   ethereumAddress: string | null,
@@ -676,6 +654,15 @@ export interface ProfilePublicResponseObject {
   tradingPnls: {
     absolutePnl30D: string | null,
     percentPnl30D: string | null,
+  },
+}
+
+export interface ProfilePrivateResponseObject extends ProfilePublicResponseObject {
+  publicId: string,
+  tradingRewards: {
+    curEpoch: number,
+    curEpochEstimatedRewards: Decimal,
+    prevEpochEstimatedRewards: Decimal,
   },
 }
 
