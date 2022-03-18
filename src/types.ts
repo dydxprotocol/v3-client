@@ -645,6 +645,7 @@ export interface ProfilePublicResponseObject {
   username: string | null,
   ethereumAddress: string | null,
   DYDXHoldings: string | null,
+  stakedDYDXHoldings: string | null,
   hedgiesHeld: number[],
   twitterHandle: string | null,
   tradingLeagues: {
@@ -654,6 +655,7 @@ export interface ProfilePublicResponseObject {
   tradingPnls: {
     absolutePnl30D: string | null,
     percentPnl30D: string | null,
+    volume30D: string,
   },
 }
 
