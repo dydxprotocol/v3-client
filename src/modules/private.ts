@@ -825,7 +825,7 @@ export default class Private {
       epoch?: number,
     },
     genericParams: GenericParams = {},
-  ): Promise<{ tradingRewards: TradingRewardsResponseObject }> {
+  ): Promise<TradingRewardsResponseObject> {
     return this._get(
       'rewards/weight',
       {
@@ -847,7 +847,7 @@ export default class Private {
       epoch?: number,
     },
     genericParams: GenericParams = {},
-  ): Promise<{ liquidityRewards: LiquidityProviderRewardsResponseObject }> {
+  ): Promise<LiquidityProviderRewardsResponseObject> {
     return this._get(
       'rewards/liquidity',
       {
@@ -863,7 +863,7 @@ export default class Private {
    */
   getRetroactiveMiningRewards(
     genericParams: GenericParams = {},
-  ): Promise<{ retroactiveMiningRewards: RetroactiveMiningRewardsResponseObject }> {
+  ): Promise<RetroactiveMiningRewardsResponseObject> {
     return this._get(
       'rewards/retroactive-mining',
       {
