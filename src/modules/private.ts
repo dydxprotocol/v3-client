@@ -913,7 +913,7 @@ export default class Private {
    */
   async getRestrictions(
     genericParams: GenericParams = {},
-  ): Promise<{ restrictions: RestrictionResponseObject }> {
+  ): Promise<RestrictionResponseObject> {
     return this._get(
       'restrictions',
       {
@@ -934,7 +934,7 @@ export default class Private {
       tradingCountry: ISO31661ALPHA2,
     },
     genericParams: GenericParams = {},
-  ): Promise<{ restrictions: UserComplianceResponseObject }> {
+  ): Promise<UserComplianceResponseObject> {
     return this.post(
       'restrictions/compliance',
       {
