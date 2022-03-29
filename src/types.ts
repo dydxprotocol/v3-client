@@ -190,6 +190,7 @@ export interface ApiOrder extends ApiStarkwareSigned {
   cancelId?: string;
   triggerPrice?: string;
   trailingPercent?: string;
+  reduceOnly?: string,
 }
 
 export interface ApiWithdrawal extends ApiStarkwareSigned {
