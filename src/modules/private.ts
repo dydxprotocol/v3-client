@@ -779,7 +779,7 @@ export default class Private {
       effectiveBeforeOrAt?: ISO8601,
     },
     genericParams: GenericParams = {},
-  ): Promise<{ fundingPayments: FundingResponseObject }> {
+  ): Promise<{ fundingPayments: FundingResponseObject[] }> {
     return this._get(
       'funding',
       {
