@@ -661,10 +661,23 @@ export interface ProfilePublicResponseObject {
 
 export interface ProfilePrivateResponseObject extends ProfilePublicResponseObject {
   publicId: string,
+  affiliateLink: string,
   tradingRewards: {
     curEpoch: number,
     curEpochEstimatedRewards: Decimal,
     prevEpochEstimatedRewards: Decimal,
+  },
+  affiliateStatistics: {
+    currentEpoch: {
+      usersReferred: string,
+      revenue: string,
+      revenueShareRate: string,
+    },
+    previousEpochs: {
+      usersReferred: string,
+      revenue: string,
+    },
+    lastEpochPaid: string,
   },
 }
 
