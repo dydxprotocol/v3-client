@@ -483,6 +483,7 @@ export interface LeaderboardPnlResponseObject {
 export interface LeaderboardPnl {
   username: string;
   ethereumAddress: string | null;
+  publicId: string;
   absolutePnl: string;
   percentPnl: string;
   absoluteRank: number | null;
