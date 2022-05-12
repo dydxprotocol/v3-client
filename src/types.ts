@@ -216,7 +216,7 @@ export interface ApiFastWithdrawal extends ApiStarkwareSigned {
   creditAsset: TransferAsset;
   creditAmount: string;
   debitAmount: string;
-  slippageTolerance: string;
+  slippageTolerance?: string;
   toAddress: string;
   lpPositionId: string;
   clientId: string;
