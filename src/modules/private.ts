@@ -464,6 +464,7 @@ export default class Private {
    */
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
+    genericParams: GenericParams = {},
     positionId: string,
   ): Promise<{ order: OrderResponseObject }> {
     const clientId = params.clientId || generateRandomClientId();
@@ -495,7 +496,10 @@ export default class Private {
 
     return this.post(
       'orders',
-      order,
+      {
+        ...order,
+        ...genericParams,
+      },
     );
   }
 
