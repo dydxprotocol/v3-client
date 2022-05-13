@@ -464,8 +464,8 @@ export default class Private {
    */
   async createOrder(
     params: PartialBy<ApiOrder, 'clientId' | 'signature'>,
-    genericParams: GenericParams = {},
     positionId: string,
+    genericParams: GenericParams = {},
   ): Promise<{ order: OrderResponseObject }> {
     const clientId = params.clientId || generateRandomClientId();
 
