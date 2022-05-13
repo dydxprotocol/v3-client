@@ -219,6 +219,7 @@ export interface ApiFastWithdrawal extends ApiStarkwareSigned {
   toAddress: string;
   lpPositionId: string;
   clientId: string;
+  slippageTolerance?: string;
 }
 
 export interface ApiFastWithdrawalParams extends ApiFastWithdrawal {
