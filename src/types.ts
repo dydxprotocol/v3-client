@@ -170,6 +170,13 @@ export enum AddressRestrictionType {
   COMPLIED = 'COMPLIED',
 }
 
+export enum AffiliateApplicationStatuses {
+  APPROVED = "APPROVED",
+  PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  REJECTED_AND_BANNED = "REJECTED_AND_BANNED"
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -663,6 +670,7 @@ export interface ProfilePublicResponseObject {
 
 export interface ProfilePrivateResponseObject extends ProfilePublicResponseObject {
   publicId: string,
+  affiliateApplicationStatus: AffiliateApplicationStatuses,
   tradingRewards: {
     curEpoch: number,
     curEpochEstimatedRewards: Decimal,
