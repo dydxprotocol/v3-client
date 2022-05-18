@@ -171,10 +171,10 @@ export enum AddressRestrictionType {
 }
 
 export enum AffiliateApplicationStatuses {
-  APPROVED = "APPROVED",
-  PENDING = "PENDING",
-  REJECTED = "REJECTED",
-  REJECTED_AND_BANNED = "REJECTED_AND_BANNED"
+  APPROVED = 'APPROVED',
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
+  REJECTED_AND_BANNED = 'REJECTED_AND_BANNED'
 }
 
 // ============ API Request Types ============
