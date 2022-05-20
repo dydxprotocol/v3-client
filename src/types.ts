@@ -603,9 +603,13 @@ export interface LiquidityProviderRewardsResponseObject {
 
 export interface LiquidityRewards {
   market: Market,
+  depthSpreadScore: string,
   uptime: string,
+  maxUptime: string,
   score: string,
   totalScore: string,
+  makerVolume: string,
+  totalMakerVolume: string,
   totalRewards: string,
   estimatedRewards: string,
 }
