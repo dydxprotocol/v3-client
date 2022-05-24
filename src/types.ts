@@ -177,6 +177,19 @@ export enum AffiliateApplicationStatuses {
   REJECTED_AND_BANNED = 'REJECTED_AND_BANNED'
 }
 
+export enum LinkType {
+  PRIMARY = 'PRIMARY',
+  SECONDARY = 'SECONDARY',
+}
+
+export enum LinkAction {
+  CREATE_SECONDARY_REQUEST = 'CREATE_SECONDARY_REQUEST',
+  DELETE_SECONDARY_REQUEST = 'DELETE_SECONDARY_REQUEST',
+  ACCEPT_PRIMARY_REQUEST = 'ACCEPT_PRIMARY_REQUEST',
+  REJECT_PRIMARY_REQUEST = 'REJECT_PRIMARY_REQUEST',
+  REMOVE = 'REMOVE',
+}
+
 // ============ API Request Types ============
 
 interface ApiStarkwareSigned {
@@ -680,6 +693,23 @@ export interface ProfilePrivateResponseObject extends ProfilePublicResponseObjec
     curEpochEstimatedRewards: Decimal,
     prevEpochEstimatedRewards: Decimal,
   },
+}
+
+export interface UserLinksResponseObject {
+  userType: LinkType | null,
+  primaryAddress: string | null,
+  linkedAddresses: string[] | null,
+}
+
+export interface UserLinkRequestsResponseObject {
+  userType: LinkType | null,
+  outgoingRequests: LinkRequest[] | null,
+  incomingRequests: LinkRequest[] | null,
+}
+
+export interface LinkRequest {
+  primaryAddress: string,
+  secondaryAddress: string,
 }
 
 // ============ API Response Field Types ============
