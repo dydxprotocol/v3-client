@@ -60,6 +60,9 @@ import {
   UserComplianceResponseObject,
   ProfilePrivateResponseObject,
   HistoricalLeaderboardPnlsResponseObject,
+  UserLinksResponseObject,
+  UserLinkRequestsResponseObject,
+  LinkAction,
 } from '../types';
 import Clock from './clock';
 
@@ -957,6 +960,53 @@ export default class Private {
   ): Promise<ProfilePrivateResponseObject> {
     return this._get(
       'profile/private',
+      {
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get information on active linked users
+   */
+  async getUserLinks(
+    genericParams: GenericParams = {},
+  ): Promise<UserLinksResponseObject> {
+    return this._get(
+      'users/links',
+      {
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description send a link request action
+   */
+  async sendLinkRequest(
+    params: {
+      action: LinkAction,
+      address: string,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{}> {
+    return this.post(
+      'users/links',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description get information on pending linked user requests
+   */
+  async getUserPendingLinkRequests(
+    genericParams: GenericParams = {},
+  ): Promise<UserLinkRequestsResponseObject> {
+    return this._get(
+      'users/links/requests',
       {
         ...genericParams,
       },
