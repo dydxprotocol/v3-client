@@ -700,7 +700,7 @@ export interface ProfilePrivateResponseObject extends ProfilePublicResponseObjec
       revenue: string,
       revenueShareRate: string,
     },
-    previousEpoch: {
+    previousEpochs: {
       usersReferred: string,
       revenue: string,
     },
