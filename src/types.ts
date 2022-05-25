@@ -596,6 +596,7 @@ export interface Weight {
 }
 
 export interface StakedDYDX {
+  primaryStakedDYDX: string,
   averageStakedDYDX: string,
   totalAverageStakedDYDX: string,
 }

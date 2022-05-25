@@ -830,6 +830,7 @@ export default class Private {
   getTradingRewards(
     params: {
       epoch?: number,
+      secondaryAddress?: string,
     },
     genericParams: GenericParams = {},
   ): Promise<TradingRewardsResponseObject> {
@@ -852,6 +853,7 @@ export default class Private {
   getLiquidityProviderRewards(
     params: {
       epoch?: number,
+      secondaryAddress?: string,
     },
     genericParams: GenericParams = {},
   ): Promise<LiquidityProviderRewardsResponseObject> {
