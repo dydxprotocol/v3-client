@@ -688,11 +688,29 @@ export interface ProfilePublicResponseObject {
 export interface ProfilePrivateResponseObject extends ProfilePublicResponseObject {
   publicId: string,
   affiliateApplicationStatus: AffiliateApplicationStatuses,
+  affiliateLinks: AffiliateLinkData[],
   tradingRewards: {
     curEpoch: number,
     curEpochEstimatedRewards: Decimal,
     prevEpochEstimatedRewards: Decimal,
   },
+  affiliateStatistics: {
+    currentEpoch: {
+      usersReferred: string,
+      revenue: string,
+      revenueShareRate: string,
+    },
+    previousEpoch: {
+      usersReferred: string,
+      revenue: string,
+    },
+    lastEpochPaid: string,
+  },
+}
+
+export interface AffiliateLinkData {
+  link: string,
+  discountRate: string,
 }
 
 export interface UserLinksResponseObject {
