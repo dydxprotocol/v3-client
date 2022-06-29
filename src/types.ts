@@ -208,6 +208,7 @@ export interface ApiOrder extends ApiStarkwareSigned {
   postOnly: boolean;
   limitFee: string;
   cancelId?: string;
+  reduceOnly?: boolean;
   triggerPrice?: string;
   trailingPercent?: string;
 }
@@ -309,6 +310,7 @@ export interface OrderResponseObject {
   status: OrderStatus;
   timeInForce: TimeInForce;
   postOnly: boolean;
+  reduceOnly?: boolean;
   cancelReason?: string | null;
 }
 
