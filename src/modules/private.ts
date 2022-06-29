@@ -459,6 +459,7 @@ export default class Private {
    * @price of the order
    * @limitFee of the order
    * @expiration of the order
+   * @reduceOnly whether the order is reduce-only (optional)
    * @cancelId if the order is replacing an existing one
    * @triggerPrice of the order if the order is a triggerable order
    * @trailingPercent of the order if the order is a trailing stop order
