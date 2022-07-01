@@ -126,6 +126,7 @@ export enum AccountLeaderboardPnlPeriod {
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
   COMPETITION = 'COMPETITION',
+  CELEBRITY_COMPETITION = 'CELEBRITY_COMPETITION',
   DAILY_COMPETITION = 'DAILY_COMPETITION',
   LEAGUES = 'LEAGUES',
 }
@@ -136,6 +137,7 @@ export enum LeaderboardPnlPeriod {
   MONTHLY = 'MONTHLY',
   ALL_TIME = 'ALL_TIME',
   COMPETITION = 'COMPETITION',
+  CELEBRITY_COMPETITION = 'CELEBRITY_COMPETITION',
   DAILY_COMPETITION = 'DAILY_COMPETITION',
   BRONZE = 'BRONZE',
   SILVER = 'SILVER',
@@ -601,7 +603,6 @@ export interface Weight {
 }
 
 export interface StakedDYDX {
-  primaryStakedDYDX: string,
   averageStakedDYDX: string,
   totalAverageStakedDYDX: string,
 }
@@ -624,6 +625,7 @@ export interface LiquidityRewards {
   market: Market,
   depthSpreadScore: string,
   uptime: string,
+  linkedUptime: string,
   maxUptime: string,
   score: string,
   totalScore: string,
