@@ -9,6 +9,8 @@ import { HttpProvider, IpcProvider, WebsocketProvider } from 'web3-core';
 
 export { Account as EthereumAccount } from 'web3-core';
 
+export type ISO6391 = string;
+
 export type ISO8601 = string;
 
 export type ISO31661ALPHA2 = string;
@@ -371,6 +373,7 @@ export interface UserResponseObject {
   stakedDydxTokenBalance: string;
   isEmailVerified: boolean;
   country: ISO31661ALPHA2 | null;
+  languageCode: ISO6391 | null;
 }
 
 export interface AccountResponseObject {
