@@ -63,6 +63,7 @@ import {
   UserLinksResponseObject,
   UserLinkRequestsResponseObject,
   LinkAction,
+  ISO6391,
 } from '../types';
 import Clock from './clock';
 
@@ -206,6 +207,7 @@ export default class Private {
    * @isSharingUsername if the user wants their username publicly shared
    * @isSharingAddress if the user wants their ethereumAddress publicly shared
    * @country for the user (ISO 3166-1 Alpha-2 Compliant)
+   * @languageCode for the user (ISO 639-1 Compliant, including 'zh-CN')
    * }
    */
   async updateUser({
@@ -215,6 +217,7 @@ export default class Private {
     isSharingUsername,
     isSharingAddress,
     country,
+    languageCode,
   }: {
     userData: {},
     email?: string | null,
@@ -222,6 +225,7 @@ export default class Private {
     isSharingUsername?: boolean,
     isSharingAddress?: boolean,
     country?: ISO31661ALPHA2,
+    languageCode?: ISO6391,
   }): Promise<{ user: UserResponseObject }> {
     return this.put(
       'users',
@@ -232,6 +236,7 @@ export default class Private {
         isSharingAddress,
         userData: JSON.stringify(userData),
         country,
+        languageCode,
       },
     );
   }
