@@ -573,6 +573,7 @@ export interface Trade {
   size: string,
   price: string,
   createdAt: ISO8601,
+  liquidation?: boolean,
 }
 
 export interface TradingRewardsResponseObject {
