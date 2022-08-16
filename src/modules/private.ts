@@ -989,10 +989,22 @@ export default class Private {
   }
 
   /**
-   * @description get a token to send to the Sumsub liveness verification widget
+   * @description send a link request action
    */
-  async postLivenessTokens(): Promise<{ token: string }> {
-    return this.post('users/liveness/tokens', {});
+  async sendLinkRequest(
+    params: {
+      action: LinkAction,
+      address: string,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<{}> {
+    return this.post(
+      'users/links',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
   }
 
   /**
@@ -1010,22 +1022,10 @@ export default class Private {
   }
 
   /**
-   * @description
+   * @description get a token to send to the Sumsub liveness verification widget
    */
-  async sendLinkRequest(
-    params: {
-      action: LinkAction,
-      address: string,
-    },
-    genericParams: GenericParams = {},
-  ): Promise<{}> {
-    return this.post(
-      'users/links',
-      {
-        ...params,
-        ...genericParams,
-      },
-    );
+  async postLivenessTokens(): Promise<{ token: string }> {
+    return this.post('users/liveness/tokens', {});
   }
 
   // ============ Signing ============
