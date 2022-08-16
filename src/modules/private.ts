@@ -989,7 +989,28 @@ export default class Private {
   }
 
   /**
-   * @description send a link request action
+   * @description get a token to send to the Sumsub liveness verification widget
+   */
+  async postLivenessTokens(): Promise<{ token: string }> {
+    return this.post('users/liveness/tokens', {});
+  }
+
+  /**
+   * @description get information on pending linked user requests
+   */
+  async getUserPendingLinkRequests(
+    genericParams: GenericParams = {},
+  ): Promise<UserLinkRequestsResponseObject> {
+    return this._get(
+      'users/links/requests',
+      {
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description
    */
   async sendLinkRequest(
     params: {
@@ -1002,20 +1023,6 @@ export default class Private {
       'users/links',
       {
         ...params,
-        ...genericParams,
-      },
-    );
-  }
-
-  /**
-   * @description get information on pending linked user requests
-   */
-  async getUserPendingLinkRequests(
-    genericParams: GenericParams = {},
-  ): Promise<UserLinkRequestsResponseObject> {
-    return this._get(
-      'users/links/requests',
-      {
         ...genericParams,
       },
     );
