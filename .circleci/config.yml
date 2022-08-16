@@ -2,7 +2,7 @@ version: 2
 jobs:
   checkout_and_install:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
     working_directory: ~/build
     steps:
       - checkout
@@ -24,7 +24,7 @@ jobs:
             - ~/build
   lint:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
     working_directory: ~/build
     steps:
       - restore_cache:
@@ -34,7 +34,7 @@ jobs:
           command: npm run lint
   build:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
     working_directory: ~/build
     steps:
       - restore_cache:
@@ -48,7 +48,7 @@ jobs:
             - ~/build
   test:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
       - image: trufflesuite/ganache-cli:v6.8.2
         command: -d -k=istanbul -i 1001
     working_directory: ~/build
@@ -60,7 +60,7 @@ jobs:
           command: npm test
   coverage:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
       - image: trufflesuite/ganache-cli:v6.8.2
         command: -d -k=istanbul -i 1001
     working_directory: ~/build
@@ -75,7 +75,7 @@ jobs:
           command: cat coverage/lcov.info | node_modules/.bin/coveralls
   publish:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
+      - image: dydxprotocol/node:12.22.12-alpine
     working_directory: ~/build
     steps:
       - restore_cache:
