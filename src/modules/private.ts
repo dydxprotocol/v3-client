@@ -1021,6 +1021,13 @@ export default class Private {
     );
   }
 
+  /**
+   * @description get a token to send to the Sumsub liveness verification widget
+   */
+  async postLivenessTokens(): Promise<{ token: string }> {
+    return this.post('users/liveness/tokens', {});
+  }
+
   // ============ Signing ============
 
   sign({
