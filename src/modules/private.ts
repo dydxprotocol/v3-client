@@ -64,6 +64,7 @@ import {
   UserLinkRequestsResponseObject,
   LinkAction,
   ISO6391,
+  LiquidityProviderRewardsV2ResponseObject,
 } from '../types';
 import Clock from './clock';
 
@@ -200,7 +201,7 @@ export default class Private {
   /**
    * @description update information for the user
    *
-   * @param {
+   * @params {
    * @userData specifiying information about the user
    * @email associated with the user
    * @username for the user
@@ -334,7 +335,7 @@ export default class Private {
   /**
    * @description get all positions for an account, meeting query parameters
    *
-   * @param {
+   * @params {
    * @market the positions are for
    * @status of the positions
    * @limit to the number of positions returned
@@ -362,7 +363,7 @@ export default class Private {
   /**
    * @description get orders for a user by a set of query parameters
    *
-   * @param {
+   * @params {
    * @market the orders are for
    * @status the orders have
    * @side of the book the orders are on
@@ -398,7 +399,7 @@ export default class Private {
    * @description get active orders (PENDING, OPEN, UNTRIGGERED) for a user by a set of query
    * parameters - if id is included then side is required
    *
-   * @param {
+   * @params {
    * @market the orders are for
    * @side of the book the orders are on
    * @id of the order
@@ -454,7 +455,7 @@ export default class Private {
   /**
    *@description place a new order
    *
-   * @param {
+   * @params {
    * @market of the order
    * @side of the order
    * @type of the order
@@ -541,7 +542,7 @@ export default class Private {
    * @description cancel active orders (PENDING, OPEN, UNTRIGGERED) for a user by a set of query
    * parameters - if id is included then side is required
    *
-   * @param {
+   * @params {
    * @market the orders are for
    * @side of the book the orders are on
    * @id of the order
@@ -567,7 +568,7 @@ export default class Private {
   /**
    *@description get fills for a user by a set of query parameters
    *
-   * @param {
+   * @params {
    * @market the fills are for
    * @orderId associated with the fills
    * @limit to the number of fills returned
@@ -595,7 +596,7 @@ export default class Private {
   /**
    * @description get transfers for a user by a set of query parameters
    *
-   * @param {
+   * @params {
    * @type of transfer
    * @limit to the number of transfers returned
    * @createdBeforeOrAt sets the time of the last transfer that will be received
@@ -621,7 +622,7 @@ export default class Private {
   /**
    * @description post a new withdrawal
    *
-   * @param {
+   * @params {
    * @amount specifies the size of the withdrawal
    * @asset specifies the asset being withdrawn
    * @clientId specifies the clientId for the address
@@ -666,16 +667,16 @@ export default class Private {
   /**
    * @description post a new fast-withdrawal
    *
-   * @param {
-    * @creditAmount specifies the size of the withdrawal
-    * @debitAmount specifies the amount to be debited
-    * @creditAsset specifies the asset being withdrawn
-    * @toAddress is the address being withdrawn to
-    * @lpPositionId is the LP positionId for the fast withdrawal
-    * @clientId specifies the clientId for the address
-    * @signature starkware specific signature for fast-withdrawal
-    * }
-    */
+   * @params {
+   * @creditAmount specifies the size of the withdrawal
+   * @debitAmount specifies the amount to be debited
+   * @creditAsset specifies the asset being withdrawn
+   * @toAddress is the address being withdrawn to
+   * @lpPositionId is the LP positionId for the fast withdrawal
+   * @clientId specifies the clientId for the address
+   * @signature starkware specific signature for fast-withdrawal
+   * }
+   */
   async createFastWithdrawal(
     {
       lpStarkKey,
@@ -725,18 +726,18 @@ export default class Private {
   }
 
   /**
-     * @description post a new transfer
-     *
-     * @param {
-      * @amount specifies the size of the transfer
-      * @receiverAccountId specifies the receiver account id
-      * @receiverPublicKey specifies the receiver public key
-      * @receiverPositionId specifies the receiver position id
-      * @clientId specifies the clientId for the address
-      * @signature starkware specific signature for the transfer
-      * }
-      * @param positionId specifies the associated position for the transfer
-      */
+   * @description post a new transfer
+   *
+   * @params {
+   * @amount specifies the size of the transfer
+   * @receiverAccountId specifies the receiver account id
+   * @receiverPublicKey specifies the receiver public key
+   * @receiverPositionId specifies the receiver position id
+   * @clientId specifies the clientId for the address
+   * @signature starkware specific signature for the transfer
+   * }
+   * @param positionId specifies the associated position for the transfer
+   */
   async createTransfer(
     params: PartialBy<TransferParams, 'clientId' | 'signature'>,
     positionId: string,
@@ -779,7 +780,7 @@ export default class Private {
   /**
    * @description get a user's funding payments by a set of query parameters
    *
-   * @param {
+   * @params {
    * @market the funding payments are for
    * @limit to the number of funding payments returned
    * @effectiveBeforeOrAt sets the latest funding payment received
@@ -805,7 +806,7 @@ export default class Private {
   /**
    * @description get historical pnl ticks for an account between certain times
    *
-   * @param {
+   * @params {
    * @createdBeforeOrAt latest historical pnl tick being returned
    * @createdOnOrAfter earliest historical pnl tick being returned
    * }
@@ -829,7 +830,7 @@ export default class Private {
   /**
    * @description get trading rewards for a user for a given epoch
    *
-   * @param {
+   * @params {
    * @epoch to request rewards data for (optional)
    * }
    */
@@ -850,11 +851,36 @@ export default class Private {
   }
 
   /**
-   * @description get liquidity provider rewards for a user for a given epoch
+   * @description get liquidity provider rewards for a user for a given epoch. use for epochs 13+.
    *
-   * @param {
-   * @epoch to request rewards data for (optional)
+   * @params {
+   *   @epoch to request rewards data for (optional)
    * }
+   *
+   */
+  getLiquidityProviderRewardsV2(
+    params: {
+      epoch?: number,
+    },
+    genericParams: GenericParams = {},
+  ): Promise<LiquidityProviderRewardsV2ResponseObject> {
+    return this._get(
+      'rewards/liquidity-provider',
+      {
+        ...params,
+        ...genericParams,
+      },
+    );
+  }
+
+  /**
+   * @description (deprecated) get liquidity provider rewards for a user for a given epoch. use for
+   * epochs 0-12.
+   *
+   * @params {
+   *   @epoch to request rewards data for (optional)
+   * }
+   *
    */
   getLiquidityProviderRewards(
     params: {
