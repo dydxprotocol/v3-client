@@ -624,9 +624,16 @@ export interface LiquidityProviderRewardsResponseObject {
 
 export interface LiquidityProviderRewardsV2ResponseObject
   extends LiquidityProviderRewardsResponseObject {
-  perAddressRewards: {
-    [address: string]: LiquidityRewards,
+  linkedAddressRewards: {
+    [address: string]: PerAddressLiquidityRewards,
   }
+}
+
+export interface PerAddressLiquidityRewards {
+  averageStakedDYDX: string,
+  markets: {
+    [market: string]: LiquidityRewards,
+  },
 }
 
 export interface LiquidityRewards {
