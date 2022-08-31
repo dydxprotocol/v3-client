@@ -622,6 +622,20 @@ export interface LiquidityProviderRewardsResponseObject {
   stakedDYDX: StakedDYDX,
 }
 
+export interface LiquidityProviderRewardsV2ResponseObject
+  extends LiquidityProviderRewardsResponseObject {
+  linkedAddressRewards: {
+    [address: string]: PerAddressLiquidityRewards,
+  }
+}
+
+export interface PerAddressLiquidityRewards {
+  averageStakedDYDX: string,
+  markets: {
+    [market: string]: LiquidityRewards,
+  },
+}
+
 export interface LiquidityRewards {
   market: Market,
   depthSpreadScore: string,
@@ -632,8 +646,9 @@ export interface LiquidityRewards {
   totalScore: string,
   makerVolume: string,
   totalMakerVolume: string,
-  totalRewards: string,
   estimatedRewards: string,
+  totalRewards: string,
+  secondaryAllocation: string,
 }
 
 export interface RetroactiveMiningRewardsResponseObject {
