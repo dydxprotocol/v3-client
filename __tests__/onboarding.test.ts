@@ -93,7 +93,7 @@ describe('Onboarding module', () => {
 
     beforeAll(() => {
       const web3 = new Web3();
-      onboardingGoerliLocal = new Onboarding('http://example.com', web3, 3);
+      onboardingGoerliLocal = new Onboarding('http://example.com', web3, 5);
       web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
     });
 
