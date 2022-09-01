@@ -17,14 +17,14 @@ const EXPECTED_STARK_KEY_PAIR_MAINNET = {
   privateKey: '0170d807cafe3d8b5758f3f698331d292bf5aeb71f6fd282f0831dee094ee891',
 };
 const EXPECTED_API_KEY_CREDENTIALS_GOERLI = {
-  key: '9c1d91a5-0a30-1ed4-2d3d-b840a479b965',
-  secret: 'hHYEswFe5MHMm8gFb81Jas9b7iLQUicsVv5YBRMY',
-  passphrase: '9z5Ew7m2DLQd87Xlk7Hd',
+  key: '1871d1ba-537c-7fe8-743c-172bcd4ae5c6',
+  secret: 'tQxclqFWip0HL4Q-xkwZb_lTfOQz4GD5CHHpYzWa',
+  passphrase: 'B8JFepDVn8eixnor7Imv',
 };
 const EXPECTED_STARK_KEY_PAIR_GOERLI = {
-  publicKey: '035e23a936e596969a6b3131cfccbd18b71779f28276d30e8215cd0d3e9252c2',
-  publicKeyYCoordinate: '0557d1a1be389d9921b9d16415eac12bd276b05e2564c4b30a7730ace13a0e19',
-  privateKey: '050505654b282eb3debadddeddfa1bc76545a6837dcd59d7d41f6a282a4bbccc',
+  publicKey: '03ea05770b452df14427b3f07ff600faa132ecc3d7643275042cb4da6ad99972',
+  publicKeyYCoordinate: '07310e2ab01978806a6fb6e51a9ee1c9a5c5117c63530ad7dead2b9f72094cc3',
+  privateKey: '01019187d91b8effe153ab1932930e27c8d01c56ad9cc937c777633c0ffc5a7e',
 };
 
 let onboardingMainnetRemote: Onboarding;
