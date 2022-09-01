@@ -3,23 +3,26 @@ import crypto from 'crypto';
 import { StarkwareLib } from '@dydxprotocol/starkex-eth';
 import {
   ApiMethod,
-  KeyPair,
-  OrderWithClientId,
-  SignableOrder,
-  SignableWithdrawal,
   asEcKeyPair,
   asSimpleKeyPair,
-  SignableConditionalTransfer,
-  SignableTransfer,
+  KeyPair,
   nonceFromClientId,
+  OrderWithClientId,
+  SignableConditionalTransfer,
+  SignableOrder,
+  SignableTransfer,
+  SignableWithdrawal,
   TransferParams as StarklibTransferParams,
 } from '@dydxprotocol/starkex-lib';
 import _ from 'lodash';
 
-import { generateQueryPath, generateRandomClientId } from '../helpers/request-helpers';
 import {
-  RequestMethod,
+  generateQueryPath,
+  generateRandomClientId,
+} from '../helpers/request-helpers';
+import {
   axiosRequest,
+  RequestMethod,
 } from '../lib/axios';
 import { getAccountId } from '../lib/db';
 import {
@@ -27,6 +30,7 @@ import {
   AccountLeaderboardPnlPeriod,
   AccountLeaderboardPnlResponseObject,
   AccountResponseObject,
+  ActiveOrderResponseObject,
   ApiFastWithdrawal,
   ApiFastWithdrawalParams,
   ApiKeyCredentials,
@@ -37,10 +41,14 @@ import {
   FillResponseObject,
   FundingResponseObject,
   GenericParams,
+  HistoricalLeaderboardPnlsResponseObject,
   HistoricalPnlResponseObject,
-  ISO8601,
   ISO31661ALPHA2,
+  ISO6391,
+  ISO8601,
+  LinkAction,
   LiquidityProviderRewardsResponseObject,
+  LiquidityProviderRewardsV2ResponseObject,
   Market,
   OrderResponseObject,
   OrderSide,
@@ -49,22 +57,17 @@ import {
   PartialBy,
   PositionResponseObject,
   PositionStatus,
+  ProfilePrivateResponseObject,
   Provider,
+  RestrictionResponseObject,
   RetroactiveMiningRewardsResponseObject,
   TradingRewardsResponseObject,
   TransferParams,
   TransferResponseObject,
-  UserResponseObject,
-  ActiveOrderResponseObject,
-  RestrictionResponseObject,
   UserComplianceResponseObject,
-  ProfilePrivateResponseObject,
-  HistoricalLeaderboardPnlsResponseObject,
-  UserLinksResponseObject,
   UserLinkRequestsResponseObject,
-  LinkAction,
-  ISO6391,
-  LiquidityProviderRewardsV2ResponseObject,
+  UserLinksResponseObject,
+  UserResponseObject,
 } from '../types';
 import Clock from './clock';
 
@@ -938,9 +941,9 @@ export default class Private {
    * NOTE: this will not work on Mainnet/Production.
    */
   async requestTestnetTokens(): Promise<{ transfer: TransferResponseObject }> {
-    // Ropsten
-    if (this.networkId !== 3) {
-      throw new Error('Network is not Ropsten');
+    // Goerli
+    if (this.networkId !== 5) {
+      throw new Error('Network is not Goerli');
     }
 
     return this.post(

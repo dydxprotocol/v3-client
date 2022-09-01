@@ -16,21 +16,21 @@ const EXPECTED_STARK_KEY_PAIR_MAINNET = {
   publicKeyYCoordinate: '02bdd58a2c2acb241070bc5d55659a85bba65211890a8c47019a33902aba8400',
   privateKey: '0170d807cafe3d8b5758f3f698331d292bf5aeb71f6fd282f0831dee094ee891',
 };
-const EXPECTED_API_KEY_CREDENTIALS_ROPSTEN = {
+const EXPECTED_API_KEY_CREDENTIALS_GOERLI = {
   key: '9c1d91a5-0a30-1ed4-2d3d-b840a479b965',
   secret: 'hHYEswFe5MHMm8gFb81Jas9b7iLQUicsVv5YBRMY',
   passphrase: '9z5Ew7m2DLQd87Xlk7Hd',
 };
-const EXPECTED_STARK_KEY_PAIR_ROPSTEN = {
+const EXPECTED_STARK_KEY_PAIR_GOERLI = {
   publicKey: '035e23a936e596969a6b3131cfccbd18b71779f28276d30e8215cd0d3e9252c2',
   publicKeyYCoordinate: '0557d1a1be389d9921b9d16415eac12bd276b05e2564c4b30a7730ace13a0e19',
   privateKey: '050505654b282eb3debadddeddfa1bc76545a6837dcd59d7d41f6a282a4bbccc',
 };
 
 let onboardingMainnetRemote: Onboarding;
-let onboardingRopstenRemote: Onboarding;
+let onboardingGoerliRemote: Onboarding;
 let onboardingMainnetLocal: Onboarding;
-let onboardingRopstenLocal: Onboarding;
+let onboardingGoerliLocal: Onboarding;
 
 describe('Onboarding module', () => {
 
@@ -52,21 +52,21 @@ describe('Onboarding module', () => {
     });
   });
 
-  describe('Ropsten, with a web3 provider', () => {
+  describe('Goerli, with a web3 provider', () => {
 
     beforeAll(async () => {
       const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
-      onboardingRopstenRemote = new Onboarding('http://example.com', web3, 3);
+      onboardingGoerliRemote = new Onboarding('http://example.com', web3, 5);
     });
 
     it('derives the default STARK key pair', async () => {
-      const keyPair = await onboardingRopstenRemote.deriveStarkKey(GANACHE_ADDRESS);
-      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_ROPSTEN);
+      const keyPair = await onboardingGoerliRemote.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_GOERLI);
     });
 
     it('derives the default API key pair', async () => {
-      const apiKey = await onboardingRopstenRemote.recoverDefaultApiCredentials(GANACHE_ADDRESS);
-      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_ROPSTEN);
+      const apiKey = await onboardingGoerliRemote.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_GOERLI);
     });
   });
 
@@ -89,22 +89,22 @@ describe('Onboarding module', () => {
     });
   });
 
-  describe('Ropsten, with a local Ethereum private key', () => {
+  describe('Goerli, with a local Ethereum private key', () => {
 
     beforeAll(() => {
       const web3 = new Web3();
-      onboardingRopstenLocal = new Onboarding('http://example.com', web3, 3);
+      onboardingGoerliLocal = new Onboarding('http://example.com', web3, 3);
       web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
     });
 
     it('derives the default STARK key pair', async () => {
-      const keyPair = await onboardingRopstenLocal.deriveStarkKey(GANACHE_ADDRESS);
-      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_ROPSTEN);
+      const keyPair = await onboardingGoerliLocal.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_GOERLI);
     });
 
     it('derives the default API key pair', async () => {
-      const apiKey = await onboardingRopstenLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
-      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_ROPSTEN);
+      const apiKey = await onboardingGoerliLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_GOERLI);
     });
   });
 });
