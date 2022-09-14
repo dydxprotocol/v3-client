@@ -1,6 +1,6 @@
 {
   "name": "@dydxprotocol/v3-client",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "Trading client library for the new dYdX system (v3 API)",
   "main": "build/src/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/dydxprotocol/v3-client#readme",
   "dependencies": {
-    "@dydxprotocol/starkex-eth": "0.14.7",
+    "@dydxprotocol/starkex-eth": "0.14.9",
     "@dydxprotocol/starkex-lib": "1.1.10",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
