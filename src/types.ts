@@ -362,6 +362,7 @@ export interface UserResponseObject {
   isRegistered: boolean;
   email: string | null;
   username: string | null;
+  publicId: string;
   userData: {};
   makerFeeRate: string | null;
   takerFeeRate: string | null;
@@ -373,7 +374,9 @@ export interface UserResponseObject {
   isSharingAddress: boolean | null;
   dydxTokenBalance: string;
   stakedDydxTokenBalance: string;
+  activeStakedDydxTokenBalance: string;
   isEmailVerified: boolean;
+  hedgiesHeld: number[];
   country: ISO31661ALPHA2 | null;
   languageCode: ISO6391 | null;
 }
