@@ -1,0 +1,13 @@
+name: Lint/Build/Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  main:
+    with:
+      USE_GANACHE: true
+    uses: dydxprotocol/actions-public/.github/workflows/v3-lint-build-test.yml@main
