@@ -152,6 +152,62 @@ export default class Onboarding {
   }
 
   /**
+   * @description Derive two STARK key pairs deterministically from an Ethereum key, with one of the STARK key pair using a rotated signature.
+   * 
+   * This is used by the frontend app to derive the two STARK key pairs in a way that is recoverable.
+   * Programmatic traders may optionally derive their STARK key pairs in the same way.
+   * 
+   * @param ethereumAddress 
+   * @param signingMethod 
+   */
+  async deriveAllStarkKeys(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.TypedData
+  ): Promise<KeyPairWithYCoordinate[]> {
+    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
+      throw new Error("Unsupported signing method for API key derivation");
+    }
+
+    const message: OnboardingAction = {
+      action: OnboardingActionString.KEY_DERIVATION,
+    };
+
+    // On mainnet, include an extra onlySignOn parameter.
+    if (this.networkId === 1) {
+      message.onlySignOn = "https://trade.dydx.exchange";
+    }
+
+    const allStarkKeyPairs: KeyPairWithYCoordinate[] = [];
+
+    const signature = await this.signer.sign(
+      ethereumAddress,
+      signingMethod,
+      message
+    );
+
+    allStarkKeyPairs.push(
+      keyPairFromData(Buffer.from(stripHexPrefix(signature), "hex"))
+    );
+
+    const rotation = ({
+      '00': '1b',
+      '01': '1c',
+      '1b': '00',
+      '1c': '01',
+    } as const)[signature.slice(-2)];
+
+    if (rotation) {
+      const rotatedSignature = `${signature.slice(0, -2)}${rotation}`;
+
+      allStarkKeyPairs.push(
+        keyPairFromData(Buffer.from(stripHexPrefix(rotatedSignature), "hex"))
+      );
+    }
+
+    return allStarkKeyPairs;
+  }
+
+  /**
    * @description Derive an API key pair deterministically from an Ethereum key.
    *
    * This is used by the frontend app to recover the default API key credentials.
