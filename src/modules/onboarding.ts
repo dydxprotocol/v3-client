@@ -152,20 +152,21 @@ export default class Onboarding {
   }
 
   /**
-   * @description Derive two STARK key pairs deterministically from an Ethereum key, with one of the STARK key pair using a rotated signature.
-   * 
-   * This is used by the frontend app to derive the two STARK key pairs in a way that is recoverable.
-   * Programmatic traders may optionally derive their STARK key pairs in the same way.
-   * 
-   * @param ethereumAddress 
-   * @param signingMethod 
+   * @description Derive two STARK key pairs deterministically from an Ethereum key, with one
+   * of the STARK key pair using a rotated signature.
+   *
+   * This is used by the frontend app to derive the two STARK key pairs in a way that is
+   * recoverable.
+   *
+   * @param ethereumAddress
+   * @param signingMethod
    */
   async deriveAllStarkKeys(
     ethereumAddress: string,
-    signingMethod: SigningMethod = SigningMethod.TypedData
+    signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate[]> {
     if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
-      throw new Error("Unsupported signing method for API key derivation");
+      throw new Error('Unsupported signing method for API key derivation');
     }
 
     const message: OnboardingAction = {
@@ -174,7 +175,7 @@ export default class Onboarding {
 
     // On mainnet, include an extra onlySignOn parameter.
     if (this.networkId === 1) {
-      message.onlySignOn = "https://trade.dydx.exchange";
+      message.onlySignOn = 'https://trade.dydx.exchange';
     }
 
     const allStarkKeyPairs: KeyPairWithYCoordinate[] = [];
@@ -182,11 +183,11 @@ export default class Onboarding {
     const signature = await this.signer.sign(
       ethereumAddress,
       signingMethod,
-      message
+      message,
     );
 
     allStarkKeyPairs.push(
-      keyPairFromData(Buffer.from(stripHexPrefix(signature), "hex"))
+      keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex')),
     );
 
     const rotation = ({
@@ -200,7 +201,7 @@ export default class Onboarding {
       const rotatedSignature = `${signature.slice(0, -2)}${rotation}`;
 
       allStarkKeyPairs.push(
-        keyPairFromData(Buffer.from(stripHexPrefix(rotatedSignature), "hex"))
+        keyPairFromData(Buffer.from(stripHexPrefix(rotatedSignature), 'hex')),
       );
     }
 

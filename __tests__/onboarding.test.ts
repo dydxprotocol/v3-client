@@ -58,7 +58,11 @@ describe('Onboarding module', () => {
 
     it('derives all possible STARK key pairs', async () => {
       const allKeyPairs = await onboardingMainnetRemote.deriveAllStarkKeys(GANACHE_ADDRESS);
-      expect(allKeyPairs).toStrictEqual([EXPECTED_STARK_KEY_PAIR_MAINNET, EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_MAINNET]);
+
+      expect(allKeyPairs).toStrictEqual([
+        EXPECTED_STARK_KEY_PAIR_MAINNET,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_MAINNET,
+      ]);
     });
 
     it('derives the default API key pair', async () => {
@@ -81,7 +85,10 @@ describe('Onboarding module', () => {
 
     it('derives all possible STARK key pairs', async () => {
       const allKeyPairs = await onboardingGoerliRemote.deriveAllStarkKeys(GANACHE_ADDRESS);
-      expect(allKeyPairs).toStrictEqual([EXPECTED_STARK_KEY_PAIR_GOERLI, EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_GOERLI]);
+      expect(allKeyPairs).toStrictEqual([
+        EXPECTED_STARK_KEY_PAIR_GOERLI,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_GOERLI,
+      ]);
     });
 
     it('derives the default API key pair', async () => {
@@ -104,7 +111,11 @@ describe('Onboarding module', () => {
 
     it('derives all possible STARK key pairs', async () => {
       const allKeyPairs = await onboardingMainnetLocal.deriveAllStarkKeys(GANACHE_ADDRESS);
-      expect(allKeyPairs).toStrictEqual([EXPECTED_STARK_KEY_PAIR_MAINNET, EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_MAINNET]);
+
+      expect(allKeyPairs).toStrictEqual([
+        EXPECTED_STARK_KEY_PAIR_MAINNET,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_MAINNET,
+      ]);
     });
 
     it('derives the default API key pair', async () => {
@@ -128,7 +139,11 @@ describe('Onboarding module', () => {
 
     it('derives all possible STARK key pairs', async () => {
       const allKeyPairs = await onboardingGoerliLocal.deriveAllStarkKeys(GANACHE_ADDRESS);
-      expect(allKeyPairs).toStrictEqual([EXPECTED_STARK_KEY_PAIR_GOERLI, EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_GOERLI]);
+
+      expect(allKeyPairs).toStrictEqual([
+        EXPECTED_STARK_KEY_PAIR_GOERLI,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_SIGN_GOERLI,
+      ]);
     });
 
     it('derives the default API key pair', async () => {
