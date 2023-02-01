@@ -5,7 +5,7 @@ import {
 import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../eth-signing';
-import { stripHexPrefix } from '../eth-signing/helpers';
+import { rotateRawSignature, stripHexPrefix } from '../eth-signing/helpers';
 import { keccak256Buffer } from '../helpers/request-helpers';
 import {
   RequestMethod,
@@ -77,6 +77,38 @@ export default class Onboarding {
     });
   }
 
+  /**
+   * Sign the 'key derivation' onboarding message to receive a signature.
+   *
+   * @param ethereumAddress of the account
+   * @param signingMethod Method to use for signing
+   * @returns Signature used to derive your STARK key pairs
+   */
+  protected async signStarkKeyDerivationMessage(
+    ethereumAddress: string,
+    signingMethod: SigningMethod = SigningMethod.TypedData,
+  ): Promise<string> {
+    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
+      throw new Error('Unsupported signing method for API key derivation');
+    }
+
+    const message: OnboardingAction = {
+      action: OnboardingActionString.KEY_DERIVATION,
+    };
+
+    // On mainnet, include an extra onlySignOn parameter.
+    if (this.networkId === 1) {
+      message.onlySignOn = 'https://trade.dydx.exchange';
+    }
+
+    const signature = await this.signer.sign(
+      ethereumAddress,
+      signingMethod,
+      message,
+    );
+    return stripHexPrefix(signature);
+  }
+
   // ============ Requests ============
 
   /**
@@ -132,76 +164,41 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate> {
-    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
-      throw new Error('Unsupported signing method for API key derivation');
-    }
-
-    const message: OnboardingAction = { action: OnboardingActionString.KEY_DERIVATION };
-
-    // On mainnet, include an extra onlySignOn parameter.
-    if (this.networkId === 1) {
-      message.onlySignOn = 'https://trade.dydx.exchange';
-    }
-
-    const signature = await this.signer.sign(
+    const signature = await this.signStarkKeyDerivationMessage(
       ethereumAddress,
       signingMethod,
-      message,
     );
-    return keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
+
+    return keyPairFromData(Buffer.from(signature, 'hex'));
   }
 
   /**
    * @description Derive two STARK key pairs deterministically from an Ethereum key, with one
    * of the STARK key pair using a rotated signature.
    *
-   * This is used by the frontend app to derive the two STARK key pairs in a way that is
-   * recoverable.
+   * This is used by the frontend app to derive the two STARK key pairs to ensure there will be
+   * no STARK key mismatch due to signature's 'v' value.
    *
-   * @param ethereumAddress
-   * @param signingMethod
+   * @param ethereumAddress Ethereum address of the account to use for signing.
+   * @param signingMethod Method to use for signing.
    */
   async deriveAllStarkKeys(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate[]> {
-    if (!KEY_DERIVATION_SUPPORTED_SIGNING_METHODS.includes(signingMethod)) {
-      throw new Error('Unsupported signing method for API key derivation');
-    }
-
-    const message: OnboardingAction = {
-      action: OnboardingActionString.KEY_DERIVATION,
-    };
-
-    // On mainnet, include an extra onlySignOn parameter.
-    if (this.networkId === 1) {
-      message.onlySignOn = 'https://trade.dydx.exchange';
-    }
-
-    const allStarkKeyPairs: KeyPairWithYCoordinate[] = [];
-
-    const signature = await this.signer.sign(
+    const signature = await this.signStarkKeyDerivationMessage(
       ethereumAddress,
       signingMethod,
-      message,
     );
 
-    allStarkKeyPairs.push(
-      keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex')),
-    );
+    const allStarkKeyPairs: KeyPairWithYCoordinate[] = [];
+    const starkKeyPair = keyPairFromData(Buffer.from(signature, 'hex'));
+    const rotatedSignature = rotateRawSignature(signature);
+    allStarkKeyPairs.push(starkKeyPair);
 
-    const rotation = ({
-      '00': '1b',
-      '01': '1c',
-      '1b': '00',
-      '1c': '01',
-    } as const)[signature.slice(-2)];
-
-    if (rotation) {
-      const rotatedSignature = `${signature.slice(0, -2)}${rotation}`;
-
+    if (rotatedSignature) {
       allStarkKeyPairs.push(
-        keyPairFromData(Buffer.from(stripHexPrefix(rotatedSignature), 'hex')),
+        keyPairFromData(Buffer.from(rotatedSignature, 'hex')),
       );
     }
 

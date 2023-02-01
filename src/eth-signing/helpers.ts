@@ -133,6 +133,28 @@ export function fixRawSignature(
   }
 }
 
+/**
+ * Return signature with rotated 'v' value.
+ * @param signature Hex stripped raw signature
+ * @returns a rotated version of the inputted signature.
+ */
+export function rotateRawSignature(signature: string): string {
+  const v = signature.slice(-2);
+
+  const rotatedV = (
+    {
+      '00': '1b',
+      '01': '1c',
+      '1b': '00',
+      '1c': '01',
+    } as const
+  )[v];
+
+  if (!rotatedV) throw new Error(`Invalid v value: ${v}`);
+
+  return `${signature.slice(0, -2)}${rotatedV}`;
+}
+
 // ============ Byte Helpers ============
 
 export function stripHexPrefix(input: string) {
