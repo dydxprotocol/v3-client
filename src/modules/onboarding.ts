@@ -5,7 +5,7 @@ import {
 import Web3 from 'web3';
 
 import { SignOnboardingAction } from '../eth-signing';
-import { rotateRawSignature, stripHexPrefix } from '../eth-signing/helpers';
+import { getAllSignatureRotations, stripHexPrefix } from '../eth-signing/helpers';
 import { keccak256Buffer } from '../helpers/request-helpers';
 import {
   RequestMethod,
@@ -106,7 +106,8 @@ export default class Onboarding {
       signingMethod,
       message,
     );
-    return stripHexPrefix(signature);
+
+    return signature;
   }
 
   // ============ Requests ============
@@ -164,20 +165,21 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate> {
-    const signature = await this.signStarkKeyDerivationMessage(
+    const signature: string = await this.signStarkKeyDerivationMessage(
       ethereumAddress,
       signingMethod,
     );
 
-    return keyPairFromData(Buffer.from(signature, 'hex'));
+    return keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
   }
 
   /**
-   * @description Derive two STARK key pairs deterministically from an Ethereum key, with one
-   * of the STARK key pair using a rotated signature.
+   * @description Derive four STARK key pairs deterministically from an Ethereum key, with three
+   * of the STARK key pairs using a signature that has had either their 'v' value, 't' value, or
+   * both values rotated.
    *
    * This is used by the frontend app to derive the two STARK key pairs to ensure there will be
-   * no STARK key mismatch due to signature's 'v' value.
+   * no STARK key mismatch due to a signature's 'v' or 't' value.
    *
    * @param ethereumAddress Ethereum address of the account to use for signing.
    * @param signingMethod Method to use for signing.
@@ -186,23 +188,16 @@ export default class Onboarding {
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<KeyPairWithYCoordinate[]> {
-    const signature = await this.signStarkKeyDerivationMessage(
+    const signature: string = await this.signStarkKeyDerivationMessage(
       ethereumAddress,
       signingMethod,
     );
 
-    const allStarkKeyPairs: KeyPairWithYCoordinate[] = [];
-    const starkKeyPair = keyPairFromData(Buffer.from(signature, 'hex'));
-    const rotatedSignature = rotateRawSignature(signature);
-    allStarkKeyPairs.push(starkKeyPair);
+    const rotatedSignatures: string[] = getAllSignatureRotations(signature);
 
-    if (rotatedSignature) {
-      allStarkKeyPairs.push(
-        keyPairFromData(Buffer.from(rotatedSignature, 'hex')),
-      );
-    }
-
-    return allStarkKeyPairs;
+    return rotatedSignatures.map((rotatedSignature: string) => keyPairFromData(
+      Buffer.from(stripHexPrefix(rotatedSignature), 'hex'),
+    ));
   }
 
   /**

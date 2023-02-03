@@ -35,6 +35,19 @@ export const EIP712_DOMAIN_STRUCT_NO_CONTRACT = [
   { name: 'chainId', type: 'uint256' },
 ];
 
+const ROTATED_V_VALUES: { [v: string]: string } = {
+  '00': '1b',
+  '01': '1c',
+  '1b': '00',
+  '1c': '01',
+};
+
+// PERSONAL and NO_PREPEND are the only SignatureTypes the frontend app deal with.
+const ROTATED_T_VALUES: { [t: string]: string } = {
+  '00': `0${SignatureTypes.PERSONAL}`,
+  '03': `0${SignatureTypes.NO_PREPEND}`,
+};
+
 export function isValidSigType(
   sigType: number,
 ): boolean {
@@ -134,25 +147,38 @@ export function fixRawSignature(
 }
 
 /**
- * Return signature with rotated 'v' value.
- * @param signature Hex stripped raw signature
- * @returns a rotated version of the inputted signature.
+ * @description get signatures that have a rotated 'v' value, a rotated 't' value, or
+ * have both rotated. If 'v' or 't' cannot be rotated they will keep their original values.
+ *
+ * @param signature to rotate
+ *
+ * @throws Error if signature has an invalid length, if 'v' value has an invalid length, or if 't'
+ * value has an invalid length
+ *
+ * @returns the list of signatures in the following order:
+ * [0]: original
+ * [1]: rotated 'v' value
+ * [2]: rotated 't' value
+ * [3]: rotated 'v' and 't' value
  */
-export function rotateRawSignature(signature: string): string {
-  const v = signature.slice(-2);
+export function getAllSignatureRotations(signature: string): string[] {
+  const stripped = stripHexPrefix(signature);
+  const rs = stripped.slice(0, 128);
+  const v = stripped.slice(128, 130);
+  const t = stripped.slice(130, 132);
+  const rotatedV: string = ROTATED_V_VALUES[v] || v;
+  const rotatedT: string = ROTATED_T_VALUES[t] || t;
 
-  const rotatedV = (
-    {
-      '00': '1b',
-      '01': '1c',
-      '1b': '00',
-      '1c': '01',
-    } as const
-  )[v];
+  if (stripped.length !== 132) {
+    throw new Error(`Invalid signature: ${signature}`);
+  }
 
-  if (!rotatedV) throw new Error(`Invalid v value: ${v}`);
-
-  return `${signature.slice(0, -2)}${rotatedV}`;
+  return [
+    `0x${stripped}`,
+    `0x${rs}${rotatedV}${t}`,
+    `0x${rs}${v}${rotatedT}`,
+    `0x${rs}${rotatedV}${rotatedT}`,
+  ];
 }
 
 // ============ Byte Helpers ============
