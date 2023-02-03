@@ -147,13 +147,12 @@ export function fixRawSignature(
 }
 
 /**
- * @description get signatures that have a rotated 'v' value, a rotated 't' value, or
- * have both rotated. If 'v' or 't' cannot be rotated they will keep their original values.
+ * @description get signatures that have a rotated 'v' value, a rotated 't' value, and
+ * have both values rotated. If 'v' or 't' cannot be rotated they will keep their original values.
  *
  * @param signature to rotate
  *
- * @throws Error if signature has an invalid length, if 'v' value has an invalid length, or if 't'
- * value has an invalid length
+ * @throws Error if signature has an invalid length
  *
  * @returns the list of signatures in the following order:
  * [0]: original

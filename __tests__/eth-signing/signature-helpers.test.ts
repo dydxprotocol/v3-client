@@ -10,7 +10,6 @@ const ONBOARDING_SIGNATURE_ROTATED_T = `${ONBOARDING_SIGNATURE_RS}1c03`;
 const ONBOARDING_SIGNATURE_BOTH_ROTATED = `${ONBOARDING_SIGNATURE_RS}0103`;
 
 describe('Signature Formatting', () => {
-
   describe('getAllSignatureRotations', () => {
     it('rotates a valid signature', () => {
       expect(getAllSignatureRotations(ONBOARDING_SIGNATURE)).toEqual([
