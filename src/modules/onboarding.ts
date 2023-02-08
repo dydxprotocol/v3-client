@@ -84,7 +84,7 @@ export default class Onboarding {
    * @param signingMethod Method to use for signing
    * @returns Signature used to derive your STARK key pairs
    */
-  protected async signStarkKeyDerivationMessage(
+  protected signStarkKeyDerivationMessage(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<string> {
@@ -101,13 +101,7 @@ export default class Onboarding {
       message.onlySignOn = 'https://trade.dydx.exchange';
     }
 
-    const signature = await this.signer.sign(
-      ethereumAddress,
-      signingMethod,
-      message,
-    );
-
-    return signature;
+    return this.signer.sign(ethereumAddress, signingMethod, message);
   }
 
   // ============ Requests ============

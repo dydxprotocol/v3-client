@@ -44,8 +44,8 @@ const ROTATED_V_VALUES: { [v: string]: string } = {
 
 // PERSONAL and NO_PREPEND are the only SignatureTypes the frontend app deal with.
 const ROTATED_T_VALUES: { [t: string]: string } = {
-  '00': `0${SignatureTypes.PERSONAL}`,
-  '03': `0${SignatureTypes.NO_PREPEND}`,
+  [`0${SignatureTypes.NO_PREPEND}`]: `0${SignatureTypes.PERSONAL}`,
+  [`0${SignatureTypes.PERSONAL}`]: `0${SignatureTypes.NO_PREPEND}`,
 };
 
 export function isValidSigType(
