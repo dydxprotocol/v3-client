@@ -84,7 +84,7 @@ export default class Onboarding {
    * @param signingMethod Method to use for signing
    * @returns Signature used to derive your STARK key pairs
    */
-  protected signStarkKeyDerivationMessage(
+  protected async signStarkKeyDerivationMessage(
     ethereumAddress: string,
     signingMethod: SigningMethod = SigningMethod.TypedData,
   ): Promise<string> {
