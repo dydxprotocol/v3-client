@@ -35,6 +35,19 @@ export const EIP712_DOMAIN_STRUCT_NO_CONTRACT = [
   { name: 'chainId', type: 'uint256' },
 ];
 
+const ROTATED_V_VALUES: { [v: string]: string } = {
+  '00': '1b',
+  '01': '1c',
+  '1b': '00',
+  '1c': '01',
+};
+
+// PERSONAL and NO_PREPEND are the only SignatureTypes the frontend app deal with.
+const ROTATED_T_VALUES: { [t: string]: string } = {
+  [`0${SignatureTypes.NO_PREPEND}`]: `0${SignatureTypes.PERSONAL}`,
+  [`0${SignatureTypes.PERSONAL}`]: `0${SignatureTypes.NO_PREPEND}`,
+};
+
 export function isValidSigType(
   sigType: number,
 ): boolean {
@@ -131,6 +144,40 @@ export function fixRawSignature(
     default:
       throw new Error(`Invalid v value: ${v}`);
   }
+}
+
+/**
+ * @description get signatures that have a rotated 'v' value, a rotated 't' value, and
+ * have both values rotated. If 'v' or 't' cannot be rotated they will keep their original values.
+ *
+ * @param signature to rotate
+ *
+ * @throws Error if signature has an invalid length
+ *
+ * @returns the list of signatures in the following order:
+ * [0]: original
+ * [1]: rotated 'v' value
+ * [2]: rotated 't' value
+ * [3]: rotated 'v' and 't' value
+ */
+export function getAllSignatureRotations(signature: string): string[] {
+  const stripped = stripHexPrefix(signature);
+  const rs = stripped.slice(0, 128);
+  const v = stripped.slice(128, 130);
+  const t = stripped.slice(130, 132);
+  const rotatedV: string = ROTATED_V_VALUES[v] || v;
+  const rotatedT: string = ROTATED_T_VALUES[t] || t;
+
+  if (stripped.length !== 132) {
+    throw new Error(`Invalid signature: ${signature}`);
+  }
+
+  return [
+    `0x${stripped}`,
+    `0x${rs}${rotatedV}${t}`,
+    `0x${rs}${v}${rotatedT}`,
+    `0x${rs}${rotatedV}${rotatedT}`,
+  ];
 }
 
 // ============ Byte Helpers ============
