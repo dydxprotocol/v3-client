@@ -31,36 +31,36 @@ const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_MAINNET = {
   publicKey: '078fd43a3ba640a1ff71713e86537ddc08ba25fe9ea37815746f486d790e9115',
   publicKeyYCoordinate: '0005e95993fd25cfcdd2ec5820b07b784ab8a95d608e8f920240f3ca907ff56d',
 };
-const EXPECTED_API_KEY_CREDENTIALS_GOERLI = {
-  key: '1871d1ba-537c-7fe8-743c-172bcd4ae5c6',
-  secret: 'tQxclqFWip0HL4Q-xkwZb_lTfOQz4GD5CHHpYzWa',
-  passphrase: 'B8JFepDVn8eixnor7Imv',
+const EXPECTED_API_KEY_CREDENTIALS_SEPOLIA = {
+  key: '30cb6046-8f4a-5677-a19c-a494ccb7c7e5',
+  secret: '4Yd_6JtH_-I2taoNQKAhkCifnVHQ2Unue88sIeuc',
+  passphrase: 'Db1GQK5KpI_qeddgjF66',
 };
-const EXPECTED_STARK_KEY_PAIR_GOERLI = {
-  publicKey: '03ea05770b452df14427b3f07ff600faa132ecc3d7643275042cb4da6ad99972',
-  publicKeyYCoordinate: '07310e2ab01978806a6fb6e51a9ee1c9a5c5117c63530ad7dead2b9f72094cc3',
-  privateKey: '01019187d91b8effe153ab1932930e27c8d01c56ad9cc937c777633c0ffc5a7e',
+const EXPECTED_STARK_KEY_PAIR_SEPOLIA = {
+  publicKey: '015e2e074a7ac9e78edb2ee9f11a0c0c0a080c79758ab81616eea9c032c75265',
+  publicKeyYCoordinate: '0360408546b64238f80d7a8a336d7304d75f122a7e5bb22cbb7a14f550eac5a8',
+  privateKey: '02d21c094fedea3e72bef27fbcdceaafd34e88fc4b7586859e26e98b21e63a60',
 };
-const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_GOERLI = {
-  privateKey: '052e820782c82a686f59863828095e82b7287c05bbed2b7b35bada66374bca02',
-  publicKey: '022cf874307a6352b487d768d1c22f17cdfbcd2044762abae3e2ccab205e7c5f',
-  publicKeyYCoordinate: '04aa067c547596d6db587ae892fe0c3743c7eec220ed873c39a879c6c7b7aeb6',
+const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_SEPOLIA = {
+  privateKey: '06a7689f8d44827c8e86f364c858161dc7d3074cc34e83e032691112dcb964f6',
+  publicKey: '044403c08df2abf4f726f4b7f83761097bb1a84ee4cfd4910bf0fd1a59081cf3',
+  publicKeyYCoordinate: '006819da149c8fc04391e0a9eb5f0263900a867a5485a093c3f98ec796fe91a4',
 };
-const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_GOERLI = {
-  privateKey: '04e31b91e0808be680168ee5cac6144d4a32e550be387731528ee032fd5d7571',
-  publicKey: '06e254645e25d32fc90763b386e99b8fe23927205f31fe61c162a446e862ddae',
-  publicKeyYCoordinate: '063f47210857f29c8a52437e5f070cb646118f88181f9991d4ba3d1dffcceda5',
+const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_SEPOLIA = {
+  privateKey: '00904b77ed3fde9c6a7f2485e4056eb878ebf473ded2380b0174e629dbfa6f13',
+  publicKey: '0534e01015261e838b58e855642ccf708f7805be2a820a0daa8c96ad5b23f82c',
+  publicKeyYCoordinate: '06d87eb3625f7a9ebdc2172fc477bd793490c18337ea06045de86d0d0001dd5b',
 };
-const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_GOERLI = {
-  privateKey: '035289da1da837881b780d00e14312c97c3c695378d4adbb3d76bde98ecdbc96',
-  publicKey: '006d181da12e58394e450cd0f577150dc10574a88f2bee37323228d2fd717f66',
-  publicKeyYCoordinate: '05d1420b2502f89c23e947a0b54a189b17a24fbb15a98e7792504ca271c919c3',
+const EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_SEPOLIA = {
+  privateKey: '03f9afcb719a7e94a1599fb41d241a0c540a78bed04d31b5446b95497fb9d6cc',
+  publicKey: '05f39f9f33daa5d36079c7b91e2c34c9eb05a6f73513465a09c3cf74ed8e5008',
+  publicKeyYCoordinate: '058f723422fca55bdadc4ae8c3b7ab162a5c154949cdbf0acd612b70ad64b75f',
 };
 
 let onboardingMainnetRemote: Onboarding;
-let onboardingGoerliRemote: Onboarding;
+let onboardingSepoliaRemote: Onboarding;
 let onboardingMainnetLocal: Onboarding;
-let onboardingGoerliLocal: Onboarding;
+let onboardingSepoliaLocal: Onboarding;
 
 describe('Onboarding module', () => {
 
@@ -93,31 +93,31 @@ describe('Onboarding module', () => {
     });
   });
 
-  describe('Goerli, with a web3 provider', () => {
+  describe('SEPOLIA, with a web3 provider', () => {
 
     beforeAll(async () => {
       const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
-      onboardingGoerliRemote = new Onboarding('http://example.com', web3, 5);
+      onboardingSepoliaRemote = new Onboarding('http://example.com', web3, 11155111);
     });
 
     it('derives the default STARK key pair', async () => {
-      const keyPair = await onboardingGoerliRemote.deriveStarkKey(GANACHE_ADDRESS);
-      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_GOERLI);
+      const keyPair = await onboardingSepoliaRemote.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_SEPOLIA);
     });
 
     it('derives all possible STARK key pairs', async () => {
-      const allKeyPairs = await onboardingGoerliRemote.deriveAllStarkKeys(GANACHE_ADDRESS);
+      const allKeyPairs = await onboardingSepoliaRemote.deriveAllStarkKeys(GANACHE_ADDRESS);
       expect(allKeyPairs).toStrictEqual([
-        EXPECTED_STARK_KEY_PAIR_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_GOERLI,
+        EXPECTED_STARK_KEY_PAIR_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_SEPOLIA,
       ]);
     });
 
     it('derives the default API key pair', async () => {
-      const apiKey = await onboardingGoerliRemote.recoverDefaultApiCredentials(GANACHE_ADDRESS);
-      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_GOERLI);
+      const apiKey = await onboardingSepoliaRemote.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_SEPOLIA);
     });
   });
 
@@ -150,33 +150,33 @@ describe('Onboarding module', () => {
     });
   });
 
-  describe('Goerli, with a local Ethereum private key', () => {
+  describe('SEPOLIA, with a local Ethereum private key', () => {
 
     beforeAll(() => {
       const web3 = new Web3();
-      onboardingGoerliLocal = new Onboarding('http://example.com', web3, 5);
+      onboardingSepoliaLocal = new Onboarding('http://example.com', web3, 11155111);
       web3.eth.accounts.wallet.add(GANACHE_PRIVATE_KEY);
     });
 
     it('derives the default STARK key pair', async () => {
-      const keyPair = await onboardingGoerliLocal.deriveStarkKey(GANACHE_ADDRESS);
-      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_GOERLI);
+      const keyPair = await onboardingSepoliaLocal.deriveStarkKey(GANACHE_ADDRESS);
+      expect(keyPair).toStrictEqual(EXPECTED_STARK_KEY_PAIR_SEPOLIA);
     });
 
     it('derives all possible STARK key pairs', async () => {
-      const allKeyPairs = await onboardingGoerliLocal.deriveAllStarkKeys(GANACHE_ADDRESS);
+      const allKeyPairs = await onboardingSepoliaLocal.deriveAllStarkKeys(GANACHE_ADDRESS);
 
       expect(allKeyPairs).toStrictEqual([
-        EXPECTED_STARK_KEY_PAIR_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_GOERLI,
-        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_GOERLI,
+        EXPECTED_STARK_KEY_PAIR_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_V_SIG_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_T_SIG_SEPOLIA,
+        EXPECTED_STARK_KEY_PAIR_FROM_ROTATED_VT_SIG_SEPOLIA,
       ]);
     });
 
     it('derives the default API key pair', async () => {
-      const apiKey = await onboardingGoerliLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
-      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_GOERLI);
+      const apiKey = await onboardingSepoliaLocal.recoverDefaultApiCredentials(GANACHE_ADDRESS);
+      expect(apiKey).toStrictEqual(EXPECTED_API_KEY_CREDENTIALS_SEPOLIA);
     });
   });
 });
