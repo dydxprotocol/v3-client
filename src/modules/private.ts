@@ -941,9 +941,9 @@ export default class Private {
    * NOTE: this will not work on Mainnet/Production.
    */
   async requestTestnetTokens(): Promise<{ transfer: TransferResponseObject }> {
-    // Goerli
-    if (this.networkId !== 5) {
-      throw new Error('Network is not Goerli');
+    // Sepolia
+    if (this.networkId !== 11155111) {
+      throw new Error('Network is not Sepolia');
     }
 
     return this.post(
